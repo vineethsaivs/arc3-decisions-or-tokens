@@ -1,0 +1,22 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-31",
+ "declared_before_results": true,
+ "declared_at": "2026-10-31T12:05Z, before any scroll run was pushed and before us8's W2, W3 or probe were read",
+ "candidate": "l1a1y8sv2r3lf15usc (W; copies uscb, uscc) = the us8 replica (unstick2 + seg8) plus scroll, against the lf15 agent (A); l1a1y8sv2r3kp12lf15usc (probe, would become the pin)",
+ "change": "franzen_overlays/scroll.py: utils/frame_diff.py detects a whole-interior shift along one axis (4-cell edge band left out; candidates from whole-line matches, accepted at a cell mismatch rate <= 0.1 and <= 0.3 of the unshifted rate, >= 60 changed cells), shifts the before frame and its objects by it and adds `scroll: [rows, cols]` (unchanged output when no scroll); the turn opener says when the last sequence's frames scrolled and by how much; the frame_diff hint documents `scroll`. Offline solution/sim/test_franzen_scroll.py (synthetic scroll, plain move unchanged, sandbox copy, opener line, every human-replay frame pair).",
+ "evidence": "10-31 agent read of kaggle-lf15us8-1031-1 and kaggle-lf15uns2-1030-3: a camera scroll reaches the model as hundreds of unrelated changes (bp35 s8 step 34: 1,343 cells, 89 'moved' pairs of 1px dots); uns2 read bp35 L2's scroll as draining water, s8 spent 22 of 27 bp35 L2 turns and most of lf52 L3 and L4 on offset arithmetic; both games were stuck there at the window's end. On the 22 human-replay games the detector fires in bp35 (103 pairs) and lf52 (40) and in no other game (0 of about 6,000 changed pairs).",
+ "wave": "Kaggle only: W1 (usc) when us8's W2 and W3 finish (beside us8's probe), W2 (uscb) when us8's probe finishes, W3 (uscc) when W1 finishes, the probe when W2 finishes; all before the 11-01 03:06Z scored submission. Read with scratchpad unst/usc_gate.py. A pooled = the kv2 gate's 7 runs",
+ "gate": {
+  "m1_scroll_fires": "turn openers saying 'The view scrolled during that sequence' in bp35 and lf52: W mean at least 3 per run and at least 1 in every W run",
+  "m1_scroll_quiet": "the same openers in the other 23 games: at most 2 in any W run",
+  "m1_seg8": "model code blocks that read a node's `group`: W mean at least 15 per run and at least 5 in every W run",
+  "m2_response": "unstick2's m2 pooled over W (of the turns that are the 3rd, 5th or 7th idle turn in a row on a level, at least 0.70 execute an action)",
+  "m3_actions": "W actions per run <= pooled A x 1.10 and W median actions/baseline on cleared levels <= pooled A + 0.05",
+  "no_harm": "W mean levels >= pooled A - 2.5 and W mean game score >= pooled A - 1.5",
+  "probe": "Kaggle probe installs and plays (at least 25 actions), 0 tracebacks in kernel.log and serve.log"
+ },
+ "reported_not_gated": "bp35 and lf52 levels against the us8 and unstick2 W runs; W levels and score against us8's W runs",
+ "decision": "usc ships (pin for the remaining draws, replacing us8 or unstick2) only if it passes every item above on its own 3 W runs and the probe, whatever us8's verdict (its W runs carry seg8's m1 and unstick2's m2 themselves); kill on any miss; no further runs are added after reading. A pass after the 11-01 03:06Z fire takes 11-02",
+ "rollback": "re-pin the pin it replaced if the first live draw is 0.00 or a day errors twice"
+}

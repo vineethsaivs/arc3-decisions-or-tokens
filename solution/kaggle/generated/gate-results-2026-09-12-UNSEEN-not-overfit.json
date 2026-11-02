@@ -1,0 +1,25 @@
+{
+  "gate": "UNSEEN-25: are we OVERFIT to the public 25, or are the hidden games harder?",
+  "date": "2026-09-12",
+  "kernel": "vineethsaivs/arc3-unseen-matched-b",
+  "config": "The SHIPPING config, unchanged. Only the game set differs: 25 RE-ARC-3 environments this project has never tuned on, difficulty-matched one-for-one to the public 25 on random-agent clearance (ratio 1.00).",
+  "predeclared_metric": "The FRACTION of available levels cleared, against our public-25 reference of about 24 percent, never the raw score, because these games are shorter. Below 15 percent would mean the bench misleads in absolute terms.",
+  "RESULT": {
+    "levels_cleared": 81,
+    "levels_available": 108,
+    "fraction": 0.750,
+    "zero_level_games": 3,
+    "actions": 6387,
+    "public_25_reference": "about 42 of ~183 levels, roughly 0.23"
+  },
+  "THE_HEADLINE": "75.0 percent against a 23 percent reference. We do THREE TIMES BETTER on games we have never tuned on. The predeclared kill condition (below 15 percent) is not remotely met.",
+  "WHAT_IT_SETTLES": "OVERFITTING TO THE PUBLIC 25 IS NOT WHAT LIMITS US. The arm exists because the board/bench gap had exactly two live explanations pointing opposite ways, and overfitting is the one that would have invalidated every gate this project has ever run. If 27 arms of tuning had bent us to the public 25, unseen games would score WORSE. They score far better. Every bench gate we have run remains a valid instrument, which is the reassuring half of a result I expected to go the other way.",
+  "WHAT_IT_DOES_NOT_SETTLE_AND_THE_CONFOUND_IS_LARGE": {
+    "the_confound": "These are RE-ARC-3 games, not the hidden set. They were matched on RANDOM-AGENT difficulty (P(random clears level 1) 0.1440 both sides), and our AGENT clears 75 percent against 23 percent. That dissociation is itself the finding: random-agent difficulty does NOT predict LLM-agent difficulty, so the matching that made this a fair sample for one measure made it unfair for the other.",
+    "why_that_is_plausible": "RE-ARC-3 environments are procedurally generated from a DSL with cleaner, more regular rules. A random agent cannot exploit regularity; a reasoning agent can. So they are easy for us for the same reason they are hard to match honestly.",
+    "consequence": "This CANNOT be read as 'the hidden games are easy' or as a prediction of board score. It measures generalisation off the tuned set, and that is all.",
+    "and_the_gap_is_still_unexplained": "Expiry was withdrawn today (generated/wave-expiry-CORRECTION-2026-09-12.json) and overfitting is now measured out. The 0.351 bench-to-board ratio has no supported explanation left. The remaining candidate is simply that the hidden 110 are harder than the public 25 in a way RE-ARC-3 does not reproduce, and nothing we currently hold can test that."
+  },
+  "A_SECOND_READING_WORTH_KEEPING": "6,387 actions across 25 games, 255 per game, against 102 on the public set, WITH far more levels. Where the agent can make progress it spends actions productively rather than stalling. That is a useful counterweight to the 'runs out of cycles' framing: on tractable games the same config with the same clock converts actions into levels at three times the rate.",
+  "instrument_note": "The first push of this arm aborted on its own guard, 'Expected 28 unseen games, got 25', because the sample was rebuilt from 28 to 25 and three counts were never re-pointed. The counts were fixed rather than the guard relaxed, and the list was verified to contain none of the public ids before the re-push. push_wave.sh now runs solution/kaggle/check_candidate_counts.py over every wave candidate so this class cannot reach a card again."
+}

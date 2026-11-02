@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-09-01T01:00:00+00:00",
+  "arm": "CC3",
+  "kernel": "vineethsaivs/arc3-poly-ctxfix3-ordinary-commit",
+  "bundle": "vineethsaivs/arc3-poly-ctxfix-v3",
+  "subject": "THE POLYPHONY LINEAGE IS CLOSED. Four arms, 9.6 GPU-hours, zero levels, and the fourth one finally isolated the reason: on Qwen3.8-27B the agent reasons well for 21 to 27 turns per game and never plays a single action.",
+
+  "RESULT": {
+    "levels": 0,
+    "zero_level_games": 25,
+    "total_actions": 104,
+    "note": "104 actions over 25 games is the bootstrap probe and nothing else."
+  },
+
+  "WHAT_CHANGED_FROM_ARM_CC_AND_WHY_IT_MATTERS": {
+    "the_repair": "POLY_HARD_CONTEXT_CHARS 60,000 -> 20,000 and LOCAL_ANALYZER_MAX_OUTPUT 0 -> 4,096, configuration only.",
+    "it_worked": "arm CC's transcripts after the probe were a solid wall of `ReadTimeout ... (read timeout=900.0)`. Arm CC3 has FOUR `model error: HTTP` events across all 25 games and no timeouts at all. The KV oversubscription and the unbounded generation are both fixed.",
+    "and_the_model_is_now_lucid": "verbatim from ka59: 'This is a 64x64 grid, mostly 2s (background) with a 4 at the bottom. Let me look at the diffs between frames to understand the mechanics.' That is exactly the behaviour we want.",
+    "and_it_still_scored_zero": "which is what makes this the informative run of the four."
+  },
+
+  "THE_ISOLATED_CAUSE, measured across all 25 transcripts": {
+    "turns_per_game": "21 to 27, comparable to the ~23 executing turns our own harness gets, so the agent was NOT starved of opportunities",
+    "submit_actions_occurrences": 0,
+    "policy_py_occurrences": 1,
+    "verifier_feedback_occurrences": "0. The string 'reproduces N of M' never appears, so no policy was ever replayed against the trace log.",
+    "deadline_or_certified_mentions": "2, across 25 games",
+    "conclusion": "The model spent every turn reasoning about the board and never drove the workbench toward a policy, never got a policy verified, and never submitted an action. It is not stuck, not confused, and not out of clock. It simply does not play."
+  },
+
+  "WHY, and this repo predicted it in writing before the port began": {
+    "the_architecture_requires_voluntary_machinery": "polyphony's system prompt says a policy is worth nothing until the harness certifies it, and certification means cell-exact retrodiction of EVERY observed transition. The model must choose to build toward that. Our own world-model feasibility scan measured 15 of 25 public games contradicting themselves within a single episode, so certification is UNREACHABLE on most of them.",
+    "the_fallback_is_advisory_prose": "`DEADLINE_PROMPT` says 'Stop editing the policy... look at the frame and play the best action you can see'. That is a sentence in a prompt, and docs/RESEARCH.md:240-242 records the measured rule verbatim: 'Qwen at 27B never uses optional machinery ... Anything we add must be always-visible or host-triggered, never agent-opt-in.'",
+    "we_wrote_this_down_on_2026-08-26": "the arm-W critique killed a near-identical design for exactly this reason, and the arm-BB gate's PARTIAL branch predicted 'every game falls through to the policy deadline and plays directly'. What actually happened is worse than the prediction: the deadline fired and the model still did not play."
+  },
+
+  "THE_CLOSURE_AND_ITS_SCOPE": {
+    "closed": "The polyphony port. Do not build a fifth arm. The predeclared rule in gate-results-2026-08-31-arm-CC said this run was the last one worth buying, and it is.",
+    "NOT_closed": "the executable-world-model ARCHITECTURE in general. Four published systems (EWM 63.8, Prime Agent 78.3, OPINE-World 78.4, Twin 93.3 RHAE) implement it successfully, and Twin's ablation is 93.3 with the harness against 61.1 without. Every one of them runs a CLOSED FRONTIER MODEL.",
+    "what_this_arm_actually_establishes": "the first open-weight data point on that architecture, and it is negative for the reason the papers never had to face: the recipe assumes a model that will voluntarily drive a long agentic workbench toward a hard verification bar. Qwen3.8-27B will not, even when given lucid reasoning, 25 turns, a working server and an explicit instruction to fall back to playing.",
+    "the_transferable_piece": "the VERIFIER, not the loop. Grading a prediction against what actually happened is worth having; requiring the model to build a certified simulator before it may act is not. That is arm FF (`arc3-q38-predgate-ordinary-commit`), which makes the grading HOST-ENFORCED and keeps our own agent's play loop intact."
+  },
+
+  "PAPER_TRACK_VALUE": "This is a clean, citable negative result that nobody else is positioned to publish: the 2026 world-model recipe, faithfully reproduced with a working server on an open-weight 27B, plays zero actions in 25 games while reasoning correctly throughout. Four arms of instrumentation history make it credible rather than anecdotal, because the first three failures were ours and are documented as ours.",
+
+  "cost": "CC3 2.4 GPU-h. Polyphony total: 4 arms, 9.6 GPU-h, 0 levels."
+}

@@ -1,0 +1,241 @@
+{
+ "part1": [
+  {
+   "arm": "franzen-p448-v1",
+   "levels": 122,
+   "control": 92,
+   "control_label": "start (1 run)",
+   "diff": 30,
+   "call": "WIN",
+   "gate": "gate-results-2026-10-02-franzen-p448-vs-start.json",
+   "promote_in_gate_file": true
+  },
+  {
+   "arm": "franzen-p448lm-v1",
+   "levels": 111,
+   "control": 122,
+   "control_label": "p448 (1 run)",
+   "diff": -11,
+   "call": "LOSS",
+   "gate": "gate-results-2026-10-02-franzen-p448lm-vs-p448.json",
+   "promote_in_gate_file": false
+  },
+  {
+   "arm": "franzen-p448s14-v1",
+   "levels": 117,
+   "control": 122,
+   "control_label": "p448 (1 run)",
+   "diff": -5,
+   "call": "TIE",
+   "gate": "gate-results-2026-10-02-franzen-p448s14-vs-p448.json",
+   "promote_in_gate_file": false
+  },
+  {
+   "arm": "franzen-p448au-v1",
+   "levels": 110,
+   "control": 122,
+   "control_label": "p448 (1 run)",
+   "diff": -12,
+   "call": "LOSS",
+   "gate": "gate-results-2026-10-03-franzen-p448au-vs-p448.json",
+   "promote_in_gate_file": false
+  },
+  {
+   "arm": "franzen-p448ho-v1",
+   "levels": 108,
+   "control": 122,
+   "control_label": "p448 (1 run)",
+   "diff": -14,
+   "call": "LOSS",
+   "gate": "gate-results-2026-10-03-franzen-p448ho-vs-p448.json",
+   "promote_in_gate_file": false
+  },
+  {
+   "arm": "franzen-p448sb-v1",
+   "levels": 105,
+   "control": 114,
+   "control_label": "p448 pooled (2)",
+   "diff": -9,
+   "call": "TIE",
+   "gate": "gate-results-2026-10-03-franzen-p448sb.json",
+   "promote_in_gate_file": false
+  },
+  {
+   "arm": "franzen-p448h14-v1",
+   "levels": 107,
+   "control": 114,
+   "control_label": "p448 pooled (2)",
+   "diff": -7,
+   "call": "TIE",
+   "gate": "gate-results-2026-10-03-franzen-p448h14.json",
+   "promote_in_gate_file": false
+  },
+  {
+   "arm": "franzen-p448h16-v1",
+   "levels": 115,
+   "control": 114,
+   "control_label": "p448 pooled (2)",
+   "diff": 1,
+   "call": "TIE",
+   "gate": "gate-results-2026-10-04-franzen-p448h16.json",
+   "promote_in_gate_file": false
+  },
+  {
+   "arm": "franzen-p448s14h71-v1",
+   "levels": 113,
+   "control": 114,
+   "control_label": "p448 pooled (2)",
+   "diff": -1,
+   "call": "TIE",
+   "gate": "gate-results-2026-10-04-franzen-p448s14h71.json",
+   "promote_in_gate_file": false
+  },
+  {
+   "arm": "franzen-p448s14ra-v1",
+   "levels": 113,
+   "control": 114,
+   "control_label": "p448 pooled (2)",
+   "diff": -1,
+   "call": "TIE",
+   "gate": "gate-results-2026-10-04-franzen-p448s14ra.json",
+   "promote_in_gate_file": false
+  },
+  {
+   "arm": "gcp-p448s14dpwfrc-v1",
+   "levels": 116,
+   "control": 123,
+   "control_label": "dpctl run 1",
+   "diff": -7,
+   "call": "TIE",
+   "gate": "gate-results-2026-10-08-franzen-l1a1p.json",
+   "promote_in_gate_file": true
+  },
+  {
+   "arm": "gcp-l1a1-v1",
+   "levels": 113,
+   "control": 123,
+   "control_label": "dpctl run 1",
+   "diff": -10,
+   "call": "LOSS",
+   "gate": "gate-results-2026-10-08-franzen-l1a1p.json",
+   "promote_in_gate_file": true
+  },
+  {
+   "arm": "gcp-l1tb-v1",
+   "levels": 115,
+   "control": 123,
+   "control_label": "dpctl run 1",
+   "diff": -8,
+   "call": "TIE",
+   "gate": "gate-results-2026-10-10-franzen-l1a1tbfc.json",
+   "promote_in_gate_file": false
+  },
+  {
+   "arm": "gcp-h16dp-v1",
+   "levels": 104,
+   "control": 123,
+   "control_label": "dpctl run 1",
+   "diff": -19,
+   "call": "LOSS",
+   "gate": null,
+   "promote_in_gate_file": null
+  },
+  {
+   "arm": "franzen-l1a1y8-v1",
+   "levels": 128,
+   "control": 113,
+   "control_label": "l1a1 run 1",
+   "diff": 15,
+   "call": "WIN",
+   "gate": "gate-results-2026-10-10-franzen-l1a1y8.json",
+   "promote_in_gate_file": true
+  },
+  {
+   "arm": "franzen-l1a1y0sv2-v1",
+   "levels": 115,
+   "control": 128,
+   "control_label": "y8 run 1",
+   "diff": -13,
+   "call": "LOSS",
+   "gate": "gate-results-2026-10-11-franzen-l1a1y0sv2.json",
+   "promote_in_gate_file": false
+  },
+  {
+   "arm": "franzen-l1a1y8sv2-v1",
+   "levels": 119,
+   "control": 128,
+   "control_label": "y8 run 1",
+   "diff": -9,
+   "call": "TIE",
+   "gate": "gate-results-2026-10-11-franzen-l1a1y8sv2.json",
+   "promote_in_gate_file": true
+  }
+ ],
+ "calls": {
+  "WIN": 2,
+  "LOSS": 6,
+  "TIE": 9
+ },
+ "part2": [
+  {
+   "arm": "deathmem",
+   "runs": [
+    42,
+    33
+   ],
+   "control": 35.0,
+   "first_adv": 7.0,
+   "pooled_adv": 2.5,
+   "src": "bench-noise-floor-2026-09-08.json (sets); control family 35.0 from gate-results-2026-09-08-arm-rcarry-run3-DEMOTED.json"
+  },
+  {
+   "arm": "topk100",
+   "runs": [
+    44,
+    28
+   ],
+   "control": 35.0,
+   "first_adv": 9.0,
+   "pooled_adv": 1.0,
+   "src": "same"
+  },
+  {
+   "arm": "rcarry (promoted run 2)",
+   "runs": [
+    46,
+    31,
+    30
+   ],
+   "control": 35.0,
+   "first_adv": 11.0,
+   "pooled_adv": 0.6666666666666643,
+   "src": "gate-results-2026-09-08-arm-rcarry-run3-DEMOTED.json (run 2 = 46 was the promoted run)"
+  },
+  {
+   "arm": "AE v2/v3",
+   "runs": [
+    37,
+    28
+   ],
+   "control": 33.0,
+   "first_adv": 4.0,
+   "pooled_adv": -0.5,
+   "src": "gate-results-2026-09-08-arm-AE-reverted.json (control pass 0 = 33)"
+  },
+  {
+   "arm": "GG2",
+   "runs": [
+    44,
+    40
+   ],
+   "control": 35.0,
+   "first_adv": 9.0,
+   "pooled_adv": 7.0,
+   "src": "gate-results-2026-09-08-arm-GG2-REPLICATED.json"
+  }
+ ],
+ "part2_summary": {
+  "mean_first_adv": 8.0,
+  "mean_pooled_adv": 2.133333333333333
+ }
+}

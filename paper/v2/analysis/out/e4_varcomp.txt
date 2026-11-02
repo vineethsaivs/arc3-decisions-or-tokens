@@ -1,0 +1,53 @@
+6 byte-identical pairs [levels]: G=25, configs=6, run-df 6
+   per-game SD within run (se) 1.225; run-effect SD (su) 0.221
+   run-mean variance: MS_run/G 0.109 vs game-noise-only expectation 0.060  (F 1.81, df 6/144)
+   run-level share of run-mean variance 44.9% (permutation p 0.099; bootstrap over configs 95% [0, 72]%)
+   total-levels variance: shared-shift part 30.6, per-game part 37.5; predicted SD from per-game noise alone 6.13
+6 byte-identical pairs [score]: G=25, configs=6, run-df 6
+   per-game SD within run (se) 20.196; run-effect SD (su) 2.912
+   run-mean variance: MS_run/G 24.794 vs game-noise-only expectation 16.316  (F 1.52, df 6/144)
+   run-level share of run-mean variance 34.2% (permutation p 0.176; bootstrap over configs 95% [0, 68]%)
+   total-score variance: shared-shift part 5299.2, per-game part 10197.2; predicted SD from per-game noise alone 100.98
+y8 family, 6 runs (gameplay-neutral riders [inference]) [score]: G=25, configs=1, run-df 5
+   per-game SD within run (se) 14.469; run-effect SD (su) 0.000
+   run-mean variance: MS_run/G 6.177 vs game-noise-only expectation 8.374  (F 0.74, df 5/120)
+   run-level share of run-mean variance 0.0% (permutation p 0.598; bootstrap over configs 95% [0, 0]%)
+   total-score variance: shared-shift part 0.0, per-game part 5233.8; predicted SD from per-game noise alone 72.35
+y8 family, 6 runs [levels]: G=25, configs=1, run-df 5
+   per-game SD within run (se) 1.039; run-effect SD (su) 0.000
+   run-mean variance: MS_run/G 0.026 vs game-noise-only expectation 0.043  (F 0.59, df 5/120)
+   run-level share of run-mean variance 0.0% (permutation p 0.720; bootstrap over configs 95% [0, 0]%)
+   total-levels variance: shared-shift part 0.0, per-game part 27.0; predicted SD from per-game noise alone 5.19
+6 pairs + y8 family [levels]: G=25, configs=7, run-df 11
+   per-game SD within run (se) 1.144; run-effect SD (su) 0.137
+   run-mean variance: MS_run/G 0.071 vs game-noise-only expectation 0.052  (F 1.36, df 11/264)
+   run-level share of run-mean variance 26.3% (permutation p 0.191; bootstrap over configs 95% [0, 67]%)
+   total-levels variance: shared-shift part 11.7, per-game part 32.7; predicted SD from per-game noise alone 5.72
+6 pairs + y8 family [score]: G=25, configs=7, run-df 11
+   per-game SD within run (se) 17.823; run-effect SD (su) 1.904
+   run-mean variance: MS_run/G 16.332 vs game-noise-only expectation 12.706  (F 1.29, df 11/264)
+   run-level share of run-mean variance 22.2% (permutation p 0.241; bootstrap over configs 95% [0, 62]%)
+   total-score variance: shared-shift part 2266.2, per-game part 7941.1; predicted SD from per-game noise alone 89.11
+
+== Leave-one-config-out run-level share (pairs only; the dpctl pair is the largest gap)
+   levels: -p448 36%, -p448s14 51%, -l1a1y8 48%, -dpctl 0%, -L1 52%, -l1a1 57%
+   score : -p448 31%, -p448s14 42%, -l1a1y8 34%, -dpctl 0%, -L1 47%, -l1a1 44%
+
+== Expected correlation between two disjoint game halves of one draw, across same-config draws
+   rho = su2 / (su2 + se2/Gh), Gh = games in each half. Scale-free in score units.
+   pairs_score            Gh=12: expected correlation 0.20 (run-level share 34%)
+   pairs_score            Gh=55: expected correlation 0.53 (run-level share 34%)
+   pairs_plus_y8_score    Gh=12: expected correlation 0.12 (run-level share 22%)
+   pairs_plus_y8_score    Gh=55: expected correlation 0.39 (run-level share 22%)
+   y8_family_score        Gh=12: expected correlation 0.00 (run-level share 0%)
+   y8_family_score        Gh=55: expected correlation 0.00 (run-level share 0%)
+
+== Where the pair gaps live (levels): games whose level count differs, and share of |gap| from the top 3 games
+   p448     net +16, games that differ 16/25, sum|d| 34, top3 [('tn36', 6), ('su15', 4), ('s5i5', 3)]
+   p448s14  net  +6, games that differ 15/25, sum|d| 28, top3 [('s5i5', 5), ('wa30', 3), ('tn36', 3)]
+   l1a1y8   net  +4, games that differ 11/25, sum|d| 16, top3 [('su15', -3), ('s5i5', 3), ('lf52', 2)]
+   dpctl    net +22, games that differ 15/25, sum|d| 32, top3 [('tn36', 7), ('vc33', 4), ('ar25', 3)]
+   L1       net  +3, games that differ 15/25, sum|d| 27, top3 [('cd82', -4), ('vc33', 3), ('tu93', 3)]
+   l1a1     net  +4, games that differ 14/25, sum|d| 32, top3 [('ka59', 5), ('cn04', -5), ('vc33', 4)]
+
+wrote <repo>/paper/v2/analysis/out/e4_varcomp.json

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-20",
+  "gate": "gate-predeclared-2026-10-12-trimtest.json (declared 2026-10-12T14:30Z, before the pairs existed)",
+  "instrument": "Kaggle dev kernel vineethsaivs/arc3-franzen-trimtest-a v1 (candidates-franzen-trimtest), complete 07:00Z; 117 post-trim states x 2 variants x 2 samples = 468 replies, 0 errors; read with solution/analysis/trim_compare.py",
+  "evidence": {
+    "coverage": "117 of 117 states complete (100%): pass (>= 90%)",
+    "acts_lean_minus_full": "+0.064, 90% [+0.004, +0.124]: pass (>= -0.05, low >= -0.12)",
+    "first_action_agreement_delta": "(full-lean 0.707) - (full-full 0.778) = -0.071, 90% [-0.132, -0.004]: FAIL (point must be >= -0.05)",
+    "reasoning_ratio_median": "0.993, 90% [0.851, 1.251]: pass (0.80 to 1.25)",
+    "blind_judge": "not run: the gate already failed and any miss kills",
+    "post_hoc_note": "Not part of the gate. Among replies that both act, agreement is 0.848 full-full (n=33) vs 0.812 full-lean (n=133); lean also acts more often (+6.4 points), so part of the gap is lean acting where full investigates. Too few full-full acting pairs to rescue anything, and rescuing a predeclared gate post hoc is not allowed."
+  },
+  "verdict": "FAIL. Slimming older reasoning and images at a trim changes the next decision more than the model's own sampling noise does.",
+  "judgment_call": "none; the predeclared rule is any miss kills",
+  "what_this_does_not_claim": "That leantrim would lose levels. Only that it changes first decisions after a trim beyond the noise floor, which the gate treats as disqualifying.",
+  "promote": false,
+  "consequence": "Leantrim stays killed for the freeze (PLAN 2.6 kill rule); no lt replicas; the ~15 Kaggle GPU-h earmarked for them is free. Pairs and replies go to the Paper Track."
+}

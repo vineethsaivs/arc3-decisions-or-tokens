@@ -1,0 +1,39 @@
+{
+  "source": "Kaggle dataset dfranzen/pennyroyal-v253, wheels/sglang-0.5.19+gd00d88efc8d6-cp312-cp312-linux_x86_64.whl (Pennyroyal v2.5.3 SGLang plus Franzen's patches)",
+  "wheel_sha256": "d0620216732b82b6efd4f8a78cc9b5f55343a4d3837fdfa3bcbb841b7718a225",
+  "license": "Apache-2.0 (wheel METADATA classifier 'License :: OSI Approved :: Apache Software License'; text in LICENSE)",
+  "stored_form": "Each file is the wheel member verbatim except that every U+2014 is written as the 6-character text \\u2014 (repo rule: no em dashes). Undo that one substitution and the bytes hash to sha256.",
+  "files": {
+    "hyperconnection.py": {
+      "wheel_path": "sglang/srt/layers/hyperconnection.py",
+      "sha256": "0e5431d5eee38498011160aac606d3865a82ab1027ae597f6e3ffd6068d3b487",
+      "em_dashes_escaped": 0
+    },
+    "qwen4_exp.py": {
+      "wheel_path": "sglang/srt/models/qwen4_exp.py",
+      "sha256": "35a1785ce4c287821f00f1518b3880ab6838ef58d42fd51ece86d8098b2ed666",
+      "em_dashes_escaped": 2
+    },
+    "flashinfer_autotune.py": {
+      "wheel_path": "sglang/srt/model_executor/runner/flashinfer_autotune.py",
+      "sha256": "3d45ae0fb6afaf6758d63cb9669fe4fb43769256d62e8fa529c9a6cd4d5d5d08",
+      "em_dashes_escaped": 1
+    },
+    "environ.py": {
+      "wheel_path": "sglang/srt/environ.py",
+      "sha256": "7431c4e0e679d1983ade2c3d9a8689c0ac78666d166d6743188434f2f25c5ed1",
+      "em_dashes_escaped": 3
+    },
+    "hc_mix_triton.py": {
+      "wheel_path": "sglang/srt/layers/hc_mix_triton.py",
+      "sha256": "556a5d2f31a0b39cbe1a2ff53c9d0ecf5e259309fa0c601351a20b52b45c7210",
+      "em_dashes_escaped": 3
+    },
+    "sm120_online_fp8.py": {
+      "wheel_path": "sglang/kernels/ops/gemm/sm120_online_fp8.py",
+      "sha256": "30d6f73fd39ef594590b764d7e5ac0859b5e889004b3579cc35e8be95660d3de",
+      "em_dashes_escaped": 0
+    }
+  },
+  "purpose": "Offline checks for arm fastdec, solution/sim/test_franzen_fastdec.py, without the 25 MB wheel."
+}

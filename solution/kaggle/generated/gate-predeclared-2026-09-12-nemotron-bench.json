@@ -1,0 +1,25 @@
+{
+  "gate": "NEMOTRON 25-game bench, predeclared BEFORE the run",
+  "date": "2026-09-12",
+  "kernel": "vineethsaivs/arc3-nemotron-bench-a",
+  "single_variable": "The MODEL. Same harness, same agent tree (arc3-q38-flashnext-ctx-v1), same 25 public games offline, same 7,920 s per game, same concurrency 28. Only the analyzer's server changes: stock vLLM 0.19.0 serving NVIDIA-Nemotron-3-Super-120B-A12B-NVFP4 instead of the patched runtime serving Qwen3.8-Flash-Next-NVFP4.",
+  "why_this_arm_exists": "Top 5 needs a bench of about 21 against our best-ever 10.54, roughly DOUBLE. No overlay in 27 arms moved more than a few levels and six Flash-Next arms separated nothing. The largest step this project ever made was a model swap (+12 levels). generated/what-top5-costs-2026-09-11.json.",
+  "what_the_serving_probe_already_established": "arc3-nemotron3-serving-probe-e: hardware gate PASS on a real Blackwell, model loads in 69.54 GiB / 92.75 s, vLLM reports 673,920 tokens / 15.51 GiB of KV and its own 'Maximum concurrency for 48,128 tokens per request: 44.36x' against the incumbent's ~2.27x, and POST /v1/chat/completions returns 200. Serving is not the question any more; PLAY is.",
+  "GATES_IN_ORDER": {
+    "1_hardware": "ABORT unless compute capability >= 8.9 and >= 80 GB. Five probes drew a Tesla P100 and three were written up as verdicts about the model. Prints SCHEDULING FAILURE, NOT A MODEL VERDICT.",
+    "2_server": "ABORT if vLLM exits or never answers /v1/models within 1,800 s. One retry without --reasoning-parser if the first launch dies on an argument error.",
+    "3_tool_call": "ABORT unless a chat completion with one `python` tool returns a parseable tool_calls entry. Our architecture is ONE generic python tool, so without this every game plays the full clock and scores zero. CLAUDE.md 15(e): arm GG3 did exactly that for ~4.7 GPU-h. The gate prints the raw content so a failure names the format the model actually emits, and is explicitly an INTEGRATION verdict, not a capability verdict."
+  },
+  "READ_IN_THIS_ORDER": [
+    "Did all three gates pass? If gate 3 failed, this run says NOTHING about Nemotron's ability to play. Fix the parser and re-push; the cost was minutes.",
+    "TOTAL LEVELS against the Flash-Next family's 40 / 44 / 47 (pooled 42.0, and 47 is the best bench this project has ever produced).",
+    "ZERO-LEVEL GAMES against the family's 3 / 5 / 2.",
+    "ex-ft09 mean beside the mean, per the single-point-trap rule: arm DD read +17.8% on the mean and 100% of it was one game.",
+    "DECISIONS PER GAME. This is the mechanism the whole swap rests on: the incumbent admits ~5 of 28 concurrent games and gets ~23.4 decisions per game, and the claim is that 44.36x admission buys batch, which buys decisions. If levels move but decisions do not, the story is wrong even if the number is good."
+  ],
+  "PASS": "Levels >= 51, i.e. outside the measured null. Within-config bench sd is 8.21 levels pooled (n=9, 27B) and 3.51 on the only three Flash-Next runs, so the 80%-power MDE at n=1 vs n=1 is about 33 levels on the conservative figure. A single run up to ~51 levels is inside what an UNCHANGED config produces, which is why a smaller number is not a win.",
+  "UNDECIDED": "31 to 50 levels. Read the decisions-per-game counter and the zeros, then replicate before any promotion. Rule 15(d) forbids an ungated structural change in a scored slot and this is the largest structural change the project has ever made.",
+  "REJECT": "Levels <= 30 with all three gates passed, or zero-level games >= 8. That is a capability collapse and Nemotron is not the lever.",
+  "explicitly_not_claimed": "This bench does not test prefix caching, which generated/prefix-caching-gated-on-the-model-2026-09-12.json shows only becomes viable once the pool grows, and which must be introduced with a pool sized for admission and retention together. One variable at a time.",
+  "cost": "about 2.4 GPU-h, or seconds if a gate fires."
+}

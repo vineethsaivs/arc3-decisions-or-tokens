@@ -1,0 +1,13 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-12",
+ "gate": "gate-predeclared-2026-10-11-franzen-l1a1y8sv2o16.json (declared 22:35Z, before the run)",
+ "control": "l1a1y8sv2 v1: 119 levels, 799.7 tok/s, running mean 12.41, KV p90 0.77 max 0.89, finish_reason length 49, 46 replies without a call",
+ "arm": {"kernel": "vineethsaivs/arc3-franzen-l1a1y8sv2o16-a", "version": 1, "change": "LOCAL_ANALYZER_MAX_OUTPUT 12K -> 16K, LOCAL_ANALYZER_CONTEXT_WINDOW (116+12)K -> (116+16)K"},
+ "evidence": {
+  "bench": "120 levels, mean game score 54.00, 0 games at 0; 810.1 tok/s (+1.3%), running mean 12.51, KV p90 0.77 max 0.90, cache hit 94.8%, accept 2.71; finish_reason length 26 (control 42 to 49); replies without a tool call 23 (control 46); 0 'maximum context length' errors, 0 tracebacks, 0 give-ups, no OOM (min free device memory 0.63 GiB)"
+ },
+ "verdict": "REJECT under the predeclared rule: the cut-reply item asked for at most 20 and the run had 26. The mechanism exists but is weaker than predicted (cuts -42% where about -67% was expected); every other item passes and levels tie (120 vs 119).",
+ "what_this_does_not_claim": "Not evidence against a longer cap; it can return combined with the strict thinking budget (history-mining.md) if a later gate is written for that pair.",
+ "promote": false
+}

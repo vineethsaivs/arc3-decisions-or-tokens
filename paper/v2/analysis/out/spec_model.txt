@@ -1,0 +1,39 @@
+part 1 self-checks pass
+== fit on 8132 clean K=3 intervals (R = 8..14)
+  linear   T = 20.92 + 1.120 R               residual sd 1.04 ms
+  coverage T = 12.33 + 33.7 * (1-(1-10/448)^(4R))  residual sd 1.06 ms
+  median step by R  : 8:29.2  9:30.7  10:31.9  11:32.9  12:34.3  13:35.5  14:36.6
+  linear fit        : 8:29.9  9:31.0  10:32.1  11:33.2  12:34.4  13:35.5  14:36.6
+  coverage fit      : 8:29.7  9:31.1  10:32.4  11:33.5  12:34.6  13:35.6  14:36.5
+  coverage at R=14, K=3: 0.718 of experts per layer; at K=4: 0.794 (+10.7% expert bytes)
+  expert bytes: 3 x 2560 x 640 params x 0.5 B x 448 x 48 layers = 52.8 GB at 4 bits (before scales); implied full-read time at 1.79 TB/s 29.5 ms vs fitted T_e 33.7 ms
+== predicted vs measured SPEC_STEPS=4 step (ms); coefficients from K=3 only
+  R    measured   pred(coverage) +delta   pred(linear: beta*R*5/4)   measured-minus-K3   coverage dT   linear dT
+  11     36.2       36.3 (-0.1)              36.3 (-0.1)              3.32             2.74          3.08
+  12     37.8       37.3 (+0.5)              37.7 (+0.1)              3.53             2.71          3.36
+  13     40.1       38.3 (+1.8)              39.1 (+0.9)              4.51             2.65          3.64
+  14     41.5       39.1 (+2.4)              40.5 (+1.0)              4.92             2.58          3.92
+  coverage model residual (a draft-forward / launch term to be explained): mean +1.17 ms, range -0.07..+2.45
+== break-even concurrency for the 4th draft position, linear marginal-row model (R < 11 is an extrapolation)
+  T3(R) = 20.9 + 1.12 R (pooled OLS), dT(R) = 0.353 R, needed A_4*(R) = L3 * dT / T3
+  R= 1  T3  22.0 ms  dT 0.35 ms  A_4* 0.045   measured A_4 0.275: K=4 wins;  geometric A_4 0.35: K=4 wins
+  R= 2  T3  23.2 ms  dT 0.71 ms  A_4* 0.086   measured A_4 0.275: K=4 wins;  geometric A_4 0.35: K=4 wins
+  R= 4  T3  25.4 ms  dT 1.41 ms  A_4* 0.156   measured A_4 0.275: K=4 wins;  geometric A_4 0.35: K=4 wins
+  R= 6  T3  27.6 ms  dT 2.12 ms  A_4* 0.216   measured A_4 0.275: K=4 wins;  geometric A_4 0.35: K=4 wins
+  R= 8  T3  29.9 ms  dT 2.82 ms  A_4* 0.266   measured A_4 0.275: K=4 wins;  geometric A_4 0.35: K=4 wins
+  R=10  T3  32.1 ms  dT 3.53 ms  A_4* 0.309   measured A_4 0.275: K=3 wins;  geometric A_4 0.35: K=4 wins
+  R=12  T3  34.4 ms  dT 4.24 ms  A_4* 0.347   measured A_4 0.275: K=3 wins;  geometric A_4 0.35: K=4 wins
+  R=14  T3  36.6 ms  dT 4.94 ms  A_4* 0.380   measured A_4 0.275: K=3 wins;  geometric A_4 0.35: K=3 wins
+  A_4 = 0.275: break-even at R = 8.4
+  A_4 = 0.35: break-even at R = 12.2
+== lever arithmetic through L/T
+  D3: L 2.699 -> 2.830 at unchanged T: +4.9% tokens per step; accepted drafts +7.7%
+  draft vocabulary: miss 1.344%, hit rate g=0.18: relative L gain +0.37%
+  draft vocabulary: miss 1.344%, hit rate g=0.33: relative L gain +0.68%
+  draft vocabulary: miss 1.344%, hit rate g=0.5: relative L gain +1.03%
+== sampling ceiling: oracle accept length 1+c+c^2+c^3 and the share of the ceiling the pin realizes (L=2.830)
+  c=0.80: oracle L(3) 2.952, realized share of accepted drafts 94%, oracle L(4) 3.362
+  c=0.85: oracle L(3) 3.187, realized share of accepted drafts 84%, oracle L(4) 3.709
+  c=0.90: oracle L(3) 3.439, realized share of accepted drafts 75%, oracle L(4) 4.095
+  c=0.95: oracle L(3) 3.710, realized share of accepted drafts 68%, oracle L(4) 4.524
+  c=1.00: oracle L(3) 4.000, realized share of accepted drafts 61%, oracle L(4) 5.000

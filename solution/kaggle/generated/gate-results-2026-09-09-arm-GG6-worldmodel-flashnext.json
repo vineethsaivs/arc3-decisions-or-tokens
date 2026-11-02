@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-09-09T21:15:00+00:00",
+  "arm": "GG6 (Flash-Next + the validate-then-plan world-model loop)",
+  "kernel": "vineethsaivs/arc3-gg6-flashnext-worldmodel-a v3, complete",
+  "predeclared_gate": "arc3-q38-flashnext-wm-v1/q38-flashnext-manifest.json, and the branch actions in generated/gg6-decision-tree-2026-09-09.json, both written before the result",
+  "subject": "A 176B MoE will USE a persistent workspace (25 of 25 games) but will NOT write an executable world model when the system prompt asks (5 of 25). The mechanism gate fails, so the primary verdict is not evaluated, exactly as the gate requires.",
+  "MECHANISM_GATE": {
+    "M1_predict_defined_in_at_least_8_of_25": "FAIL. 5 of 25.",
+    "M2_validate_in_at_least_20pc_of_sandbox_calls": "FAIL. 1.5% of tool calls, in 3 of 25 games.",
+    "M3_plan_invoked_in_at_least_5_of_25": "FAIL. 1 of 25.",
+    "M4_memory_prelude_in_at_least_12_of_25": "PASS. 18 of 25.",
+    "verdict": "FAIL overall. Per the predeclared rule, the PRIMARY VERDICT IS NOT EVALUATED. The 35 levels are NOT a rejection of the world-model architecture."
+  },
+  "BUT_THE_DIRECTION_IS_RIGHT_AND_THAT_IS_THE_NEW_INFORMATION": {
+    "comparison_to_arm_V_on_the_27B": {
+      "games_defining_predict": "27B 1 of 25  ->  Flash-Next 5 of 25 (5x)",
+      "games_invoking_validate": "27B 1 of 50 game-runs  ->  Flash-Next 3 of 25",
+      "games_invoking_plan": "27B 0  ->  Flash-Next 1",
+      "memory_prelude": "27B 7 to 8 of 25  ->  Flash-Next 18 of 25",
+      "memory_dict_used_at_all": "Flash-Next 25 of 25"
+    },
+    "reading": "Flash-Next strictly dominates the 27B on every counter, so model capability does move this, but nowhere near enough. The gap between 5 of 25 and the 8-of-25 threshold is not the story; the gap between 25 of 25 using memory and 5 of 25 writing predict is."
+  },
+  "THE_FINDING_worth_publishing": "Persistence is ADOPTED and formalism is DECLINED. Given a persistent Python workspace the model uses it in every single game. Asked in the same prompt to write predict/validate/plan, it does so in a fifth of them. This is not a capability failure of the workspace and not an integration failure; both were verified working on the real tree by a zero-GPU CPU probe before this run. It is a compliance failure, and it matches today's other measurement that the model writes search code in only 10 of 25 games despite the prompt demanding it in capitals.",
+  "THE_COST_SIDE_which_is_large": {
+    "actions_per_game": "57.9, against 118.7 and 99.0 for the two control runs. The world-model tooling roughly HALVED the environment actions.",
+    "steps_per_game": "43.5 against 45.9 in the control, so the turns were not fewer; they were spent differently.",
+    "reading": "The agent paid about half its action budget for machinery it then mostly did not use. That is the worst of both, and it is why the levels came in at 35."
+  },
+  "SECONDARY_reported_beside_never_instead": {
+    "levels": 35, "zeros": 5, "mean25": 7.738, "ex_ft09": 6.077,
+    "paired_vs_control_run1": "4 up / 9 down / 12 tied (up-dn = -5), levels -9",
+    "paired_vs_control_run2": "3 up / 7 down / 15 tied (up-dn = -4), levels -5",
+    "both_inside_the_measured_null": "|up-dn| of 5 and 4 against a null of 8, so not even a measured regression by the bench's own standard",
+    "L2_conversion_among_L1_clearers": "40%, against 59% and 50% in the controls"
+  },
+  "AND_THE_LEVELS_ARE_DOUBLY_UNFAIR_HERE": "GG6 carries both defects found earlier today: validate() demanded whole-board exact equality with no abstention, and the transition log had no level filter so certification became impossible from the first level clear onward. A model that DID comply would still have been told it was wrong. Both are fixed in GG8, which is built, CPU-verified and unpushed.",
+  "BRANCH_TAKEN_from_the_decision_tree_written_before_the_result": {
+    "branch": "B, mechanism FAILS",
+    "action": "The Tycho ORCHESTRATOR becomes the top arm. Its premise is exactly what this arm just confirmed: the model will not build a model when told to, so delegate it to a SEPARATE builder call whose only job is to write or repair predict. Tycho's matched ablation on Opus 4.8 at identical budget: no world model 79.07 RHAE / 157 levels, actor-controlled builder 88.49 / 166, and the builder policy uses FEWER actions (10,354 vs 11,576), which matters doubly here given GG6 halved ours.",
+    "how_to_build_it": "Same plumbing as the existing animation handler: the sandbox sends a typed request, the host makes one focused analyzer call, the generated source returns and is stored in memory['prelude'] (which this run shows the model already maintains in 18 of 25 games).",
+    "and_GG8_still_runs": "GG8 is not superseded. It removes the reason a complying model would be told it is wrong, and it is a 1-run mechanism screen. Run it, then the orchestrator."
+  },
+  "cost": "about 2.5 GPU-hours, plus roughly 16 minutes lost to the two mount-path failures now fixed."
+}

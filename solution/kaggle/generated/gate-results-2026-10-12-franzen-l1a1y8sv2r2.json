@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-12",
+  "gate": "gate-predeclared-2026-10-12-franzen-l1a1y8sv2r2.json (declared 2026-10-12T03:59Z, before any run)",
+  "instrument": "25-game Kaggle replica (14 streams, 7,200 s window), one run; franzen_readout.py, servelog.py, stall_servelog.py, toolfast_counters.py, accept_by_context.py, keepdata_counters.py, promptobs_counters.py",
+  "control": "l1a1y8sv2 v1: 119 levels; accept 2.704 (60-80K 2.704, 80-100K 2.719); clean step at 14 running 36.5 ms; keepdata M1 18, M2 56, M3 9, M4 1, M5 220, M6 5; promptobs int_len 7, view_attr 2, unknown_udlr 7, tracebacks 220, tool results 2,476",
+  "arm": {
+    "kernel": "vineethsaivs/arc3-franzen-l1a1y8sv2r2-a",
+    "version": 1,
+    "change": "l1a1y8sv2r1 (watchdog, MEMFRAC 0.955, memcap, MMHASH, toolfast) plus the D3 drafter refit (d3draft_serve.py), keepdata (keepdata.py) and promptobs lite (promptobs.py)"
+  },
+  "evidence": {
+    "levels": "122 levels over 25 games, 0 games at 0, mean game score 56.00 (control 119, 54.23; l1a1y8sv2r1 128, 59.35)",
+    "robustness_and_throughput_as_r1": "PASS on every item but one band: 'watchdog: watching pid 482', '0 relaunches'; mem_fraction_static 0.955, pool 1,495,872; 0 OutOfMemoryError, 0 expandable-segments failures, 0 'KV cache pool is full', no 'free device mem' line; cache hit 95.2%; prefills over 20K new 120; stall 1.7 ms per 10K cached; decode share 84.6%; toolfast gap sum 485 s, p10 0.004 s, slope 0.121 s, running 60-105 13.11, longest snippet 94 (0 of 100+); 0 MemoryError, 3 tool timeouts, 0 sandbox exits; 0 tracebacks in kernel.log, 0 give-ups, 0 'analyzer endpoint returned HTTP'; failclosed summary printed. The memcap band 'python calls 2,300 to 2,700' is exceeded on the high side (2,837), as in r1 (2,822): responses rose to 2,885 (control 2,522) and the share with a python call is unchanged (98.4% vs 98.2%)",
+    "d3": "PASS: 'd3draft: 29 mtp.* tensors spliced'; accept at 8+ running 2.827 (floor 2.76; control 2.704); 60-80K 2.838 (floor 2.744), 80-100K 2.834 (floor 2.759); clean step at 14 running 36.5 ms (cap 37.1); harness tok/s 890.0 (control 799.7, r1 846.0)",
+    "keepdata": "FAIL on two of six counters: M1 4 (cap 3; control 18), M2 48 (cap 32; control 56); M3 0, M4 50 (floor 15), M5 212, M6 3 pass. The net works where it applies (plain-data NameErrors 18 -> 4, blocked time imports 9 -> 0, 50 calls read kept data), but most earlier-name NameErrors are outside it",
+    "promptobs": "PASS: int_len 0 (cap 2), view_attr 0, unknown_udlr 0, new_attr 0, tracebacks 212 (cap 253), tool results 2,837 (band 2,138 to 2,839)",
+    "report_only": "host RAM max 117.1 GB, harness proc slope +0.69 GB/h; health {'oom': 0, 'giveup_games': 0, 'relaunches': 0}; '#OURS_FORM ok version=d_prime' present; READY 551.7 s (D3 splice adds about 40 s)"
+  },
+  "verdict": "PARTIAL, per the predeclared partial rule: keepdata's own counters fail, so keepdata is dropped; D3, promptobs lite and every r1 rider pass, and 122 levels clears the 105 floor. The set that ships is l1a1y8sv2r1 + D3 + promptobs lite, built as the probe l1a1y8sv2r3p (identical to l1a1y8sv2r2p except that the keepdata overlay is absent; promptobs passes its offline test in that overlay order).",
+  "judgment_call": "The memcap item's python-call band (2,300 to 2,700) fails as written in both r1 and r2. It was set from the control's call count and did not allow for the throughput riders in the same arm, which raise the number of responses in the window. Its purpose was to catch memcap breaking or multiplying calls; the per-response call share, 0 MemoryErrors, fewer tracebacks and 0 sandbox exits show no such harm. It is treated as a confounded band, not a robustness failure. Future gates count python calls per response.",
+  "what_this_does_not_claim": "No level gain is claimed: 122 and 128 are inside the replica's run-to-run spread. D3's effect is +4.5% accept length and +5.2% harness tokens over r1, on a single run.",
+  "promote": false
+}

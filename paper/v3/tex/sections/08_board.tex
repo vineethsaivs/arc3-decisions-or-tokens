@@ -1,0 +1,45 @@
+\section{The leaderboard result and its selection}\label{sec:board}
+
+% BOARD-REFRESH: after the final board (2026-11-02 23:59 UTC), lead this section with the private score of the linked
+% Final Submission and re-read every number marked V3-W30 (kapi.sh subs; kapi.sh leaderboard 40).
+\paragraph{A maximum.}
+Our best public score, 40.98, covers half of the hidden games. % V3-B2
+It is the best of 28 live draws since the fork, and one of three draws of its configuration (Appendix~\ref{app:draws}). % V3-B1 V3-W30
+On the last day, after our final draw scored and before the deadline, \ifanon our rank is withheld here and\else we ranked 23rd and\fi{} the top score was 75.56 (Figure~\ref{fig:draws}). % V3-W30
+
+\begin{figure}[t]
+\centering
+\ifanon\figfile{fig_draws_anon}{4.9in}\else\figfile{fig_draws}{4.9in}\fi
+\caption{The live board history. (a) Every scored submission, by build family (Appendix~\ref{app:draws} lists each draw's build); the Final Submissions (40.98 on 2026-10-20 and 40.09 on 2026-10-13) are ringed, and open symbols at the axis are the three 0.00 draws. (b) Our best public score against the scores at ranks 1, 3 and 5, one snapshot a day from 2026-08-25. Public scores on half of the hidden games, higher is better; the last point of (b) is the snapshot of 2026-11-02 07:06Z\ifanon\else{} (20th of 5,043), and our rank read at about 12:15Z was 23rd of 5,048, before the deadline\fi. The figure does not show private scores, which are not known until after 2026-11-02.}\label{fig:draws} % V3-B3 V3-W30 BOARD-REFRESH
+\end{figure}
+
+\paragraph{One agent's draws spread widely.}
+The same agent in two serving variants, one with a draft vocabulary that should leave the output distribution unchanged, averaged 38.43 over three draws and 31.15 over four (Appendix~\ref{app:draws}). % V3-B4
+Five later draws with a keepalive that acts only while the server boots averaged 35.04, between the two, and three draws of a build with one more game in flight averaged 34.35. % V3-W16 V3-W24
+The variants were drawn in separate stretches of days, so a calendar or Kaggle-node effect plus chance is the economical reading.
+The same calendar term applies to every time-ordered comparison here, including the board step after the yield change and the development-run comparison of Sec.~\ref{sec:yield}.
+
+\paragraph{The board ranks the stack and attributes nothing.}
+The seven live draws before the yield change average 29.25 and the 21 after it 34.96, three of them an adapter's (Sec.~\ref{sec:finetune}). % V3-B5 G2 V3-W30
+Those are different, time-ordered configurations, each carrying other changes, so the step is a trend and not a lever's effect.
+
+\paragraph{How much of the best draw is selection.}
+If the first eight live draws after the yield change shared one mean, the best of eight would sit about 1.4 SD above it, near 40.3 (Appendix~\ref{app:draws}). % V3-B6
+Resampling the twelve valid draws of the agent's family, whose record closed on 2026-10-28, gives an expected best of twelve of 40.33 (Figure~\ref{fig:selection}). % V3-W16
+So 40.98 is what a maximum of this family looks like, not evidence of a higher mean.
+Picking two Final Submissions by public score is a mild form of the holdout reuse studied by \citet{blum2015ladder} and \citet{roelofs2019meta}. % G8
+
+\paragraph{What to expect on the private half.}
+Within a configuration the public and private halves of a draw correlate 0.00 to 0.53 on our model, so a draw picked by its public score should be expected to score near the family mean on the private half, not near its public score. % G8
+The agent's seventeen valid draws and its zero of unknown cause average 32.67 together. % V3-W30
+
+\paragraph{Scale check.}
+The valid draws average 0.61 of the development-run mean game score, inside the earlier range of 0.53 to 0.63; the ratio checks scale and forecasts nothing. % V3-W2 G4 V3-W30
+
+\paragraph{Dead draws.}
+Three of 31 completed draws since the fork scored 0.00: two in field-wide failures of the midnight submission wave, and one of unknown cause, since a scored run returns no log (Appendix~\ref{app:failures}). % V3-B1 V3-B7 B11 V3-W30
+
+\paragraph{Final Submissions.}
+Our written rule, adopted after our best draw was submitted (the finals rule, Appendix~\ref{app:draws}), marks the agent's two best valid draws, 40.98 and 40.09, unless a fine-tuned adapter passes all its gates; none did (Sec.~\ref{sec:finetune}). % V3-B9 V3-W17 V3-W38
+On 2026-11-02, after the last draw, we marked these two by hand on the submissions page, where the selection held after a reload; they are also the two highest public draws, so Kaggle's automatic pick would have chosen them, and the final standing is the better of their private scores. % V3-W25 V3-W30 V3-W35 BOARD-REFRESH
+Both are draws of builds that predate the harness changes of Sec.~\ref{sec:harness}. The first harness build drew 33.56 and the build with all four shipped changes 36.38 in the final draw; one draw each says nothing about either build's mean. % V3-W24 V3-W30 BOARD-REFRESH

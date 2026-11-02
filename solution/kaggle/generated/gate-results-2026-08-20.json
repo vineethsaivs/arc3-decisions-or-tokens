@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-20T23:30:00.646710+00:00",
+  "subject": "Two predeclared gates FAILED on 2026-08-20. Both hypotheses are rejected.",
+  "control": {
+    "run": "solution/kaggle/generated/kernel-outputs/q38-reproduction-v1/benchmark.json",
+    "levels": 19,
+    "mean_score": 2.666,
+    "actions": 1630,
+    "tokens_per_action": 1395,
+    "frozen_games_over_30min": 7,
+    "analyzer_read_timeouts": 56
+  },
+  "rejections": [
+    {
+      "arm": "q38 output cap, LOCAL_ANALYZER_MAX_OUTPUT 0 -> 8000",
+      "kernel": "vineethsaivs/arc3-q38-output-cap-ordinary-commit",
+      "benchmark": "solution/kaggle/generated/kernel-outputs/q38-output-cap-v1/benchmark.json",
+      "predeclared_gate": "Mechanism first: analyzer read-timeout events must fall well below the control's 56, and completed levels must not decrease.",
+      "result": {
+        "analyzer_read_timeouts": 50,
+        "levels": 18,
+        "mean_score": 3.124,
+        "actions": 1194,
+        "tokens_per_action": 2185,
+        "frozen_games_over_30min": 11
+      },
+      "verdict": "REJECT",
+      "why": "The timeout count fell only 56 to 50, not to near zero. Frozen games rose 7 to 11 and completed levels fell 19 to 18. Bounding generation length therefore does not prevent the stalls.",
+      "what_this_falsifies": "The 2026-08-19 diagnosis that unbounded generation against a 900 s analyzer read timeout is what strands games. The 38.5 percent of in-game wall clock sitting inside action steps over 900 s is a real measurement, but the cause is not generation length. An adversarial verifier named the surviving alternative in advance: the stalls are server-side under 25 to 28 concurrent requests, which a per-request output cap cannot fix.",
+      "side_effect_confirmed": "Tokens per action rose 1395 to 2185 while actions fell 1630 to 1194, consistent with the predicted context-budget cost of the cap (reply reserve 512 -> 8000 cuts the request budget 64512 -> 57024, recorded in q38-output-cap-context-budget-2026-08-19.json)."
+    },
+    {
+      "arm": "LB-9 reproduction, Anim source tree driven by Qwen3.8",
+      "kernel": "vineethsaivs/arc3-lb9-anim-q38-reproduction",
+      "benchmark": "solution/kaggle/generated/kernel-outputs/lb9-anim-q38-v1/benchmark.json",
+      "upstream": "foysalemonshanto/lb-9-arc3-duck-v12-with-qwen-3-8-27b",
+      "predeclared_gate": "Completed levels versus the 19-level exact q38 control on the same 25 games.",
+      "result": {
+        "levels": 17,
+        "mean_score": 2.467,
+        "actions": 1160,
+        "tokens_per_action": 1676,
+        "frozen_games_over_30min": 11,
+        "analyzer_read_timeouts": 86
+      },
+      "verdict": "REJECT",
+      "why": "17 levels against the control's 19 and against the context arm's 23, on the identical 25 games, one pass, concurrency 28. It also recorded the most analyzer timeouts of any run.",
+      "what_this_falsifies": "The association argument that the Anim harness paired with Qwen3.8 is worth roughly +0.7, inferred from FOYSAL at 2.23 and keithtyser at 2.13 against jakobbrggen at 1.71 and us at 1.17. An adversarial verifier rated this arm +0.00 with a range of -0.10 to +0.20 and gave the file-level reason that holds up: the Anim tree ships MULTIMODAL_UPSCALE=4 and no grid lines where q38 ships 8 plus grid lines, so the fork is a multimodal downgrade on an older dirty tree. Those two accounts' scores are max-of-89 and max-of-61, not per-draw means."
+    }
+  ],
+  "what_survived": {
+    "arm": "q38 + 70 percent token-budget context hysteresis",
+    "kernel_version": "vineethsaivs/arc3-q38-context-history-ordinary-commit v1",
+    "ordinary_commit": {
+      "levels": 23,
+      "mean_score": 4.428,
+      "actions": 1273
+    },
+    "scored": {
+      "submission": "55632876",
+      "public_score": 1.68,
+      "previous_best": 1.19,
+      "delta": 0.49,
+      "rank_after": 163,
+      "rank_before": 392,
+      "field": 2443
+    },
+    "note": "The public25-to-hidden bridge predicted 1.64 for this arm against an actual 1.68, which is one corroborating point for that fit. It remains a two-point line and is still not a gate."
+  },
+  "method_note": "Both rejected arms were gated on a predeclared mechanism check rather than on the noisy 25-game level count, and both gates fired correctly. The output-cap gate in particular was written to be falsifiable by its author's own stated criterion, and it falsified."
+}

@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-01",
+  "plan": "docs/PLAN_2026-10-01.md",
+  "instrument": "25-game scored-run replica: all 25 public games, 10 admitted streams, 7,200 s shared window",
+  "control": {
+    "kernel": "vineethsaivs/arc3-franzen-rep-a",
+    "version": 1,
+    "readout": "kernel-outputs/franzen-rep-v1/readout.json"
+  },
+  "arm": {
+    "kernel": "vineethsaivs/arc3-franzen-a12-a",
+    "version": 1,
+    "change": "12 admitted streams with decode graphs 11-12, precache starts at the server launch, 30 s sanity import dropped",
+    "readout": "kernel-outputs/franzen-a12-v1/readout.json"
+  },
+  "result": {
+    "levels": [
+      97,
+      90
+    ],
+    "ready_s": [
+      553,
+      488
+    ],
+    "harness_tok_s": [
+      621,
+      495
+    ],
+    "cache_hit_pct": [
+      93.3,
+      72.2
+    ],
+    "kv_p90": [
+      0.85,
+      0.96
+    ],
+    "prefills_over_20k": [
+      93,
+      356
+    ]
+  },
+  "verdict": "SERVING FAIL for 12 streams: the KV pool saturates, prefix-cache hits fall 21 points and harness throughput falls 20%. The startup trims PASS on mechanism: READY 65 s sooner, so they become the new control ('start').",
+  "next": "Free memory before adding streams: kvlite (memory fraction 0.97, 48 Mamba slots) and hic12 (32 GB host-RAM KV tier, 12 streams); probes pushed 10-01 to check boot and stability.",
+  "what_this_does_not_claim": "One run per arm; the level difference is within what a rerun could produce. The serving numbers are what decide this gate."
+}

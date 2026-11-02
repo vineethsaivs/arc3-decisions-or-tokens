@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-04",
+  "plan": "docs/PLAN_2026-10-01.md",
+  "instrument": "25-game scored-run replica (7,200 s shared window)",
+  "control": "pooled p448s14 (two runs): 114 levels, mean game score 52.8, 730 tok/s, accept length 2.67; its scored draw was 28.97",
+  "arm": {"kernel": "vineethsaivs/arc3-franzen-p448s14ra-a", "version": 1, "change": "p448s14 plus relaxed MTP acceptance at 0.5 (lossy)"},
+  "result": {"levels": 113, "mean_game_score": 50.50, "harness_tok_s": 776.8, "decode_tok_s": 887.7, "accept_len": 3.07, "cache_hit_pct": 92.9, "levels_at_75k_100k_150k": [61, 74, 89]},
+  "verdict": "HOLD. The mechanism works (accept length 2.67 to 3.07, decode +9%, harness tokens per second +6%), but levels tie (113 against 114) and game score is lower (50.5 against 52.8), with fewer levels at 150K tokens (89 against 93 pooled), which is the pattern a lossy acceptance rule would produce. Not enough to swap a pin that just scored 28.97.",
+  "promote": false
+}

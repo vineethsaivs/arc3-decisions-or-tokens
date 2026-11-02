@@ -1,0 +1,76 @@
+{
+ "B8": {
+  "hardall": {
+   "S_dprime": 21.98818533749047,
+   "equal_share": {
+    "S_at_1": 22.383412906688168,
+    "multiplier_to_match_dprime": 0.978888389658382
+   },
+   "franzen_rule": {
+    "S_at_1": 20.5273399055067,
+    "multiplier_to_match_dprime": null
+   }
+  },
+  "slow2.5": {
+   "S_dprime": 37.791368017726604,
+   "equal_share": {
+    "S_at_1": 28.111348785250893,
+    "multiplier_to_match_dprime": 1.3316442342451305
+   },
+   "franzen_rule": {
+    "S_at_1": 34.59393763057685,
+    "multiplier_to_match_dprime": 1.1433857823643998
+   }
+  },
+  "y8x": {
+   "S_dprime": 57.62034213560899,
+   "equal_share": {
+    "S_at_1": 58.67151224296739,
+    "multiplier_to_match_dprime": 0.953854413428525
+   },
+   "franzen_rule": {
+    "S_at_1": 54.65277415692456,
+    "multiplier_to_match_dprime": null
+   }
+  }
+ },
+ "B9": {
+  "100": {
+   "S_priority_gate": 58.926812408642824,
+   "S_waves": 54.51644184639635,
+   "games_with_zero_seconds": 0,
+   "waves": 4
+  },
+  "110": {
+   "S_priority_gate": 57.62034213560899,
+   "S_waves": 54.220601021160604,
+   "games_with_zero_seconds": 0,
+   "waves": 4
+  },
+  "112": {
+   "S_priority_gate": 57.2801462701007,
+   "S_waves": 54.165285620649115,
+   "games_with_zero_seconds": 0,
+   "waves": 4
+  },
+  "113": {
+   "S_priority_gate": 57.374512453805906,
+   "S_waves": 53.68594680984691,
+   "games_with_zero_seconds": 1,
+   "waves": 5
+  },
+  "120": {
+   "S_priority_gate": 56.25113110272676,
+   "S_waves": 50.55426657927251,
+   "games_with_zero_seconds": 8,
+   "waves": 5
+  },
+  "140": {
+   "S_priority_gate": 53.42899973165993,
+   "S_waves": 43.33222849651929,
+   "games_with_zero_seconds": 28,
+   "waves": 5
+  }
+ },
+ "seeds": 30
+}

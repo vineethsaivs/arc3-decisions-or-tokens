@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-31T19:15:00+00:00",
+  "arm": "CC",
+  "name": "Polyphony with a prompt that fits the served window",
+  "predeclared_before_any_result": true,
+  "bundle": "vineethsaivs/arc3-poly-ctxfix-v1",
+  "kernel": "vineethsaivs/arc3-poly-ctxfix-ordinary-commit",
+  "control": "q38-temp09-v1, the bundle that drew our banked 2.65: 35 levels, 4 zero-level games, mean 6.722",
+
+  "what_this_is": "Arms BB and BB2 were not measurements of the polyphony architecture. Both returned 0 levels on all 25 games because the prompt overran the served context window and the solver retried the same oversized prompt for the rest of every game. This arm repairs the instrument. The architecture is untouched.",
+
+  "the_two_failed_runs": {
+    "BB  arc3-poly-repro-ordinary-commit": "window 65,536. 11,331 of 11,680 requests HTTP 400. 94 actions across 25 games, all in the first 27 seconds. 0 levels.",
+    "BB2 arc3-poly-repro2-ordinary-commit": "window 81,920 plus fp8 KV. 11,436 of 11,892 requests HTTP 400. 99 actions. 0 levels.",
+    "the_server_message": "This model's maximum context length is N tokens. However, you requested 0 output tokens and your prompt contains at least N+1 input tokens.",
+    "why_BB2_did_not_fix_BB": "apply_poly_serving_fix.py raised the window on an estimate of '240,000 characters is roughly 68,500 tokens at ~3.5 chars/token'. Measured with the Qwen3 tokenizer, upstream's grid rendering f'{cell:>3}' produces EXACTLY 1.00 characters per token, because Qwen3 splits every digit and every space into its own token. A 64x64 frame is 12,351 characters and 12,351 tokens. So POLY_CONTEXT_MAX_CHARS=240000 is a budget of up to 240,000 TOKENS, and the estimate was 3.5x too small.",
+    "and_compaction_never_ran": "compact() only fires ABOVE its threshold. At 240,000 characters it never fires: five frames overrun a 65,536-token window while compaction is still 180,000 characters away from acting."
+  },
+
+  "what_changed": {
+    "prompts.py": "one hex digit per cell instead of a three-wide padded decimal. 4,159 characters and 4,144 tokens per 64x64 frame, a 3.0x reduction. Cell values are 0-15 by specification so a hex digit is exact, the model's predict() still returns integers, and the frame header states the encoding.",
+    "agent.py": "a hard character cap on the whole conversation after compaction, default 60,000, env POLY_HARD_CONTEXT_CHARS. A character bound is a token bound because BPE never emits more tokens than there are characters, so this holds with no tokenizer at run time. It is needed because compact() keeps the system turn and the last six turns whatever they cost, and six frames alone are 25,000 characters.",
+    "action_names.py": "ACTION7 -> UNDO, the arm-AA fix carried forward as maintenance per gate-results-2026-08-30-arms-X-AA.json."
+  },
+  "what_was_NOT_changed": "the Observe -> Edit -> Plan -> Act loop, the planner, the verifier, the workbench, the trace log, the policy deadline, the bootstrap probe, and every POLY_* setting other than the character budget.",
+
+  "MECHANISM_GATE_check_this_first": {
+    "condition_1": "HTTP 400 context-overflow responses in vllm-openai-server.log fall below 1% of requests. BB and BB2 were at 97% and 96%.",
+    "condition_2": "total actions across 25 games is in the hundreds or thousands, not 94. BB and BB2 both stopped after the bootstrap probe.",
+    "condition_3": "the polyphony loop reaches its own machinery: at least one game shows verify() reporting matched/total, and at least one shows a policy.py written.",
+    "if_1_and_2_pass_but_3_fails": "PARTIAL. The architecture ran but never certified a policy, so every game fell through to the policy deadline and played directly. That is a real result and the primary verdict should be read as a FLOOR on polyphony, not a measurement of it.",
+    "if_1_fails": "the repair is insufficient. Lower POLY_HARD_CONTEXT_CHARS and do not draw any conclusion about the architecture."
+  },
+
+  "PRIMARY_VERDICT": {
+    "measure": "total levels over the 25 games, plus the paired per-game sign test against the 35-level control.",
+    "STRONG_PROMOTE": ">= 47 levels. Polyphony becomes the base for everything and ships to the daily slot immediately.",
+    "PROMOTE": "40 to 46, or the sign test clearly favours the arm.",
+    "TIE": "30 to 39 with no sign-test separation. The incumbent keeps the submission slot. Polyphony still becomes the DEVELOPMENT base if the mechanism gate passed fully, because a tie against a genuinely different architecture is far more informative than a tie between two overlays of ours, and seven consecutive overlay arms have now landed inside the noise floor.",
+    "REJECT": "<= 29 levels.",
+    "ties_go_to_the_incumbent_for_the_SUBMISSION_SLOT": "explicitly, and never promote on a variance argument."
+  },
+
+  "honest_prior": "0.35 that this returns >= 40 levels, 0.15 that it returns >= 47, 0.20 that the mechanism gate still fails for a reason we have not found. The prior is lower than arm BB's 0.45 because two runs have now shown this branch is an experiment that was never exercised past three short games, so upstream's 4.71 board score is probably NOT this code.",
+
+  "what_this_changes_about_the_polyphony_thesis": "CLAUDE.md and memory record 'the top of the board publishes its agent as CC0, runs our EXACT model and serving with LESS context, and scores double, so the gap is ARCHITECTURE'. That inference is now weaker: the published branch cannot complete a single 64x64 game without 400ing, and its benchmark pickle is a 3-game smoke config. Tufa Labs' 4.71 is very unlikely to come from this code. Polyphony is still worth measuring, on its merits, as the only genuinely different architecture we have source for.",
+
+  "cost": "~2.4 GPU-h, one ordinary commit, zero submission slots.",
+  "offline_test": "solution/sim/test_polyphony_context_fix.py, 16 checks against the patched shipped modules, all passing."
+}

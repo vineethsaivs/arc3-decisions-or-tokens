@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-23T00:54:24.778621+00:00",
+  "subject": "Gate results for arms F and G. Both REJECTED.",
+  "gate_predeclared_in": "solution/kaggle/generated/gate-predeclared-2026-08-22-arms-F-G.json",
+  "incumbent": {
+    "arm": "q38-context-window-v1",
+    "levels": 33,
+    "mean": 5.963,
+    "zero_level_games": 5,
+    "board_draw": 1.87,
+    "rank_at_that_draw": 136
+  },
+  "arms": {
+    "q38-ctxwin-up16-imgtok-v1": {
+      "verdict": "REJECT",
+      "change": "MULTIMODAL_UPSCALE 16 plus the image-token estimator fix",
+      "outcome": {
+        "levels": 25,
+        "mean": 3.45,
+        "actions": 1827,
+        "zero_level_games": 6,
+        "peak_kv": 0.679,
+        "generation_tok_s": 355.7
+      },
+      "vs_incumbent": {
+        "levels": "25 vs 33",
+        "paired": "5 gained, 10 lost, one-sided p = 0.151"
+      },
+      "what_this_settles": "The visual-resolution hypothesis is now DEAD. Upscale 16 failed twice: once cheaply (23 levels, where the phantom image charge ate the context budget) and once in the fair configuration the estimator fix was built to create (25 levels). The 'retest after the estimator fix' escape hatch recorded on 2026-08-21 has been used and it did not save it. Do not propose upscale 16 again.",
+      "collateral": "This also retires the estimator fix as a shipping candidate. It had already failed to add on top of the window raise (arm D); it now fails as an enabler too."
+    },
+    "q38-ctxwin-temp03-v1": {
+      "verdict": "REJECT, and the prediction behind it was falsified",
+      "change": "LOCAL_ANALYZER_TEMPERATURE 0.6 -> 0.3",
+      "outcome": {
+        "levels": 22,
+        "mean": 3.061,
+        "actions": 1965,
+        "zero_level_games": 11,
+        "peak_kv": 0.583,
+        "generation_tok_s": 455.1
+      },
+      "vs_incumbent": {
+        "levels": "22 vs 33",
+        "paired": "4 gained, 12 lost, one-sided p = 0.038, significantly WORSE"
+      },
+      "the_falsified_prediction": "The arm was built on the argument that failing runs show HIGHER action entropy over 500 recorded runs, so our failure mode is not too little exploration and temperature should come DOWN. That is now measured false: lowering it was significantly worse. The entropy correlation is a CONSEQUENCE of failing, not a cause. Recorded because the reasoning was explicit and wrong.",
+      "consequence": "Testing the other direction (0.9) as arm H. Zero-level games nearly doubled, 5 -> 11, which is the sharpest signal in the run."
+    }
+  }
+}

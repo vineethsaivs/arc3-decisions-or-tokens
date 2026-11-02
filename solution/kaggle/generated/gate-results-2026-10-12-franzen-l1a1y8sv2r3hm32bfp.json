@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-12",
+  "gate": "gate-predeclared-2026-10-12-franzen-l1a1y8sv2r3hm32bfp.json (declared 14:05Z, before the push)",
+  "instrument": "300 s per game Kaggle probe, 25 games (complete 14:17Z); kernel.log, serve.log Decode lines",
+  "control": "l1a1y8sv2r3hm32p v1 probe (accept 2.721 at 8+ running); the pin's probe l1a1y8sv2r3p v1 2.707",
+  "arm": {"kernel": "vineethsaivs/arc3-franzen-l1a1y8sv2r3hm32bfp-a", "version": 1,
+          "change": "hm32p + BF16 MTP-draft KV, target pool capped at 1,375,552 tokens"},
+  "evidence": {
+    "install": "PASS: speculative_draft_kv_cache_dtype bf16, max_total_tokens 1375552; boot 'KV Cache is allocated. dtype: torch.bfloat16, #tokens: 1375552, K size: 1.31 GB' (draft) and float8_e4m3fn 7.87 GB K (target); the hotmap and pin install lines",
+    "health": "PASS: READY 520 s, 0 tracebacks, 0 OutOfMemoryError, 0 'KV cache pool is full', no 'free device mem' warning",
+    "signal": "FAIL: accept 2.731 at 8+ running (required 2.771; control 2.721): 0-20K 2.739 vs 2.743, 20-40K 2.724 vs 2.702; at 14 running 2.726 vs 2.698"
+  },
+  "verdict": "No replica. BF16 draft KV on D3 moves accept by about 0.01 at probe contexts, inside the 0.04 spread of D3 probes, as the 10-11 plan expected (D3 was trained with FP8 drafter KV emulated). It costs 8% of the KV pool. Dropped",
+  "what_this_does_not_claim": "Probe contexts stop near 40K; an effect confined to 60K and beyond is not excluded, but nothing here justifies paying 8% of the KV pool to look for it",
+  "promote": false
+}

@@ -1,0 +1,50 @@
+\section{A context lever that did not survive interleaving: what the model sees when a turn resumes}\label{sec:yield}
+
+\paragraph{The change.}
+A yield ends a request after a set number of tokens generated without an action and resumes the turn with the opener and the current board image sent again (Sec.~\ref{sec:setting}).
+Duck yields on a time threshold, Franzen made it a token threshold of 2,048, and Lord Han Solo's public notebook yields rarely \citep{bessis2026duck,franzen2026writeup}. % D14
+We raised the threshold to 8,192; the idea of yielding less often is not ours, the value and the measurement are. % D14
+
+\paragraph{The comparison.}
+Nine development runs with the rarer yield average 124.0 levels, and 21 with the old one average 111.5. % D1
+The runs were not interleaved: the controls ran first and the treated runs over the following days (Appendix~\ref{app:yield}). % D8 YN8
+A day-level shift like the one in the identical pairs (Sec.~\ref{sec:measure}) can carry part of any such gap.
+
+\paragraph{Its uncertainty.}
+At the pairs' SD the 12.5-level gap runs from $+4.5$ to $+20.6$. % D1
+A run bootstrap, which treats runs on different days as exchangeable, gives $+9.2$ to $+15.8$; the treated runs lead on all but three games (Figure~\ref{fig:yield}; Table~\ref{tab:yield}). % D1 D3
+
+\paragraph{The counter that moved.}
+The mechanism counter is the resume opener, a request that re-sends the opener and image, several thousand new prompt tokens each. % D5
+Resumes fell about 70\%, from about 600 per run to about 190, while turns, requests per turn and tokens per turn held. % D5 V3-W10
+Replaying the recorded turns at each threshold reproduces the counts. % D6
+The freed prefill is at most 2.3\% of GPU time by arithmetic and under 1\% by the server's own timers, about half a level on the curve, so the gain is not the saved compute. % D7 F10
+
+\paragraph{The token confound.}
+Seven of the nine treated runs also carry later serving changes and generated 17\% more tokens than the controls. % D8
+At the curve's elasticity those tokens are worth about 5 of the 12.5 levels, and up to 9 at the highest per-token rate we measured. % D9
+
+\paragraph{What the model-free checks say.}
+At equal tokens per game the later seven match the controls through 150K and lead only beyond 200K, and their clearance per token equals the controls' (Appendix~\ref{app:yield}). % D10 D13
+Their gain fits their extra tokens as well as it fits the yield; if it is tokens, the curve underprices throughput (Sec.~\ref{sec:curve}).
+
+\paragraph{The clean comparison is weak.}
+The first two treated runs differ from their controls only in the yield line and in two checks that act only in a scored run, and they generated the same tokens. % D4 D8
+They led by 15 levels ($p$ 0.33), which two runs per arm cannot resolve. % D4
+They were the best of 17 first-run comparisons on this stack, and if every arm had done nothing the best of 17 would reach that lead about once in ten at the pairs' SD. % D4
+
+\begin{figure}[t]
+\centering
+\figfile{fig_yield}{4.4in}
+\caption{Re-sending context less often coincided with more levels across days, and not when interleaved. (a) Across days: per demonstration game, mean levels of nine runs that yield after 8,192 tokens minus 21 runs that yield after 2,048, sorted; line and band: the mean and its 95\% bootstrap interval over runs ($+9.2$ to $+15.8$). (b) Resume openers per game from the four runs with usage logs. Circles: three runs at 2,048, observed ($x$) against the same turns replayed at 8,192 ($y$), 74\% fewer in total; triangles: one run at 8,192, replayed at 2,048 ($x$) against observed ($y$), 70\% fewer. Below the diagonal means fewer interruptions at 8,192. (c) Interleaved, two builds that differ in one line, alternating regions: levels per run of six runs at 2,048 and six at 8,192 (means 123.17 and 120.67), and the two differences, 8,192 minus 2,048, each with a 95\% interval at the six pairs' SD of 8.25 (6 df). The across-days comparison was not interleaved, and seven of its nine 8,192 runs also generated more tokens. The interleaved interval, $-14.2$ to $+9.2$, excludes the across-days $+12.5$ and any gain above about 9 levels, and does not exclude smaller gains; four launched runs never ran. Higher is better.}\label{fig:yield} % D1 D3 D5 D6 D8 V3-W36
+\end{figure}
+
+So across days the rarer yield coincides with 12.5 more levels, and the counter it acts on moved as designed; we cannot say how much of the gap is the yield itself. % D1 D5
+The interleaved test below decides that.
+
+% PLACEHOLDER-INTERLEAVED: edit \interleavedresult in sections/placeholders.tex, not this line.
+% count:off
+\notebox{\interleavedresult} % FRAMING_v3 s9 YN6 V3-X13 V3-W36
+% count:on
+
+The rarer yield moved the counter it targets, and interleaved it showed no level gain we could see. If a resume does change decisions, we do not know why, and this test cannot show that it does.

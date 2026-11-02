@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-26T20:40:00+00:00",
+  "subject": "Gate results for arm V, the validate-then-plan world-model loop, run as a byte-identical pair.",
+  "predeclared_gate": "gate-predeclared-2026-08-26-arm-V-world-model.json",
+  "predeclared_gate_sha256": "27f862743e66def64b019ae1fd5f9771a4a1590289d56590e3f0c99b15b43dbd",
+  "runs": {
+    "arm_V": {"kernel": "vineethsaivs/arc3-q38-worldmodel-ordinary-commit", "status": "complete", "levels": 29, "zero_games": 6, "mean_score": 4.07, "reach_L1": 19, "reach_L2": 8, "median_actions": 85},
+    "arm_V_rep": {"kernel": "vineethsaivs/arc3-q38-worldmodel-rep-ordinary-commit", "status": "complete", "levels": 33, "zero_games": 5},
+    "pooled_levels": 31.0,
+    "control_pooled_levels": 36.0,
+    "family_control_mean": 33.8
+  },
+  "MECHANISM_GATE": {
+    "checked_first": true,
+    "outcome": "INSTRUMENT FAILURE",
+    "evidence": {
+      "tracebacks_in_our_three_files": 0,
+      "model_wrote_a_predict_function": "1 of 25 games in EACH arm (lp85 both times)",
+      "model_actually_invoked_validate": "1 of 50 game-runs (arm V, game lp85, 6 calls); 0 in the replicate",
+      "model_invoked_plan": 0,
+      "threshold_was": "validate() called in at least 20 percent of sandbox calls",
+      "tools_existed_at_runtime": "YES. lp85 called print(validate(predict)) successfully and no NameError names validate, plan or transition_log in either arm.",
+      "prompt_was_delivered": "YES. The addendum appears on all 1,315 turns of a sampled game.",
+      "persistence_half_works": "memory[...] assigned in 24 of 25 games in BOTH arms; memory['prelude'] assigned in 7 and 8 games respectively."
+    },
+    "reading": "The overlay shipped correctly and the model declined to use it. This is NOT evidence that the validate-then-plan loop fails on this benchmark; it is evidence that a 27B model, told in the system prompt to write an executable world model, does not write one. The instruction was advisory and the model treated it as advisory, adopting the persistent `memory` dict as an ordinary scratchpad instead."
+  },
+  "PRIMARY_VERDICT": {
+    "evaluated": false,
+    "why_not": "The predeclared gate says verbatim: 'If the mechanism gate reports instrument failure, the primary verdict is not evaluated at all.' Pooled 31.0 would otherwise have fallen in the REJECT band (<= 33).",
+    "explicit_warning": "Do NOT record this as 'world models were tested and rejected'. They were not tested. Any future doc that cites 31 levels as a refutation of the world-model loop is wrong."
+  },
+  "incidental": {
+    "lp85_the_one_game_that_built_a_model": "reached level 2 in arm V and level 1 in the replicate. n=1 either way and it means nothing on its own.",
+    "analysis_error_caught_before_reporting": "The first mechanism sweep used `grep -E 'validate(predict)'`, where the parentheses are ERE grouping, so it matched the literal string 'validatepredict' and returned 0 of 25 games for every parenthesised pattern. Re-run with `grep -F`. The corrected counts are the ones above. The conclusion did not change, but it was reached from a broken measurement first."
+  },
+  "what_would_make_this_a_real_test": [
+    "Make the loop structural rather than advisory: have the harness itself refuse to forward action() calls until a validate() has passed, instead of asking the model to refuse.",
+    "Ship a worked example of a `predict` function in the prompt; the current addendum describes the shape but never demonstrates it.",
+    "Check first whether a 27B model can write a correct predict() at all, offline against the recorded corpus, before spending GPU on another live pair."
+  ]
+}

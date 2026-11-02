@@ -1,0 +1,19 @@
+\section{What to copy, and what transfers}\label{sec:copy}
+
+\notebox{\textbf{What to copy.}
+(1) Run identical code at least eight times on one day to size the noise before trusting a level gain; here two runs per arm saw only effects above 23 of 183 levels.
+(2) Judge a small change by the metric it targets (tokens per second, prefix-cache hits, draft acceptance), and use levels only to veto gross harm.
+(3) Price a speed-up two ways before paying for it, by resampling logged level attempts at other budgets and by what the window's last tenth still earns; here the two differ about threefold on score, so check with a token-only cut.
+(4) Interleave arms on one build before believing a harness gain across days: here a rarer re-send coincided with 12.5 more levels across days and with none when interleaved.
+(5) Diagnose before building: set a cleared play of a level beside a stuck play of the same level, count what separates them, and write each change's kill rule before its first run.
+(6) Untested here: where the agent already clears most levels, filter self-training data by efficiency, not by ``cleared''. Also untested: a paired test on recorded states (do replies with a context change disagree on the first action more than two unchanged replies do?), which we used once and have not validated against a lever with a known level effect.}
+
+\paragraph{Five objects that transfer.}
+\emph{A noise ruler:} any evaluator whose score varies between identical runs can be sized by repeating them on one day, and a gate built on mechanism counters needs nothing more.
+\emph{A budget curve:} any agent with a token or time budget and logged attempts can price a speed-up before paying for it, and can see whether its losses sit in problems that more search would reach.
+\emph{A re-send policy:} any harness that pauses a model and resumes it by re-sending its prompt is choosing how often to interrupt; here that choice coincided with a level gain across days that vanished when the arms were interleaved, so interleave before believing a small harness gain.
+\emph{A stall rule:} any agent that can think without acting needs a rule for when thinking must end in an action; ours fired as designed, and levels from three runs cannot say whether it helped.
+\emph{A self-training warning:} a success filter on tasks the agent already solves keeps its habits, slow ones included; in our one experiment the adapter's reasoning style shifted while its levels fell.
+
+\paragraph{What we did not test.}
+Each object was tested on one model, one harness and one benchmark; only the fine-tuning result crosses a boundary, from RE-ARC-3 training games to demonstration games whose families the adapter never saw. % V3-L1

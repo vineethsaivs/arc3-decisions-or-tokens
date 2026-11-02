@@ -1,0 +1,187 @@
+\section{Yield: the comparison and secondary analyses}\label{app:yield}
+
+The nine yield runs are every full-length run at 8,192 on the current code line. The first two carry no change besides the yield and two checks that act only on the scored path; the later seven also carry serving changes. The 21 controls are every full-length run at 2,048 on that line. % D1 D8
+
+Table~\ref{tab:yield} is the comparison behind Sec.~\ref{sec:yield}. Since 2026-10-14 every run in it is adjudicated: the own-traffic draft-vocabulary run, open at the time of v2, passed its gate, so the eight-run row is now a plain sensitivity row (V3-H5). % V3-H5
+
+\begin{table}[!htb]
+\caption{Yield 8,192 against 2,048: difference in mean levels per run, run bootstrap 95\% interval (n/a for two runs or days), and exact two-sided permutation $p$ over run labels, assumed exchangeable. Controls are the 21 runs at 2,048.}\label{tab:yield}
+\centering\footnotesize
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.34\linewidth}rrcr@{}}
+\toprule
+Comparison & Runs & Diff. & 95\% CI & Exact $p$ \\
+\midrule
+All nine & 9 vs 21 & $+12.5$ & $+9.2$ to $+15.8$ & $2.4\times10^{-6}$ \\ % D1
+Eight & 8 vs 21 & $+12.3$ & $+8.8$ to $+15.8$ & $7.9\times10^{-6}$ \\ % D2
+Six & 6 vs 21 & $+13.5$ & $+9.7$ to $+17.1$ & $2.4\times10^{-5}$ \\ % D2
+First two, their two controls & 2 vs 2 & $+15.0$ & n/a & 0.33 \\ % D4
+By UTC day & 3 vs 6 days & $+10.9$ & n/a & 0.012 \\ % D3
+\bottomrule
+\end{tabular}
+\par\vspace{2pt}
+\begin{minipage}{\linewidth}\footnotesize The day row's $p$ is its least possible, $1/84$. The 30 runs are every full-length run at the two settings on the current stack. On a development run the first two at 8,192 differ from their controls in the yield setting alone; the seven later runs carry other changes. Eight leaves out the own-traffic draft-vocabulary run, whose gate was still open in v2 and has since passed; six also leaves out the 16K-output-cap run and the four-draft-step run. Left out: three older-stack runs (they would widen the gap), the run without a token yield (115 levels against 119 for the same code at 8,192; server out of memory at 6,893 s) and an 8,192 run that died at start (0 levels; counted, the mean of ten is 111.6).\end{minipage} % D1 D2 D3 D4 YN7
+\end{table}
+
+\paragraph{The interleaved wave.}
+Sixteen Vertex AI Spot jobs (one RTX PRO 6000 each, the replica image, the 25 demonstration games, 14 streams, one 7,200 s window) were launched on 2026-10-21 between 02:50 and 02:54 UTC: eight per arm, four per region per arm in us-central1 and us-east4, in A B B A order inside each region. The two builds differ in one line, the yield token count (8,192 against 2,048); both log requests. The design and decision rules are in a file dated 2026-10-21, written before the first job was submitted; its rules were amended at 02:55 while all 16 jobs were still pending. % V3-W36
+Four jobs never ran: three sat pending in us-east4 and were cancelled at 06:40 to free capacity for the adapter wave, and one failed on a regional stockout. No replacement ran, so the read uses six runs per arm (Table~\ref{tab:interleaved}). % V3-W36
+The 8,192 arm scored 2.5 levels below the 2,048 arm (permutation $p$ 0.42; by region $-3.8$ in us-central1 and $+4.0$ in us-east4), 3.2 below at matched tokens, on 1.5\% more generated tokens and a third of the resume openers. At the six pairs' SD (8.25, 6 df) the 95\% interval on the difference is $-14.2$ to $+9.2$; at the SD of the eight same-day runs (5.95, 7 df) it is $-10.6$ to $+5.6$. The test therefore excludes the across-days $+12.5$ and any gain above about 9 levels, and does not exclude smaller gains. % V3-W36
+Two candidate causes of the non-reproduction are drift between days and the extra tokens that seven of the nine across-days runs generated, worth about 5 of the 12.5 levels at the curve's elasticity; this test holds tokens equal and cannot apportion the two. % V3-W36 D8 D9
+
+\begin{table}[!htb]
+\caption{The twelve valid runs of the interleaved wave: levels cleared on the 25 demonstration games and generated tokens, by arm (yield threshold) and the region where the run completed. Means 123.17 (2,048) and 120.67 (8,192).}\label{tab:interleaved}
+\centering\footnotesize
+\begin{tabular}{@{}rllrr@{}}
+\toprule
+Yield & Run & Region & Levels & Tokens (M) \\
+\midrule
+2,048 & \texttt{y2-c-1} & us-east4 & 123 & 6.30 \\
+2,048 & \texttt{y2-c-3} & us-central1 & 125 & 6.30 \\
+2,048 & \texttt{y2-c-4} & us-central1 & 119 & 6.30 \\
+2,048 & \texttt{y2-e-2} & us-central1 & 124 & 6.31 \\
+2,048 & \texttt{y2-e-3} & us-central1 & 123 & 6.39 \\
+2,048 & \texttt{y2-e-4} & us-central1 & 125 & 6.34 \\
+8,192 & \texttt{y8-c-1} & us-central1 & 114 & 6.43 \\
+8,192 & \texttt{y8-c-3} & us-central1 & 129 & 6.37 \\
+8,192 & \texttt{y8-e-1} & us-central1 & 113 & 6.47 \\
+8,192 & \texttt{y8-e-2} & us-east4 & 127 & 6.37 \\
+8,192 & \texttt{y8-e-3} & us-central1 & 120 & 6.39 \\
+8,192 & \texttt{y8-e-4} & us-central1 & 121 & 6.49 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Run flow.}
+Table~\ref{tab:runflow} lists every full-length replica run on this stack. Of the 34, 30 enter the main comparison. No 2,048 run lost its server. The 300 s probes, one 1,800 s smoke run and two watchdog rehearsals are not full-length runs. % YN7 B12
+
+\begin{table}[!htb]
+\caption{The 34 full-length replica runs on this stack, with levels per run, and one run outside them. Used: in the main comparison of Table~\ref{tab:yield}.}\label{tab:runflow}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{%
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.30\linewidth}r>{\raggedright\arraybackslash}p{0.30\linewidth}>{\raggedright\arraybackslash}p{0.26\linewidth}@{}}
+\toprule
+Group & Runs & Levels & Use \\
+\midrule
+Yield 2,048, same-stack controls & 9 & 123, 101, 104, 116, 113, 113, 109, 115, 109 & Control \\ % D1
+Yield 2,048, earlier-stack controls & 12 & 122, 106, 117, 111, 111, 110, 108, 105, 107, 115, 113, 113 & Control \\ % D1
+Yield 8,192, first two & 2 & 128, 124 & Treated \\ % D1
+Yield 8,192, later seven & 7 & 119, 120, 128, 122, 129, 120, 126 & Treated \\ % D1
+No token yield & 1 & 115 & Left out: server out of memory at 6,893 s, 5.7 minutes before the window ended \\ % YN7 B12
+Fork before expert pruning & 3 & 92, 97, 90 & Left out: earlier code line; counting them would widen the gap \\ % YN7
+Yield 8,192, died at start (not among the 34) & 1 & 0 & Left out: counting it makes a ten-run mean of 111.6 \\ % YN7 B12
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\paragraph{Other comparisons.}
+Table~\ref{tab:yieldall} gives the comparisons that Table~\ref{tab:yield} omits. The unit is the run. Intervals that resample two runs are narrow by construction, so we print none for the first two against any control group.
+Same-stack controls are the nine 2,048 runs of the code line that the 8,192 runs share, and earlier-stack controls the 12 before it. Pinned-code controls are 12 whose code was, or replicated, a pinned or near-pinned configuration. Kaggle controls are the 13 run on Kaggle; eight ran on a cloud VM. % D3
+
+\begin{table}[!htb]
+\caption{Further comparisons of mean levels, yield 8,192 against 2,048, on the replica. Exact two-sided permutation $p$ over run labels; bootstrap over runs; the last interval is at the six-pair SD of 8.25 (6 df). Control groups are defined in the text.}\label{tab:yieldall}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{%
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.34\linewidth}rrccr@{}}
+\toprule
+Comparison & Runs & Diff. & Bootstrap CI & CI at SD 8.25 & Exact $p$ \\
+\midrule
+First two, same-stack controls & 2 vs 9 & $+14.6$ & n/a & $-1.2$ to $+30.3$ & 0.018 \\ % D4 YN1
+First two, all controls & 2 vs 21 & $+14.5$ & n/a & $-0.4$ to $+29.5$ & 0.0040 \\ % D4 YN1
+First two, pinned-code controls & 2 vs 12 & $+13.1$ & n/a & $-2.3$ to $+28.5$ & 0.022 \\ % D3 YN1
+First two, Kaggle controls & 2 vs 13 & $+14.7$ & n/a & $-0.6$ to $+30.0$ & 0.0095 \\ % D3 YN1
+Later seven, all controls & 7 vs 21 & $+12.0$ & $+8.3$ to $+15.7$ & $+3.1$ to $+20.8$ & $2.7\times10^{-5}$ \\ % D8 YN1
+Later seven, same-stack controls & 7 vs 9 & $+12.0$ & $+7.0$ to $+17.0$ & $+1.8$ to $+22.2$ & 0.0012 \\ % D8 YN1
+Later six, all controls & 6 vs 21 & $+11.5$ & $+7.8$ to $+15.6$ & $+2.2$ to $+20.9$ & $1.05\times10^{-4}$ \\ % D2 YN1
+Nine, same-stack controls & 9 vs 9 & $+12.6$ & $+7.8$ to $+17.2$ & $+3.0$ to $+22.1$ & $2.9\times10^{-4}$ \\ % D3 YN1
+Nine, earlier-stack controls & 9 vs 12 & $+12.5$ & $+8.8$ to $+16.0$ & $+3.6$ to $+21.4$ & $3.4\times10^{-5}$ \\ % D3 YN1
+Nine, pinned-code controls & 9 vs 12 & $+11.1$ & $+6.9$ to $+15.3$ & $+2.2$ to $+20.0$ & $3.1\times10^{-4}$ \\ % D3 YN1
+Nine, Kaggle controls & 9 vs 13 & $+12.7$ & $+9.2$ to $+16.0$ & $+3.9$ to $+21.4$ & $1.8\times10^{-5}$ \\ % D3 YN1
+\bottomrule
+\end{tabular}}
+\end{table}
+
+With replicates averaged, 8 yield configurations against 16 control configurations differ by $+12.8$ (Monte Carlo $p<10^{-5}$, no hit in 100,000 shuffles). % D3
+Per game, the nine are ahead on 22 of 25 games, behind on 2 and tied on 1 (run-label permutation $p=3\times10^{-4}$). The first two against all controls are 21, 3 and 1, and against their own two controls 12, 2 and 11 ($p=0.17$). % D3
+The 22 games that gain carry $+13.0$ levels and the two that lose $-0.5$, so the gain is spread. % D3
+
+\paragraph{Contrasts that hold tokens equal.}
+The matched contrast of Sec.~\ref{sec:yield} sets the first three 8,192 runs (128, 124 and 119 levels; 5.67M tokens on average) against the Kaggle thinking-budget control and the two cloud controls (109, 113 and 109 levels; 5.62M). % YN3
+With 20 possible splits, the exact $p$ of 0.05 is the least possible. % YN3
+The same-minute pair is the first 8,192 run and the thinking-budget control, which started at 04:08 and 04:11 UTC on 2026-10-10. % YN4
+
+\paragraph{Where on the token axis the gap opens.}
+Table~\ref{tab:yieldtok} reads levels at equal generated tokens per game; games that stopped earlier keep their final levels.
+
+\begin{table}[!htb]
+\caption{Levels at equal generated tokens per game: yield 8,192 minus the 21 controls (higher is better). The later seven include the own-traffic draft-vocabulary run. Nine horizons were computed. The first two lead at 100K ($p=0.016$) and 150K ($p=0.028$, exact one-sided), the only horizons where we computed it.}\label{tab:yieldtok}
+\centering\footnotesize
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{%
+\begin{tabular}{@{}rrrrr@{}}
+\toprule
+Tokens per game & First two & Later seven & Later-seven $p$ & Games running (first two / later seven / controls) \\
+\midrule
+25K & $+3.2$ & $-0.7$ & 0.78 & 25.0 / 25.0 / 25.0 \\ % D10
+50K & $+3.1$ & 0.0 & 0.53 & 25.0 / 24.4 / 24.8 \\ % D10
+75K & $+3.3$ & $+1.6$ & 0.23 & 24.5 / 23.9 / 23.9 \\ % D10
+100K & $+9.1$ & $+0.3$ & 0.46 & 22.5 / 23.1 / 23.2 \\ % D10
+150K & $+8.8$ & $+0.3$ & 0.45 & 19.5 / 20.9 / 19.6 \\ % D10
+200K & $+9.1$ & $+2.0$ & 0.18 & 15.0 / 17.9 / 14.6 \\ % D10
+250K & $+12.8$ & $+5.6$ & 0.015 & 10.0 / 13.9 / 8.0 \\ % D10
+300K & $+13.4$ & $+8.9$ & $4.5\times10^{-4}$ & 4.0 / 8.3 / 2.8 \\ % D10
+400K & $+14.5$ & $+11.8$ & $2.7\times10^{-5}$ & 0.5 / 0.6 / 0.0 \\ % D10
+\bottomrule
+\end{tabular}}
+\end{table}
+
+The first two are ahead from 100K with the same total tokens as their control. The later seven match the controls through 150K and open a gap after 200K, where more of their games are still running (Sec.~\ref{sec:yield}). % D8 D10
+
+\paragraph{Mechanism and replay.}
+Resume openers fell from 565, 634 and 572 per run at 2,048 to 185, 151 and 196 in the first three runs at 8,192, and stayed at 151 to 215 in all eight runs with transcripts, about 70\% fewer. Turn-start invocations, requests per turn and tokens per turn did not move. % D5
+A resume costs 6.2K to 7.0K new prefill tokens on its first request, against 1.3K to 1.8K for a request inside an invocation. % D5
+Re-cutting each recorded turn at the run's own threshold reproduces its resume count exactly: 546, 587 and 523 in the three 2,048 runs and 185 in the one 8,192 run with usage logs. These are counts over clean turns, 99\% of all turns. % D6
+The replay is a deterministic rule checked against itself. Across thresholds it misses: the 2,048 traces re-cut at 8,192 give 135, 144 and 154 resumes, and the 8,192 run has 185, which is 20\% to 37\% more. The 8,192 trace re-cut at 2,048 gives 625, which is 6\% to 20\% more than the 523 to 587 observed. % D6
+
+
+
+For each 2,048 run the replay also predicts the new prefill that the larger threshold would avoid: 1.82M, 2.20M and 1.90M tokens, against observed gaps to the first 8,192 run of 3.69M, 3.85M and 1.51M. The first two controls lack the reply-cache fix, so their gaps include another difference; the third is on the same code line. % D6 D7
+The freed prefill is at most 2.3\% of the window by arithmetic and 0.6\% to 0.8\% by the server's prefill timers (Appendix~\ref{app:time}). % D7 F10
+
+\paragraph{Discontinuity at the threshold.}
+A request that lands just under or just over the threshold differs mainly in whether it was interrupted, because the reply length near the threshold is chance (Table~\ref{tab:rd}).
+The next request acts more often after a resume at both thresholds. % D12
+Removing resumes removes that nudge, so this does not explain the gain. Power is low, and the 8,192 rows rest on one run. % D12
+
+\begin{table}[!htb]
+\caption{Jump in the probability that the next request acts at the yield threshold, local-linear, 95\% bootstrap over turns. The 2,048 rows pool three runs, the 8,192 rows use one.}\label{tab:rd}
+\centering\footnotesize
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{%
+\begin{tabular}{@{}rrrrr@{}}
+\toprule
+Threshold & Bandwidth & Yield / continue (turns) & Acts, yield and continue & Jump \\
+\midrule
+2,048 & 400 & 348 / 423 & 0.385, 0.345 & $+0.113$ ($-0.027$ to $+0.224$) \\ % D12
+2,048 & 700 & 569 / 745 & 0.376, 0.349 & $+0.081$ ($-0.021$ to $+0.188$) \\ % D12
+2,048 & 1,200 & 814 / 1,326 & 0.380, 0.360 & $+0.046$ ($-0.032$ to $+0.121$) \\ % D12
+8,192 & 400 & 34 / 35 & 0.412, 0.143 & $+0.396$ ($-0.026$ to $+0.863$) \\ % D12
+8,192 & 700 & 48 / 60 & 0.333, 0.183 & $+0.392$ ($+0.140$ to $+0.668$) \\ % D12
+8,192 & 1,200 & 71 / 103 & 0.366, 0.204 & $+0.196$ ($-0.023$ to $+0.424$) \\ % D12
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\paragraph{Per-token clearance.}
+Within game and level, the Mantel-Haenszel ratio of clearance per generated token is 1.073 for the nine against the 21 controls (run-cluster bootstrap CI 1.029 to 1.138, one-sided permutation $p=0.032$), 1.192 for the first two ($p=0.052$) and 1.071 for the later seven (CI 1.030 to 1.147, $p=0.082$). % D13
+Scoring each run against the controls' rate per token instead gives 1.070 for the first two and 1.001 for the later seven ($p=0.17$). % D13
+Censoring at the window end is informative, since the priority rule gives tokens to games that progress, so we read these ratios as indicative. They are strongest in the first two runs. % D13
+
+\paragraph{What else differs between the arms.}
+A cell-by-cell diff of the notebooks (26 cells each) shows that the first two's control and the first 8,192 run differ in the yield line and two fail-closed checks that raise only on the scored path. The first 8,192 run and its replicate differ in no cell, and the run with no token yield differs from its parent in the yield line only. % D1
+The Kaggle same-code control also carries a strict thinking budget, which tied on its own promotion test. % B7
+No same-platform, same-code 2,048 control at full window exists: the control of the first two ran on a cloud VM and the first 8,192 run on Kaggle, though 13 Kaggle controls average 111.3 and eight cloud controls 111.8. % D3
+
+\paragraph{Choices made after seeing the data.}
+We chose the control and treated sets (with eight and six as sensitivity rows), four further control subsets (Table~\ref{tab:yieldall}), nine token horizons (Table~\ref{tab:yieldtok}), the token values of Sec.~\ref{sec:yield} and levels rather than score as the outcome. The score gap is $+6.9$ points of mean game score (56.65 against 49.72). % D3 NEW:choices
+
+

@@ -1,0 +1,11 @@
+## 750173 Two 0.00 scores since Oct 16, runs ending early. Anyone else?
+2026-10-17T04:35 Ishan Karnick : My last two submissions (Oct 16 and Oct 17 UTC) both scored 0.00 and were marked complete within about 4.5 hours of submitting, so they ended well before the 9 h limit. Both are Franzen's M2 SGLang notebook with small harness changes. A nearly identical version scored 26.92 on Oct 15, with the same harness patch and image pin and only two scheduler settings changed. Earlier variants scored 27 to 30, and the Save & Run commits still finish normally.
+
+Is anyone else getting 0.00 or early exits since the site update around Oct 14-15? Hosts, could you check whether something changed in the scoring environment, like the gateway, the machines, or a runtime limit?
+
+Slow∞Loop reported the same symptom here: https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/750127
+- 2026-10-17T08:35 Jeroen Cottaar : If you don't do any move for 15 minutes, the run will end with the score so far - 0.00 in your case since you didn't do anything yet.  You can start a thread that issues a RESET move to one game every 10 minutes until startup to deal with this.
+  - 2026-10-19T14:50 Lavin Wins : Thanks Jeroen! You are contributing a lot , respect to you from every person of this communty 🫡🫡
+  - 2026-10-20T05:23 CPMP : > If you don't do any move for 15 minutes, t  We see that slow dataset loading can be the cause for no move within 15 minutes.
+    - 2026-10-20T18:48 Mirza Milan Farabi : I can see from my end that downloading dataset/model is taking too much time; even after the download finishes, model precaching and loading with vllm/sglang is taking 2x or sometimes 3x the time. If this happens during the competition rerun (on hidden test submission), it will be fatal.  Mine also, getting 0.00 and running for about 30 minutes then ended.
+- 2026-10-20T03:39 kdyyhae : There is a high probability that notebook has been changed bad。

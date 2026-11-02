@@ -1,0 +1,92 @@
+\section{Tried and not shipped, with costs}\label{app:tried}
+
+Table~\ref{tab:tried} lists the levers we built, ran and did not ship, each with the number that decided it and what it cost.
+Level counts are single development runs on the demonstration set unless a pair is stated, so they screen and do not settle (Sec.~\ref{sec:measure}). % A3 B7
+A row reports this stack at this size and says nothing about the idea elsewhere; ``held'' means not shipped and not ruled out.
+Costs are in runs: one development run is about 2.2 free Kaggle GPU-hours, or \$3.88 to \$5.45 on a rented RTX PRO 6000 at list prices (about \$4 on the earlier rented VM). % V3-C8 V3-X11 H1
+Figure~\ref{fig:tried} places every measured arm, shipped or not, against the noise of single runs.
+
+\begingroup\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.39\linewidth}>{\raggedright\arraybackslash}p{0.20\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}@{}}
+\caption{Levers built and not shipped, with the deciding number and the cost. Levels are single development runs unless stated; counters come from server or behaviour logs.}\label{tab:tried}\\
+\toprule
+Lever & Result & Decision & Cost \\
+\midrule
+\endfirsthead
+\toprule
+Lever & Result & Decision & Cost \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+Fourth draft step & Accept length $+9.8\%$, step $+13.5\%$, decode $-4.2\%$, harness tokens per second $-2.8\%$ & Not shipped: 0.275 against 0.379 needed (Appendix~\ref{app:serving}) & 1 run against 2 controls \\ % E5 E6 E11
+Relaxed acceptance (0.5) & Decode $+9\%$; levels 113 against 114, fewer at 150K tokens per game & Held: lossy, levels tie & 1 run \\ % F3
+16 streams, host-RAM KV tier & Tokens per second $+7\%$; levels 115 against 114; later code line 104 against 112 (the pooled pair of 123 and 101) & Held: tie twice ($-8$ against the pooled control) & 2 runs \\ % F3 NEW:h16
+12 streams without pruning & Cache hit 72.2\%, 90 levels & Failed: cache evictions & 1 run \\ % NEW:12streams
+Strict thinking budget (10,240 tokens) & 109 levels; mechanism works (cut replies removed); an earlier run 115 against 116 and 113 & Held: tie & 2 runs \\ % F3 B7
+Output cap raised to 16K & 120 levels; cut replies 26 against a limit of 20 & Rejected & 1 run \\ % F3
+BF16 draft KV & Full-size run: CUDA out of memory seven seconds into play, 0 levels; probe pair accept length $+0.010$ [$-0.040$, 0.062]; costs 8\% of the KV pool & Rejected & 1 run, 2 probes \\ % E9 F3
+keepdata overlay & 2 of its 6 counters failed in the one run & Dropped by its predeclared rule & 1 run \\ % F3
+Solved-level memory, strategy audit, early handover, opener port & 111, 110, 108 and 105 levels against the pooled control of 114 (3 to 9 below; single runs, inside the noise) & Dropped for lack of a mechanism, not proven harm (Table~\ref{tab:gatehist}) & 4 runs \\ % B7
+71K retained history & 113 levels against 114 & Dropped: tie & 1 run \\ % B7
+Leaner history (older reasoning and images as markers) & Paired decision test: first-action agreement $-0.071$ against the noise floor (90\% interval $-0.132$ to $-0.004$, which contains the $-0.05$ tolerance; two-sided paired $p$ 0.09); acts sooner; a parser defect found later leaves the verdict unchanged ($-0.081$) & Killed before any development run (Sec.~\ref{sec:measure}) & 0.72 GPU-hours \\ % V3-T3 V3-T6 V3-T8 V3-W6
+Rejection-sampling LoRA, rank 16 & Levels 109 and 115 at full strength, 117 at half, against 119 to 129 & Stopped by the project's rule: 130 per run to proceed, 120 or less at half strength stops (Sec.~\ref{sec:rft}) & Play data about 13.5 h of rented GPU (about \$17, estimated), training 4.78 h (\$7.89), 3 runs at most 9.6 h (at most \$16) \\ % V3-L9 V3-L10 V3-L11 V3-L19
+Own-traffic draft vocabulary & Gate passed: decode $+1.2\%$ (predicted $+1.4\%$ to $+1.7\%$), 126 levels against 129 & Shipped 2026-10-14 to 2026-10-19, then pinned back on a board hypothesis that we do not attribute to it (Sec.~\ref{sec:board}) & 1 run, 1 probe \\ % V3-H2 V3-H4 V3-B4
+Group-relative RL, round A & Two adapters gated; the first-wave lead did not replicate, and the full-strength merge read $-0.6$ levels & Not shipped (Sec.~\ref{sec:rl}) & Program ledger \$87 to \$110 at list prices by 2026-10-21 01:00Z (Appendix~\ref{app:regen}) \\ % V3-G8 V3-G9 V3-C2
+\end{longtable}
+\endgroup
+
+\begin{figure}[!htb]
+\centering
+\figfile{fig_tried}{5.86in}
+\caption{What we tried, against the noise of single runs. One row per measured arm, grouped by lever class: levels of the arm minus its control on the 25 demonstration games (the pooled byte-identical pair where one exists, so a few gaps differ from the control used at the time). Shaded: where 50\% and 95\% of the gaps between two single runs of identical code fall (SD 8.25, six pairs). Filled circle: the mechanism counter fired; cross: it did not; open circle: no counter recorded; orange with a bold label: shipped. Right column: arm runs against control runs. Not drawn: arms with no level reading (BF16 draft KV, leaner history, round A).}\label{fig:tried} % B1 B7 F3 V3-L9 V3-L10
+\end{figure}
+
+\subsection{First-run comparisons replayed}\label{app:gates}
+
+Table~\ref{tab:gatehist} replays our first-run comparisons under one rule: beating the control run by 10 levels or more is a win, trailing by 10 or more a loss, anything else a tie. % B7
+The replay is post hoc. At the time each comparison used the control then at hand, predeclared counters and often more than one run, so the table shows what a one-run rule would have called. Our decisions used more evidence. % B7
+
+\begin{table}[!htb]
+\caption{The 17 first-run comparisons on the current stack. Rows refer only to earlier rows. Levels are single replica runs. ``Pooled'' is the difference against the pooled control of its byte-identical pair, shown for the six loss calls.}\label{tab:gatehist}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{%
+\begin{tabular}{@{}r>{\raggedright\arraybackslash}p{0.37\linewidth}r>{\raggedright\arraybackslash}p{0.20\linewidth}rlr@{}}
+\toprule
+No. & Arm & Levels & Control & Diff. & Call & Pooled \\
+\midrule
+1 & Expert pruning to 448, startup trims & 122 & 92, startup-trims run & $+30$ & Win & \\ % B7
+2 & Row 1 plus solved-level memory & 111 & 122, row 1 & $-11$ & Loss & $-3$ \\ % B7
+3 & Row 1 at 14 streams & 117 & 122, row 1 & $-5$ & Tie & \\ % B7
+4 & Row 1 plus strategy audit & 110 & 122, row 1 & $-12$ & Loss & $-4$ \\ % B7
+5 & Row 1 plus early handover & 108 & 122, row 1 & $-14$ & Loss & $-6$ \\ % B7
+6 & Row 1 plus opener port & 105 & 114.0, row 1 pooled & $-9$ & Tie & \\ % B7
+7 & Row 3 plus host-RAM tier & 107 & 114.0 & $-7$ & Tie & \\ % B7
+8 & Row 1 at 16 streams plus host-RAM tier & 115 & 114.0 & $+1$ & Tie & \\ % B7
+9 & Row 3 plus 71K retained history & 113 & 114.0 & $-1$ & Tie & \\ % B7
+10 & Row 3 plus relaxed acceptance & 113 & 114.0 & $-1$ & Tie & \\ % B7
+11 & D-prime stack plus waste fixes and reply cache & 116 & 123, D-prime stack run 1 & $-7$ & Tie & \\ % B7
+12 & Row 11 plus agent fixes & 113 & 123, D-prime stack run 1 & $-10$ & Loss & $+1$ \\ % B7
+13 & Row 11 plus strict thinking budget & 115 & 123 & $-8$ & Tie & \\ % B7
+14 & D-prime stack at 16 streams, host tier & 104 & 123 & $-19$ & Loss & $-8$ \\ % B7
+15 & Row 12 plus yield 8,192 & 128 & 113, row 12 & $+15$ & Win & \\ % B7
+16 & Row 15 plus ring fix, async upload, no token yield & 115 & 128, row 15 & $-13$ & Loss & $-11$ \\ % B7
+17 & Row 15 plus ring fix, async upload & 119 & 128, row 15 & $-9$ & Tie & \\ % B7
+\bottomrule
+\end{tabular}}
+\end{table}
+
+The rule calls 2 wins, 6 losses and 9 ties. % B7
+Both wins shipped on a verified mechanism and held up on replication (pairs 122 and 106, 128 and 124). % B7
+Every control in a loss call was the higher run of its byte-identical pair: 122 of 122 and 106, 123 of 123 and 101, 128 of 128 and 124. The six loss calls rest on three control runs (122 three times, 123 twice, 128 once), so this is three facts. % B7
+Against the pooled control five of the six losses shrink to 8 levels or fewer. Row 16 stays at $-11$, but that run failed its own mechanism check and lost its server to an out-of-memory error in the last minutes of the window. % B7 B12
+Row 16 is also the one run that differs from a treated run in the yield line alone, with all other changes in place: 115 levels against 119 for row 17. % D2
+Row 12 was a loss call ($-10$) that we shipped on its mechanism, and a tie against the pooled control. % B7
+
+On the older stack five arms were promoted on a first or lucky run. Their advantage over the control family was $+7.0$, $+9.0$, $+11.0$, $+4.0$ and $+9.0$ levels on that run and $+2.5$, $+1.0$, $+0.7$, $-0.5$ and $+7.0$ after the byte-identical replicate: means $+8.0$ and $+2.1$ (73\% shrinkage). % B7
+Two of the five were withdrawn the same or the next day, and one survived its replicate. % B7
+
+

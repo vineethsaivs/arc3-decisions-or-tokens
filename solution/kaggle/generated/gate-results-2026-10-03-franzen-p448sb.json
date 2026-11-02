@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-03",
+  "plan": "docs/PLAN_2026-10-01.md",
+  "instrument": "25-game scored-run replica (7,200 s shared window)",
+  "control": "pooled p448 at 12 streams: 114 levels, mean game score 51.3",
+  "arm": {
+    "kernel": "vineethsaivs/arc3-franzen-p448sb-a",
+    "version": 1,
+    "change": "p448 (12 streams) plus the rellik13 opener port (static opener lines removed, bar lines deleted)"
+  },
+  "result": {
+    "levels": 105,
+    "mean_game_score": 47.39,
+    "harness_tok_s": 706.2,
+    "cache_hit_pct": 93.7
+  },
+  "verdict": "FAIL: 105 levels and game score 47.4 against the 12-stream pooled 114 and 51.3. Not carried forward.",
+  "promote": false
+}

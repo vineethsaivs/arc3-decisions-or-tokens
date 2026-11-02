@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-27",
+  "declared_before_results": true,
+  "candidate": "l1a1y8sv2r3lf (wave W) / l1a1y8sv2r3hoblf (held-out W) / l1a1y8sv2r3kp12lf (probe, would become the pin)",
+  "change": "the pin plus two overlays: levelfirst (at a trim, earlier levels drain to a 12K tail before the usual drain; never drops a message the base trimmer keeps) and imports (time with a no-op sleep, inspect, traceback, types, hashlib, pprint, timeit, dataclasses, typing, enum importable; __build_class__, object, setattr, delattr, id, super, property, staticmethod, classmethod, vars, ImportError, ModuleNotFoundError, BaseException, TimeoutError, MemoryError added to the sandbox builtins, so `class X:` no longer raises)",
+  "plan": "docs/research/2026-10-27-harness/PLAN.md",
+  "offline": "solution/sim/test_franzen_levelfirst.py and test_franzen_sandbox.py (all overlay orders) must pass",
+  "wave": "8 W (l1a1y8sv2r3lf) + 4 concurrent A (l1a1y8sv2r3rq) on the public 25, 2 W (l1a1y8sv2r3hoblf) + 1 A (l1a1y8sv2r3hob) on the held-out 25; ~/.cache/arc3-hunt/hunt_lf.sh; about $86",
+  "control_reference": "36 pin-family replica runs on the public 25 (rq1020, ra1-rq, ra2h-a2..5, wsrh-a1..5, yw-y8, we1h-a, we3h-a): new prefill 10.36M (sd 0.44), generated 6.399M (sd 0.068), levels 123.8 (sd 5.3) per run",
+  "gate": {
+    "m1_prefill": "W mean new prefill tokens per run (serve.log Prefill batch #new-token) at most 9.70M (expected about 9.2M: trim re-prefill -19% of its 59% share)",
+    "m2_tokens": "W mean generated tokens per run (benchmark.json solver_note) at least 6.40M (expected about 6.5M)",
+    "m3_errors": "in W transcripts, no 'is not allowed in the sandbox' for the ten added modules and no '__build_class__ not found'; if transcripts cannot be read, the offline test stands",
+    "no_harm": "W mean levels at least 121.3 (pooled A mean of the 36 + 4 concurrent, minus 2.5) and, without W's best game, at least A minus 3; held-out reported only",
+    "power": "8 W: se of the W mean 1.9 levels; a true tie passes no-harm about 91% of the time, a true -5 about 16%"
+  },
+  "decision": "ship (Kaggle probe of l1a1y8sv2r3kp12lf, then promote_franzen_arm.py --pin) on m1, m2, no_harm and a clean probe; kill on any miss. A tie with the verified mechanism ships (CLAUDE.md, How we measure). No level gain is claimed: the expected effect (+2 to +3% decode time, about +0.5 to +1 board point) is below what 8 runs resolve.",
+  "rollback": "re-pin l1a1y8sv2r3kp12 if the first live draw is 0.00 or a day errors twice"
+}

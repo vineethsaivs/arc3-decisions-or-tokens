@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "declared_at": "2026-10-12T11:50Z, before the push and before any run of the arm",
+  "arm": "l1a1y8sv2r3s4 (vineethsaivs/arc3-franzen-l1a1y8sv2r3s4-a): the pin's replica l1a1y8sv2r3 with SPEC_STEPS 4 instead of 3 (5 verify tokens = compress_ratio + 1, inside the qsaring guard; test_franzen_qsaring.py replays windows up to ratio + 1 clean). One line differs from l1a1y8sv2r3",
+  "why": "research plan 2026-10-11 section 6 reopened spec steps 4 once D3 was in the pin and the freeze audit's first replicate had run; both hold. Predicted +2 to 3% decode throughput (serving.md 2.4): the 4th position adds about 0.35 to 0.40 accepted tokens per step for about +10% step time. Lossless by construction; the only risk is memory (0.13 to 0.18 GiB of headroom, against the +0.47 GiB MEMFRAC 0.955 bought)",
+  "instrument": "25-game Kaggle replica, one run; Decode batch lines of serve.log by running count (gen throughput and accept length), servelog.py, accept_by_context.py, franzen_readout.py, the health script",
+  "control": "l1a1y8sv2r3 v1 and l1a1y8sv2r2 v1 (same stack, SPEC_STEPS 3): gen throughput at 14 running 975.3 and 973.3 tok/s (pooled 974.3; the two differ by 0.2%), at 13 running 944.7 and 940.7; accept at 14 running 2.814 and 2.812; clean step at 14 running 36.6 and 36.5 ms; harness 885.5 and 890.0 tok/s; 129 and 122 levels",
+  "mechanism_required": {
+    "install": "serve.log server args show speculative_num_steps=4 and speculative_num_draft_tokens=5; every install line of the pin (watchdog, d3draft 29 tensors, memcap, toolfast, promptobs-lite, mem_fraction_static 0.955, '#OURS_FORM ok version=d_prime')",
+    "accept": "accept length at 14 running at least 3.00 (the 4th token is used)",
+    "throughput": "gen throughput at 14 running at least 984 tok/s (+1.0% on the pooled control); at 13 running at least 942.7 (not below the control mean)",
+    "health": "0 OutOfMemoryError, 0 'expandable_segments' failures, at most 2 'KV cache pool is full', no 'free device mem' reading under 0.30 GiB, 0 watchdog relaunches, 0 tracebacks in kernel.log, 0 give-ups, failclosed summary printed; cache hit at least 93.5%",
+    "levels": "at least 105 (the reject floor for clear losers)"
+  },
+  "report_only": "clean step ms by running; harness tok/s; accept by context band; prefill ms per 1K new tokens",
+  "pass": "build and probe l1a1y8sv2r3s4p (install lines, SPEC 4 args, accept on probe contexts above the pin's 2.707 probe reading, 0 tracebacks), then promote it with promote_franzen_arm.py",
+  "fail": "the pin stands; record the measured step and accept numbers so the 4th position's value is known for any later drafter refit"
+}

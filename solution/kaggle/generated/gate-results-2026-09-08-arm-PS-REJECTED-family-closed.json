@@ -1,0 +1,59 @@
+{
+ "schema_version": 1,
+ "created_at": "2026-09-08T23:00:00+00:00",
+ "arm": "PS (phantom strip)",
+ "adjudicated_against": "solution/kaggle/generated/gate-predeclared-2026-09-08-arm-PS-phantom-strip.json, written before the arm was pushed, which predicted a TIE and named the condition that would kill the whole family",
+ "verdict": "REJECT, and the CONTEXT-BUDGET FAMILY IS CLOSED.",
+
+ "RESULT_pass_matched": {
+  "PS": {"levels": 25, "zeros": 7, "mean25": 4.284, "ex_ft09": 3.272},
+  "control pass 0": {"levels": 33, "zeros": 4, "mean25": 5.082, "ex_ft09": 4.103},
+  "control q38-undo-v1 (its direct parent)": {"levels": 35, "zeros": 3, "mean25": 5.858, "ex_ft09": 5.507},
+  "paired": "2 up / 9 down / 14 tied, up - dn = -7, levels -8"
+ },
+
+ "WHICH_PREDECLARED_REJECT_FIRED": {
+  "compound_reject": "NOT met. It required <= 29 levels AND paired |up-dn| >= 11. Levels are 25 which qualifies, but |up-dn| is 7, which does not.",
+  "independent_reject": "MET. The gate reads verbatim: 'Independent reject: ex-ft09 mean < 4.55 regardless of ft09, which is the FF-rejected arm's level.' PS returned ex-ft09 3.272.",
+  "so": "REJECT on the independent condition, exactly as written, with no reinterpretation."
+ },
+
+ "THE_MECHANISM_FIRED_HARD_AND_THAT_IS_THE_POINT": {
+  "phantom_reasoning_stripped": 1045,
+  "predicted_range": "600 to 900, so it fired MORE than expected",
+  "phantom_reasoning_chars": 10269901,
+  "reading": "10.3 million characters of text the model never saw were removed from the trimmer's accounting. The counter is exactly ZERO in the control because the method does not exist there. This is not an integration failure. The arm did precisely what it was designed to do."
+ },
+
+ "PREDECLARED_EVICTION_READOUTS_all_moved_as_predicted": {
+  "trimmer_fire_rate": {"control": "24.7% of turn transitions", "predicted": "<= 18%", "actual": "13.9%", "met": true},
+  "median_peak_retained": {"control": 33, "predicted": ">= 40", "actual": 47, "met": true},
+  "median_floor_after_eviction": {"control": 5, "predicted": ">= 8", "actual": 5, "met": false,
+    "note": "expected in hindsight: the low-water fraction is still 0.7 of the budget, so the floor is unchanged by construction. My prediction was wrong about this one readout and the error was mine, not the arm's."},
+  "messages_destroyed_per_run": {"control": 2837, "actual": 1742}
+ },
+
+ "THE_FAMILY_KILL_CONDITION_MET_VERBATIM": {
+  "what_the_gate_said": "'What kills the whole family, not just the arm: counters fire, the eviction rate falls to <= 15%, retained turns rise ~40%, and levels come back <= 29. That falsifies the budget is spent on phantoms and that is why we die, and it retires COMPACTION with it, because if handing the model 40% more real history costs levels, summarising the deleted part cannot help either. Record that verdict and stop spending GPU on the trimmer.'",
+  "counters_fired": "YES, 1,045 strips",
+  "eviction_rate": "13.9%, which is <= 15%",
+  "retained_turns_rose": "peak 33 -> 47 messages, +42%, against a predicted ~40%",
+  "levels": "25, which is <= 29",
+  "conclusion": "ALL FOUR CONDITIONS MET. COMPACTION IS RETIRED WITHOUT BEING BUILT, and the trimmer / context-budget family is CLOSED. Do not spend another GPU-hour on what the trimmer keeps or how it decides."
+ },
+
+ "THE_UNIFIED_FINDING_THIS_PRODUCES_and_it_reconciles_a_tension": {
+  "the_apparent_contradiction": "Raising the analyzer BUDGET has won twice (31,744 -> 48,128 gave 23 -> 33 levels on the 27B; 32,768 -> 48,128 gave 33 -> 44 on Flash-Next tonight). Yet PS effectively raised RETAINED HISTORY at a fixed budget and LOST 8 levels. Those look opposite.",
+  "the_resolution": "They are not opposite once the dose-response is read properly. On the 27B the measured doses are 23 / 33 / 30 levels at 31,744 / 48,128 / 64,512. 48,128 is a PEAK, not a floor. PS pushed effective retained history from 33 to 47 messages, i.e. PAST the peak, and landed where 64,512 already sat. GG2 raised Flash-Next from BELOW the peak up TO it.",
+  "the_statement": "THERE IS AN OPTIMUM AMOUNT OF RETAINED HISTORY AND WE ARE ALREADY AT IT. More history is actively harmful. The context wins were about reaching the optimum, not about having more.",
+  "why_this_is_worth_more_than_the_arm": "It closes a family that has consumed several arms (ctxwin doses, imgtok, hysteresis, and now PS), it retires compaction before it cost anything, and it predicts that arm GG3's value must come from THROUGHPUT (admission 5 -> 8), not from any further context increase. GG3 should NOT be followed by a context raise beyond 48,128."
+ },
+
+ "what_I_got_right_and_wrong": {
+  "right": "The gate predicted a TIE and named the family-kill condition in advance, so this outcome is informative rather than merely disappointing. The defect itself is still real: 47% of a retained turn's estimated cost was text the model never read, measured over 1,305 turns, and that measurement stands.",
+  "wrong": "I predicted the floor-after-eviction readout would rise to >= 8. It stayed at 5, and it was always going to, because the low-water fraction is 0.7 of the budget regardless of what the budget is spent on. That was a thinking error in the gate, recorded rather than quietly dropped.",
+  "and_the_deeper_lesson": "Fixing a provable defect is not the same as improving the score. The phantom accounting WAS broken. Repairing it made the agent worse, because the resource it freed was one we did not want more of."
+ },
+
+ "action_taken": "PS is NOT promoted and NOT added to any rotation. The overlay and its 8 offline checks stay in the repo as a documented negative result. Compaction is retired unbuilt."
+}

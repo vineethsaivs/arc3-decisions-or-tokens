@@ -1,0 +1,48 @@
+\section{The token-budget curve: a simulator puts the agent near its ceiling}\label{sec:curve}
+
+\paragraph{The curve.}
+We simulate the score the scheduler earns on a budget of $B$ tokens by resampling 1,114 level attempts recorded in eight development runs, seven at the 8,192 yield and one without a token yield. % C1
+Score rises in proportion to budget, bends, and flattens at a \emph{ceiling}: the expected score with unlimited tokens when each level is redrawn from its recorded attempts (Figure~\ref{fig:budget}), the shape of the plateau in \citet{pourcel2025soar}. % C1 N3-11
+Levels that no recorded attempt cleared never clear, so the ceiling is an upper bound at the depths we recorded, and no run had more than this budget. % C2
+
+\paragraph{The operating point.}
+At its own budget a development run earns about 90\% of its ceiling. % C2 N2
+The share is partly built in, because the attempts were recorded at that budget: against the eight runs that built the curve it reads 94\%, and it falls as more runs are pooled and the ceiling rises (Appendix~\ref{app:curve-checks}). % C2 N2 C9
+
+\paragraph{The price of throughput.}
+The elasticity, the percent change in levels per percent change in tokens, is 0.31 at the operating point, and 0.18 to 0.49 across subsets of four runs. % C3
+Our serving changes together added 11\% tokens per second, which the curve prices at about 4 levels. % C4 F1
+
+\paragraph{What it takes to see that price.}
+Seeing it takes about 61 runs per arm at the pairs' SD, or 32 runs made on one day, both two-sided (Table~\ref{tab:detect}); our gates ran two. % C4 V3-X13 V3-W12
+So the serving gains are unresolved, not zero.
+
+\paragraph{A second reading, from the clock.}
+The clock gives the slope without a simulator. % V3-W13
+In the last tenth of the window, 34 development runs still cleared 4.4\% of their levels and earned 7.4\% of their points. % V3-W13
+If that late rate held on a stretched clock, the elasticity would be 0.44 on levels and 0.73 on score. % V3-W13
+
+\paragraph{Where the two readings part.}
+On levels they roughly agree: the clock's slope sits inside the curve's range across subsets and next to the fit to past serving steps (Appendix~\ref{app:curve-checks}). % V3-W14 C3 N1.3
+On score they do not: the curve's marginal levels weigh less than its average level, while the levels real runs clear late are deep ones that weigh more. % V3-W14 V3-W13
+Read on score, the clock prices our 11\% speed-up at about 5 of 59 points, about three times the curve's price and still below what two runs can see. % V3-W14 C7
+Why the curve's marginal levels are shallower we have not tested; until we know, it ranks levers by levels and underprices throughput in score. % V3-W14
+
+\begin{figure}[t]
+\centering
+\figfile{fig_budget}{2.7in}
+\caption{A simulator puts the agent near its token ceiling. Simulated score against token budget relative to today's serving speed, for 110 games in the hidden run's window, from attempts recorded in eight development runs; bands: middle 50\%, 80\% and 95\% of 200 resamples of the runs. Dot: the operating point, about 90\% of the ceiling extrapolated to more runs (94\% of these runs' plateau); arrow: 11\% more tokens; dashed: these runs' plateau; hatched: the ceiling with more runs pooled; bar: the SD of one run. Higher is better. The simulator assumes that levels no attempt cleared stay stuck; no run had more than this budget.}\label{fig:budget} % C1 C2 C3 C4
+\end{figure}
+
+\paragraph{Why throughput may not be the lever.}
+At the deadline the simulator spends 62\% of tokens on levels it clears, 31\% on levels that no attempt cleared and 7\% on clearable levels left unfinished. % C6
+For the nine yield runs, 57\% of the points lost to unreached levels sit on levels that no run in the yield comparison cleared; for its controls the share is 48\%. % N3-12
+Whether more tokens or different decisions would clear those levels is open: the curve assumes they stay stuck, and no run had more than this budget.
+
+\paragraph{How far to trust it.}
+We built the curve after the changes it prices, so we use it to order levers and not to forecast a score: leaving one run out, it is close at matched tokens but 4.9 levels low end to end, about as large as the price it gives. % C5
+A token-only cut to 70\% of the budget would test it; the curve predicts a loss of about 20 levels. % N1-s9 V3-W15
+Read at the same point of their window, the runs of the clock reading had cleared 20 fewer, though they lost about twice the curve's share of score, and a truncated run is not a run given fewer tokens, which we have not made. % V3-W15
+
+\paragraph{Past serving steps.}
+Twelve earlier serving steps fitted together give an elasticity of 0.45, and one of them, expert pruning, bought 19.5 levels against 3.3 predicted from its extra tokens, so a throughput change can be worth more than the curve says (Table~\ref{tab:steps}). % N1.3 N1.4 F1

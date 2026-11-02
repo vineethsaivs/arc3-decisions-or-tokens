@@ -1,0 +1,20 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-11",
+ "gate": "gate-predeclared-2026-10-11-franzen-l1a1y0sv2.json (declared 17:57Z, before the run)",
+ "control": "l1a1y8sv2 v1: 119 levels, 799.7 tok/s, openers 1,317 (4.72 actions each), 46 replies without a call, 83 history drains",
+ "arm": {
+  "kernel": "vineethsaivs/arc3-franzen-l1a1y0sv2-a",
+  "version": 1,
+  "change": "l1a1y8sv2 with LOCAL_ANALYZER_YIELD_TOKENS 0 (no token yield)"
+ },
+ "evidence": {
+  "bench": "115 levels, mean game score 53.04; 734.6 tok/s harness (-8.1%), decode 875.8 mean, accept 2.70, cache hit 95.3%, KV max 0.90; openers 1,391 including 42 'You have not acted yet' nudges, 4.14 actions per opener; 41 replies without a call; 0 turn_token_budget yields; 241 history drains (control 83)",
+  "server_death": "SGLang scheduler CUDA OOM at 20:02:32Z, 6,893 s into the 7,200 s window: an uncached 8,192-token prefill chunk (pending 182K tokens) with 8 requests decoding, free device memory 0.55 GiB, in the PLE short-conv path (qwen4_exp.py:1125). 14 games then gave up on 'connection refused' in the last ~5 minutes",
+  "mechanism": "without the yield, the resume opener's push to act is gone (yield-turns.md: after a resume, 35% act on the next request vs 30% after a tool result), turns run longer, the context fills and drains (241 vs 83), and every output-cap cut now gets the 'Investigate first' nudge"
+ },
+ "verdict": "REJECT. Mechanism items fail: openers 1,391 (cap 1,250), actions per opener 4.14 (floor 4.8), tok/s 91.9% of the control (floor 97%). Levels 115 clear the floor but the predeclared promote rule needs the mechanism.",
+ "what_this_does_not_claim": "The 5 minutes lost to the OOM cost a few levels at most; the reject rests on the turn mechanism, not on levels.",
+ "promote": false,
+ "correction_2026_10_12": "The opener count included OOM artifacts (adversarial verifier, docs/research/2026-10-11-improve, rare-yield-y16-nudgefix): 1,391 openers = 1,191 executed turns + 159 request-error retries after the 20:02:32Z OOM + 41 nudges. Without the retries: 1,232 openers (passes the 1,250 cap), 4.68 actions per opener (still under the 4.8 floor), alive tok/s 768.7 (96% of the control, still under 97%); tokens per action flat (920 vs 907 to 931); decisions did not run longer (53 at 16K+, 8 at 32K+ vs 52 to 67 and 12 to 16 in the y8 family); trims 86 vs 95 to 104. Verdict unchanged: REJECT, narrowly, on two items; y0 is a tie with y8 on mechanism, not a loss, and the 'yield re-grounds' explanation in this record is not established."
+}

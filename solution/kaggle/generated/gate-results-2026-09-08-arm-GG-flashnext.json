@@ -1,0 +1,49 @@
+{
+ "schema_version": 1,
+ "created_at": "2026-09-08T17:30:00+00:00",
+ "arm": "GG (Qwen3.8-Flash-Next-NVFP4 on OUR q38 agent tree)",
+ "subject": "Arm GG produced a number for the first time. It had been blocked since 2026-09-02 by a misdiagnosed Kaggle failure.",
+ "how_it_was_unblocked": "The failure was NOT the pip --quiet/DEVNULL visibility bug docs/PLAN_2026-09-08.md named (the pip error was in the log all along: the competition wheelhouse path did not exist), and NOT a bad notebook as CLAUDE.md rule 15(b2) claimed. It was a STALE KERNEL SLUG: competition sources attach stickily and are never refreshed on re-push. Proved with two fresh zero-GPU CPU probes (arc3-mount-probe-alpha/beta) carrying the failing candidate's exact attachment set including the 135 GB model, both of which mounted the wheelhouse with all 31 wheels. Re-pushed as arc3-gg-flashnext-fresh-slug-a and it ran.",
+
+ "MECHANISM_GATE": {
+  "note": "checked FIRST, per generated/gate-predeclared-2026-09-02-arm-GG-flashnext.json",
+  "1_model_loaded": "PASS. 'Model loading took 81.8 GiB memory and 166.2 seconds' (gate band 78-86 GiB), served-model-name Qwen/Qwen3.8-Flash-Next-NVFP4, ModelOpt NVFP4 checkpoint detected, 206 safetensors shards.",
+  "2_ple_offload_live": "PASS. PleOffloadWorker process running, 'Loading safetensors checkpoint shards(PLE-offload)', 'PLE offload matched 132 checkpoint tensor(s), loaded 5 offload entries, verified 2/2 materialized parameter(s)'.",
+  "3_kv_pool": "NOT VERIFIED. vLLM did not print 'GPU KV cache size' in this log. --kv-cache-memory-bytes 5368709120 was passed and the engine initialised in 109 s. Recorded as unverified rather than passed.",
+  "4_no_restart": "PASS. 0 watchdog restarts.",
+  "5_the_agent_played": "PASS on actions: 2,622 environment actions (gate wants >= 2,000). Decisions are not separately countable from this log under TAAF_MINIMAL_DIAGNOSTICS.",
+  "6_tool_calls_parse": "PASS. 0 'Unknown action' rejections (gate wants <= 6).",
+  "7_no_traceback_in_our_three_files": "PASS. 0.",
+  "verdict": "6 of 7 confirmed, 1 unverified for want of a log line. This is a CLEAN INSTRUMENT and a real measurement."
+ },
+
+ "RESULT_pass_matched": {
+  "arm GG":          {"levels": 33, "zeros": 3, "mean25": 6.115, "ex_ft09": 4.385,
+                      "actions": 2622, "tokens": 1898560, "tok_per_action": 724, "actions_per_game": 104.9},
+  "control pass 0":  {"levels": 33, "zeros": 4, "mean25": 5.082, "ex_ft09": 4.103},
+  "paired": "6 up / 6 down / 13 tied, up - dn = 0, levels +0",
+  "reading": "An EXACT TIE on levels, one FEWER zero-level game, and higher on both scorer means (mean25 +20.3%, ex-ft09 +6.9%)."
+ },
+
+ "PREDECLARED_VERDICT": {
+  "band": "30 to 45 = TIE band",
+  "rule": "PROMOTE into a 1:1 rotation only if games gained >= 2 x games lost. It is 6 and 6.",
+  "status": "HOLD. Not promoted. The predeclared gate is honoured as written."
+ },
+
+ "WHY_THE_TIE_IS_A_POSITIVE_READ_AND_WHAT_TO_DO_NEXT": {
+  "the confound, predeclared before the run": "Flash-Next runs at analyzer context 32,768 because the KV pool is only 5 GiB. On the 27B the context dose-response is 23 / 33 / 30 levels at 31,744 / 48,128 / 64,512, so 32,768 is the 23-LEVEL condition. The predeclared gate says verbatim: 'the context step is worth about -5 to -10 levels on the 27B, so a GG tie would already imply the model is worth about +5 to +10.'",
+  "so": "GG tied at 33 while carrying roughly a -10-level handicap, and it did so with FEWER actions (2,622 vs 3,347 for q38-undo) and the LOWEST tokens per action of any config we have run (724 against a family range of 876 to 2,827).",
+  "why the context is pinned": "serving_setup.py hard-codes ANALYZER_CONTEXT = 32_768 (line 129), which drives BOTH --max-model-len (line 2322) and LOCAL_ANALYZER_CONTEXT_WINDOW (line 2935). It is not env-overridable, and the file self-verifies its sha256 against SOURCE_IDENTITY.json (line 603). GPU_MEMORY_UTILIZATION is pinned at 0.92, and the model alone takes 81.8 GiB, leaving about 6.1 GiB for KV under that cap against the 5 GiB actually requested.",
+  "the next arm, GG2, and its arithmetic": "Raise ANALYZER_CONTEXT toward our proven 48,128 while keeping the serving regime no worse than the run that just succeeded. Today: pool ~105,202 tokens, max_num_seqs 8, so worst-case admitted 262,144 = 2.49x oversubscribed. Options that stay at or below 2.49x: (a) KV 5 -> 6 GiB via TAAF_VLLM_KV_CACHE_MEMORY_BYTES (fits under the existing 0.92 cap, no OOM risk) with context 38,912; (b) keep 5 GiB and set TAAF_VLLM_MAX_NUM_SEQS=6 with context 48,128, giving 2.29x, BETTER than today. Only ANALYZER_CONTEXT needs a serving_setup.py edit plus a SOURCE_IDENTITY.json rehash; max_num_seqs and KV bytes are already env-overridable from the notebook.",
+  "state this as a confound, not a win": "GG changes the model, the serving stack, the context window, the temperature (0.9 -> 0.6), MULTIMODAL_UPSCALE (8 -> 4), prefix caching, KV dtype and MTP all at once. The manifest lists all six. A tie under that many simultaneous reversions is encouraging and is not attribution."
+ },
+
+ "cost": "about 4.7 GPU-hours including the two dead pushes on the stale slug. Quota after: 11.69 of 30 h used.",
+ "artifacts": {
+  "kernel": "vineethsaivs/arc3-gg-flashnext-fresh-slug-a v1",
+  "candidate": "solution/kaggle/generated/candidates-q38-flashnext-b",
+  "predeclared_gate": "solution/kaggle/generated/gate-predeclared-2026-09-02-arm-GG-flashnext.json",
+  "slug_diagnosis": "solution/kaggle/generated/kaggle-stale-slug-competition-source-2026-08-29.json"
+ }
+}

@@ -1,0 +1,33 @@
+\section{Setting and system}\label{sec:setting}
+
+\paragraph{The agent.}
+Our entry is Daniel Franzen's Milestone~2 notebook \citep{franzen2026milestone2,franzen2026writeup} with changes of ours (Appendix~\ref{app:components}). % A4
+The model is Qwen3.8-Flash-Next \citep{qwen38flashnext}, a mixture-of-experts model with about 6B active parameters, in Intel's 4-bit weights \citep{intel2026w4a16}, served offline by the Pennyroyal build of SGLang \citep{pezzulli2026pennyroyal,zheng2023sglang} with a multi-token-prediction drafter \citep{albucino2026drafter}. % H5
+The harness is Tufa Labs' Duck \citep{bessis2026duck} as patched by Franzen: the model reasons, runs Python in a sandbox through one tool, and acts by calling \texttt{action()}; each new board arrives as an enlarged image that marks the cells that changed, and the reasoning stays in a history of up to 128K tokens (Figure~\ref{fig:loop}). % H5 V3-W4
+
+\paragraph{A turn and its yield.}
+A \emph{turn} starts when a new board arrives and ends when the model acts; inside it the model may call its tool many times, each call a server request that continues the same context.
+The harness also ends a request once the model has generated a set number of tokens without acting, the \emph{yield}, and resumes the same turn with a new request that sends the turn's opening message (the \emph{opener}) and the current board image again.
+Franzen's notebook yields after 2,048 tokens and ours after 8,192 (Sec.~\ref{sec:yield}). % D14
+
+\paragraph{Score.}
+A game has $n$ levels and level $l$ has weight $l$. An agent that clears $k$ levels scores
+\begin{equation}\label{eq:score}
+G = 100\,\frac{W(k)}{W(n)}\,\min(1,\bar e),\qquad \bar e = \frac{1}{W(k)}\sum_{l\le k} l\,s_l,
+\end{equation}
+where $W(m)=m(m+1)/2$ and $s_l=\min\!\big(1.15,(h_l/a_l)^{2}\big)$ compares the agent's actions $a_l$ on level $l$ with the human baseline $h_l$. % A1
+The first factor is the completion share, with unreached levels counted as zero; the second is efficiency.
+Equation~\eqref{eq:score} restates the published scorer and matches its code on every recorded play we checked. % A1
+Every action sent to the game counts and thinking is free, so completion carries the score: nearly all the points a run loses are levels never reached, not levels cleared slowly. % A2
+
+\paragraph{Development runs.}
+We develop on the demonstration set: its 25 games, played by 14 concurrent streams in a shared window of 7,200~s, which gives each game about the token budget it gets in the scored run. % A3
+We call one such run a \emph{development run}; the 25 games hold 183 levels. % A3 V3-W3
+The organisers warn that demonstration-set scores do not measure progress \citep{arcprize2026arcagi3}, so we use these runs for noise and price, and the leaderboard is our only held-out number.
+
+\paragraph{Inherited, borrowed, ours.}
+Most of the system is inherited: the model, its weights and drafter, the serving build, the harness, Franzen's patch and his schedule for the scored run. % A4
+Several of our changes borrow other people's ideas, credited in Sec.~\ref{sec:related} and Appendix~\ref{app:components}.
+Three decisions matter more than the rest, and Figure~\ref{fig:loop} marks where they act: the yield after 8,192 tokens; expert pruning, which drops an eighth of the experts in each layer so that 14 games run at once; and fail-closed checks. % D14 F2 H5
+The checks make two kinds of dead scored run, a server that exits before it is ready or a run under 20 levels at the end, raise an error, which Kaggle does not count against the daily slot. % B10
+Neither has fired on a scored run, they cannot catch a run killed from outside, and a 0.00 of unknown cause still banked on 2026-10-18 (Sec.~\ref{sec:board}). % B10 V3-B7

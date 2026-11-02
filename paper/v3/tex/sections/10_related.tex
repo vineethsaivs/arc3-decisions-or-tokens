@@ -1,0 +1,36 @@
+\section{Related work and credit}\label{sec:related}
+
+\paragraph{Noise in evaluation.}
+Single runs are weak evidence in reinforcement learning \citep{henderson2017matters} and for agents \citep{bjarnason2026randomness,kapoor2024agentsmatter,anthropic2026infranoise}.
+Remedies include intervals \citep{agarwal2021precipice}, power analysis \citep{colas2018seeds,miller2024errorbars}, protocols judged by their error rates \citep{bouthillier2021variance} and the expected maximum of several runs \citep{dodge2019showyourwork}.
+On this benchmark, forum posts attribute most of the variance of repeated runs to whether single levels clear \citep{borro19802026forum732932} and find that identical builds differ widely \citep{makarov2026forum743723}. % N3-9
+We add the size of that noise on this score, and concurrent replication on rented copies of the scoring GPU; we also tried a paired test of single decisions, used once and not validated.
+
+\paragraph{Budgets and context.}
+Score that flattens with compute is the picture of \citet{pourcel2025soar}; budget forcing ends reasoning at a budget \citep{muennighoff2025s1}, while a yield resumes the turn.
+Ending a request at a tool call forces recomputation \citep{abhyankar2024infercept}, and keeping reasoning across tool turns is a known harness rule and lever \citep{deepseek2025v32,kamradt2026astra}; we found no earlier measurement of a client-side yield threshold.
+
+\paragraph{Self-training and reinforcement learning.}
+Training on a model's own successes is the idea of STaR, ReST and rejection-sampling fine-tuning \citep{zelikman2022star,gulcehre2023rest,yuan2023rft}, and RL recipes already drop prompts that a policy always solves, as in DAPO's dynamic sampling \citep{yu2025dapo}.
+Ours is the supervised case of the same problem: a success filter removes too little when the agent already succeeds, and what it keeps carries the agent's slow habits.
+Round A follows GRPO \citep{shao2024deepseekmath}, with its ratio band from the public RL code agent-factory-3 (near DAPO's asymmetric clip \citep{yu2025dapo}), its KL weight from GiGPO \citep{feng2025gigpo} and the $k_3$ estimator \citep{schulman2020klapprox}. % V3-G3
+Serving outputs are known to depend on batch composition \citep{he2025nondeterminism,yuan2025numerical}; we measure what that does to a training-side drift guard.
+
+
+\paragraph{ARC-AGI-3.}
+Tycho and Twin use hosted models on the demonstration set \citep{lehmann2026tycho,skoutnev2026twin}, and the benchmark report warns that such scores do not measure progress \citep{arcprize2026arcagi3}.
+The open-weight work we found is mostly write-ups \citep{bessis2026duck,franzen2026writeup}.
+Public harnesses converge on an executable world model checked against the log of play \citep{skoutnev2026twin,lehmann2026tycho,wu2026kepler,gowtham2026arcskill,rodionov2026ablation}, the pattern of WorldCoder and PoE-World \citep{tang2024worldcoder,piriyakulkij2025poeworld}; they differ in whether the harness enforces the check or the prompt asks for it, and only Twin blocks an action until its program replays every observed transition. % V3-W33
+Twin's ablation removes its whole harness at once, and Rodionov's verification variant ranks first in every setting but bundles verification with other changes, so neither isolates the replay; graph exploration reaches deep states at near-zero action efficiency \citep{rudakov2025graph}, and truncating history costs little when facts can be looked up again \citep{lencevicius2026persistgym}. % V3-W33
+Our replay check is the optional, prompted form of that rule on an open-weight model: it fired, and three runs cannot say whether it helps (Sec.~\ref{sec:harness}, Appendix~\ref{app:research}). % V3-W29 V3-W33
+The two leading teams have published no method; their public repositories and their results on ARC-AGI-2 are consistent with post-training at a scale we cannot match. % V3-R1 V3-R2
+
+\paragraph{What is new here.}
+As far as we found, three things: a token-budget price for an ARC-AGI-3 agent, a measurement of a client-side yield threshold with an interleaved test on which its apparent gain did not reproduce, and a KL drift guard read net of a nondeterministic training forward pass; a paired test of single decisions is a fourth, but it was used once and is not validated.
+
+\paragraph{Credit.}
+Inherited, with the component table of Appendix~\ref{app:components} giving each part's origin: Qwen's model \citep{qwen38flashnext}, Intel's weights \citep{intel2026w4a16}, albucino's drafter \citep{albucino2026drafter}, J.~Pezzulli's Pennyroyal build \citep{pezzulli2026pennyroyal}, Tufa Labs' Duck harness and RE-ARC-3 \citep{bessis2026duck,tufalabs2026rearc3}, and Daniel Franzen's patch, notebook and schedule \citep{franzen2026milestone2,franzen2026writeup}. % H5
+Borrowed: shiiin9's priority formula \citep{shiiin92026dprime}, ursuciprian's drafter refit \citep{ursuciprian2026d3}, lovedheart's index-key fix \citep{lovedheart2026qsa}, ideas from Son Pham's team, face-of-agi, lee-chang-93 and Lord Han Solo, Jeroen Cottaar's idle-rule fix \citep{cottaar2026forum750173}, and Tufa Labs' step-verification addendum, which Franzen's settings leave off and our stall-check change turns on \citep{bessis2026duck}. % H2 H3 H4 D14 V3-R4 V3-W20
+Ours: the build, the measurements, the guards and the fine-tuning experiments. % A4
+Our code will be released under CC-BY 4.0, the licence Kaggle's rules apply to a winning submission; arcprize.org separately asks for CC0 or MIT-0, and the release will state which applies. Nothing is public yet. Third-party files keep their licences; the model is under the Qwen Community License, and we make no claim about its prize eligibility. % H7 H9 V3-W40
+Appendix~\ref{app:licences} gives the licences, the release status and how AI coding agents were used.

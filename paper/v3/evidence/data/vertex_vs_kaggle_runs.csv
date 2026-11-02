@@ -1,0 +1,19 @@
+run,platform,identical_bytes_group,levels_25,levels_bench17,levels_bench9_nonsat,mean_score,harness_tok_s,accept_8plus,cache_hit_pct,ready_s
+franzen-l1a1y8-v1,kaggle,"y8 family, other config",128,100,45,,,,,
+franzen-l1a1y8r-v1,kaggle,"y8 family, other config",124,96,42,,,,,
+franzen-l1a1y8sv2-v1,kaggle,"y8 family, other config",119,91,36,,,,,
+franzen-l1a1y8sv2o16-v1,kaggle,"y8 family, other config",120,92,37,,,,,
+franzen-l1a1y8sv2r1-v1,kaggle,"y8 family, other config",128,95,40,,,,,
+franzen-l1a1y8sv2r2-v1,kaggle,"y8 family, other config",122,95,40,,,,,
+franzen-l1a1y8sv2r3-v1,kaggle,r3,129,95,40,,,,,
+franzen-l1a1y8sv2r3hm32-v1,kaggle,"y8 family, other config",126,97,43,,,,,
+franzen-l1a1y8sv2r3s4-v1,kaggle,"y8 family, other config",120,93,38,,,,,
+vertex-cal1,vertex,r3,126,97,42,58.44,886.9,2.808,95.08,563
+vertex-rq1020-1,vertex,rq (r3 + request log),117,93,38,54.59,868.7,2.804,95.07,589
+vertex-rq1020-2,vertex,rq (r3 + request log),125,98,43,57.84,885.1,2.807,94.8,574
+vertex-rq1020-3,vertex,rq (r3 + request log),124,95,42,55.73,869.9,2.808,94.96,511
+vertex-rq1020-4,vertex,rq (r3 + request log),132,96,41,62.08,871.0,2.818,95.03,557
+vertex-rq1020-5,vertex,rq (r3 + request log),130,94,40,,,,,
+vertex-rq1020-6,vertex,rq (r3 + request log),128,94,40,,,,,
+vertex-rq1020-7,vertex,rq (r3 + request log),126,94,43,57.14,886.8,2.818,95.32,497
+vertex-rq1020-8,vertex,rq (r3 + request log),115,90,35,51.52,880.0,2.816,94.72,610

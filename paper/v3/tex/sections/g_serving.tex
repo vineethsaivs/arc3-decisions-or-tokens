@@ -1,0 +1,235 @@
+\section{Serving detail: draft steps, vocabulary, the index-key fix and the time ledger}\label{app:serving}
+
+Everything here is serving: it changes tokens per window, not which tokens the model would choose, so it is priced by the curve of Sec.~\ref{sec:curve} and gated on counters (Sec.~\ref{sec:measure}). % E1
+Our serving levers rest on speculative sampling \citep{leviathan2022speculative,chen2023speculative}, whose acceptance under sampling is capped by the target's top probability \citep{li2026bebop}. % E1
+Table~\ref{tab:levers} lists the serving levers with their counters. Development runs, temperature 0.7, 14 running requests unless stated; step times are decode-line arithmetic, not kernel timers. % E4
+
+\begin{table}[!htb]
+\caption{Serving levers on development runs at temperature 0.7 and 14 running requests (accept length at 8 or more for the refit), with 95\% intervals. The refit pair also changes the prompt format; a probe pair without it agrees. The fourth step is one run against two controls. Host-path changes are bundled, one run each. No levels are reported (Sec.~\ref{sec:measure}).}\label{tab:levers} % E5 E7 E8 E9 F6 F8 F12
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.19\linewidth}>{\raggedright\arraybackslash}p{0.18\linewidth}>{\raggedright\arraybackslash}p{0.41\linewidth}>{\raggedright\arraybackslash}p{0.12\linewidth}@{}}
+\toprule
+Lever & Counter & Result & Verdict \\
+\midrule
+Drafter refit \citep{ursuciprian2026d3,albucino2026drafter} & accept length; decode rate; step & 2.699 to 2.830 (+4.8\%, +0.130 [0.108, 0.151]); +50.5 tok/s [39.7, 61.2] (+5.5\%); step +0.18 ms [$-0.04$, 0.36] & Shipped \\ % E7
+Fourth draft step & accept length; step; decode rate & +9.8\%; +4.93 ms [4.76, 5.12] (+13.5\%); $-40.9$ tok/s [$-49.1$, $-32.3$] ($-4.2$\%) & Not shipped \\ % E5
+Image hashing, toolfast & prefill-side GPU time (log lines); host gaps & 1,217 s before, 1,005 to 1,058 s in three later runs (direct timers 1,188 before, 1,082 to 1,119); 3,410 before, 344 to 563 of 100,800 stream-seconds & Shipped \\ % F6 F8 F12
+Own-traffic draft vocabulary & decode rate; step; accept length & served map misses 1.416\% of generated tokens; own 32K map: decode $+1.2\%$ at 14 running (predicted $+1.4\%$ to $+1.7\%$), step 36.6 to 36.0 ms, accept $+0.3\%$; one run against one control & Gate passed; later pinned back \\ % E8 V3-H2 V3-H4
+BF16 draft KV & accept length & no change at probe scale; 8\% of the KV pool & Not shipped \\ % E9
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Verify rule.}
+Under sampling the server accepts a drafted token with the probability the target gives it, which caps acceptance at the target's maximum probability: Bebop's Proposition~1 \citep{li2026bebop}. % E1
+The paragraph on the sampling cap below measures the cap on our traffic. % V3-T7
+We read the rule in the shipped wheel and the kernel on SGLang main; the shipped binary was not inspected. % E1
+We draft a chain, and trees lift the cap \citep{chen2024sequoia}.
+
+\paragraph{Break-even.}
+Let $A_k$ be the probability that the first $k$ drafts are accepted, $L=1+\sum_{k\le K}A_k$ the tokens per request per verify step, $\tau$ the step time and $\Delta\tau$ what one more draft adds.
+That draft pays exactly when $A_{K+1}>L\,\Delta\tau/\tau$, the marginal form of the walltime result of Leviathan et al.\ (Theorem~3.8) with a step that grows with $K$ \citep{leviathan2022speculative}.
+Cascade, Amankulov and Mamatin, TurboSpec and MagicDec give variants for expert cost and load \citep{saxena2025cascade,amankulov2026limits,liu2024turbospec,sadhukhan2024magicdec}.
+
+\paragraph{The fourth draft step.}
+At 14 running requests three drafts give $L=2.814$ and $\tau=36.6$ ms. % E6
+A fourth adds $A_4=0.275$ [0.246, 0.303] to $L$ (the probability that all four drafts are accepted) and 4.93 ms [4.76, 5.12] to $\tau$. % E5
+Break-even is $2.814\times4.93/36.6=0.379$; we had expected $A_4$ of 0.35 to 0.40 and a step about 10\% longer. % E6 E11
+Given three accepted drafts the fourth is accepted with probability 0.61, against 0.77 at positions 1 to 3. % E2 E12
+It would need 0.838, above the first position's 0.773, so no chain whose conditional acceptance does not rise with position can pay here. % E12
+The 0.275 is a difference of two runs that assumes positions 1 to 3 are unchanged, and $A_1$ to $A_3$ are counts from 5 of 25 games. % E2 E6
+Five verify rows are also the limit of the sparse-attention ring as patched \citep{lovedheart2026qsa}, so a build effect at position 4 is not excluded. % E10
+A per-position count above 0.379 would reverse the verdict.
+
+
+\paragraph{The sampling cap, measured.}
+On the kernel of the paired decision test we logged the top-20 log-probabilities of 30 full-history replies (33,364 generated positions). % V3-T7
+The mean post-temperature, top-p-cut maximum token probability is $c = 0.912$ (per reply 0.857 to 0.974). % V3-T7
+A one-hot chain drafter of three steps is then capped near $1 + c + c^2 + c^3 = 3.50$ accepted tokens per step (4.19 at four steps), against 2.830 live, and our first-position acceptance of 0.773 is 85\% of $c$. % V3-T7
+The fourth position's measured 0.275 sits far below $c^4 = 0.692$, so the four-step loss is the drafter's, not the sampler's. % V3-T7
+The cap assumes independent positions and rests on 30 replies capped at 2,048 tokens; the idea of the cap is Bebop's \citep{li2026bebop}. % V3-T7
+
+\paragraph{The own-traffic draft vocabulary.}
+The served 64K draft vocabulary misses 1.416\% of the tokens our model generates (Table~\ref{tab:vocab}). % E8
+We built a 32,768-id map from our own transcripts and gated it on one 25-game run against the shipped configuration, under bars declared before the push: decode at least $\times1.008$ at 14 running requests, step at most 36.45 ms, accept length at least 2.827, levels at least 105. % V3-H1
+It passed: decode 987.1 against 975.3 tokens per second ($+1.2\%$; an identical-stack reference read 973.3), clean step 36.0 against 36.6 ms, accept length 2.8385 against 2.8300, 126 levels against 129, every number recomputed from the server log. % V3-H2
+The measured gain is below the predicted $+1.4\%$ to $+1.7\%$. % V3-H4
+The map should leave the output distribution unchanged (speculative sampling preserves it when the verify path is correct), and its probe installed and served cleanly (READY after 550 s, 0 tracebacks). % V3-H3
+
+
+Everything is at temperature 0.7 on development replica runs unless stated. Step times are decode-line arithmetic on intervals without prefill, not kernel timers. % E4
+
+\paragraph{Step time.}
+Over 8,132 clean intervals from six runs with three drafts, at 8 to 14 running requests $R$, the step is $\tau=20.92$ [20.29, 21.45] $+\,1.120$ [1.082, 1.168] $R$ ms (300 s block bootstrap). % E4
+With context it is $18.21+1.163R+0.280\,[0.233,0.307]$ ms per 10K tokens of mean context per request, so the step is not flat: at $R=14$ the median rises from 34.4 ms under 20K to 36.8 ms at 80K to 100K (+7\%). % E4 NEW:stepctx
+A fourth step adds 3.58, 3.59, 4.61 and 4.93 ms at $R=11$ to 14 (11 to 677 four-step intervals). % E4
+
+\paragraph{Where it would pay.}
+The four-draft run covers $R=11$ to 14, so any crossing below 11 depends on how the added verify row is costed. % E13
+We tried three cost models, each fitted to the four measured gaps: proportional to $R$ (0.353 ms per request), affine ($-2.16+0.507R$ ms) and expert coverage plus 0.12 ms per request. % E13
+With $A_4=0.275$ they cross the needed gain $L\,\Delta\tau/\tau$ of the break-even rule above at $R$ of about 3, 8 and 11, so we do not say where the fourth step pays. % E13
+Under the proportional model the needed gain is 0.266, 0.309, 0.347 and 0.380 at $R=8$, 10, 12 and 14, and the geometric 0.350 crosses it at $R\approx12$. % E4 E6
+The coverage model, fitted on three drafts, predicts $+2.6$ ms for the fourth step at $R=14$ against 4.9 measured. Expert bytes alone give 2.2 to 2.3 ms (0.076 more of the 52.8 GB of expert weights, read at 1.79 TB/s). We did not attribute the rest, which is row-proportional work. % E14
+
+\paragraph{Scope of the fourth-step result.}
+It is one run against two controls at one operating point: 14 streams, temperature 0.7, top-k 20, top-p 0.95, a chain of drafts. % E5 E13
+We ran no two-draft arm and no policy that sets the draft length per request.
+A draft tree lifts the sampling cap \citep{chen2024sequoia}; we drafted a chain. % E1
+The target is the pruned (448 of 512 experts), 4-bit-weight model, and the refit drafter was trained against a different 4-bit target \citep{ursuciprian2026d3}. The vendor reports an accept length of 4.06 to 4.07 at four draft steps on benchmark text \citep{qiu2026qwen38next}, and ours is 2.83 at three on agent traffic under sampling. We cannot say whether temperature, text, pruning or quantisation accounts for the gap. % E2 NEW:vendor
+
+\paragraph{Drafter refit.}
+ursuciprian's KL refit of the drafter's dense tensors (29 in albucino's file, 24 in the card), which we transplant at boot \citep{ursuciprian2026d3,albucino2026drafter}, raises accept length from 2.699 to 2.830 ($+0.130$ [0.108, 0.151], +4.8\%) and decode by 50.5 tokens/s [39.7, 61.2] (+5.5\%) at an unchanged step ($+0.18$ ms [$-0.04$, 0.36]). % E7
+The replica pair also carries a prompt-format change; a probe pair that isolates the refit agrees ($+0.133$ [0.076, 0.181]). % E7
+Fine-tuning an MTP head on self-distilled data is the recipe of FastMTP \citep{cai2025fastmtp}. % E7
+
+\paragraph{Draft vocabulary.}
+The served 64K draft vocabulary misses 1.416\% of 41,560,633 generated tokens. % E8
+Table~\ref{tab:vocab} compares it with maps rebuilt from our transcripts.
+Runs outside the build set replay the same 25 games, so only the leave-one-game-out rebuild leaves the scored game out of its map. Tokens are re-tokenized transcript text, a proxy for the sampled ids. % E8
+
+\begin{table}[!htb]
+\caption{Generated tokens missing from the draft vocabulary (lower is better). The build set is seven development runs; the three further runs play the same 25 games. Own maps are built from our traffic at 32K and 64K entries.}\label{tab:vocab}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{%
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.34\linewidth}rrrr@{}}
+\toprule
+Set & Tokens & Served 64K & Own 32K & Own 64K \\
+\midrule
+Build set, pooled (7 runs) & 41,560,633 & 1.416\% & in-sample & in-sample \\ % E8
+\quad per run & 5.3M to 6.4M & 1.32\% to 1.51\% & in-sample & in-sample \\ % E8
+Outside the build set, run 1 & 6,261,780 & 1.407\% & 0.047\% & 0.014\% \\ % E8
+Outside the build set, run 2 & 5,618,162 & 1.468\% & 0.031\% & 0.010\% \\ % E8
+Outside the build set, run 3 & 5,295,450 & 1.305\% & 0.073\% & 0.014\% \\ % E8
+Leave-one-game-out, 25 games (better than served on 25 of 25) & pooled & n/a & 0.106\% & 0.038\% \\ % E8
+\bottomrule
+\end{tabular}}
+\end{table}
+
+Three spellings of ``Hmm'' (capitalised, capitalised after a space, lower case after a space) are 0.304\%, 0.218\% and 0.123\% of tokens: 0.646\% in all and 46\% of the served map's misses. % E8
+FR-Spec truncates the draft vocabulary by token frequency \citep{zhao2025frspec}; FastMTP applies the idea to an MTP head \citep{cai2025fastmtp}, and a vocabulary-trimming study fits coverage to workload responses \citep{benshoham2026vocabtrim}. The nearest work to our rebuild from the target's own samples is VocabTrim (Goel et al., arXiv 2506.22694). % E8
+We estimate the acceptance gain at 0.4\% to 1.0\% of accept length (hit rates of 0.18 to 0.50 on the recovered tokens) and claim none. A 1.4\% miss caps first-position acceptance at 98.6\%, far above the 77\% measured. % E8 E2
+
+\paragraph{BF16 draft KV.}
+A probe pair with the target pool capped at 1,375,552 tokens gives accept length $+0.010$ [$-0.040$, 0.062] at 8 or more running requests and $+0.027$ [$-0.010$, 0.069] at 14; a null pair reads $-0.012$ [$-0.053$, 0.040]. Both probes of the pair carry the 32K vocabulary map, and probe contexts stop near 40K. The cache costs 8\% of the KV pool. % E9
+
+\paragraph{The QSA ring replay and the invalid probe.}
+The fix is lovedheart's \citep{lovedheart2026qsa}; we replayed it on our wheel in an offline test (CPU torch, the wheel's index builders, no CUDA kernels). % E10
+For 4-token verify windows after prefixes of 1 to 256 tokens, the unpatched stride corrupts 192 of 256 completed groups and the patched one 0; one-token decode is clean. That is 3/4, the share of window alignments that start mid-group. We measured no corruption rate on traffic. % E10
+lovedheart's commit reports the same kind of sweep: 90 of 118 groups corrupted, 0 after. % E10
+After the patch, windows up to 5 rows are clean and 6 wrap (64 of 384), so four draft steps sit at the limit, a build effect at position 4 cannot be excluded, and five would be unsafe. Their guard rejects drafts longer than twice the ratio; ours is tighter, at the ratio plus one, because our replay wraps at six rows. % E10 NEW:qsaguard
+The GPU probe was invalid by its own predeclared rule: 1 of 16 prompts (unpatched) and 2 of 16 (patched) reused the decode-time keys, and the rule required 12. % E10
+Median divergence between two fresh runs of the same prompt is 16 tokens on the unpatched boot and 4 on the patched one, so the noise floors differ by boot. Output that varies with batch composition through floating-point reductions is a known property of LLM serving \citep{he2025nondeterminism,yuan2025numerical}. % E10 NEW:divergence
+The effect on the GPU is unmeasured. Accept length is unchanged by the fix together with the upload fix (2.697 and 2.698 before, 2.704 after). % E10
+
+\paragraph{Greedy against sampled.}
+On a greedy boot of the original drafter (temperature 0, one request, 16 recorded prompts of about 4.9K tokens) accept length is 3.221 (SE 0.05), 0.857 per position if geometric. At temperature 0.7 it is 2.59 to 2.61 across runs and probes, 0.713 to 0.720 per position, with 28\% fewer accepted drafts per step. % E3
+The two sides ran different text, so this indicates the size of the tax without matching it. The headroom is now measured on the same kernel as the paired decision test (above). % E3 V3-T7
+
+\paragraph{Per-position counts.}
+Table~\ref{tab:perpos} comes from the own-traffic draft-vocabulary run (5 of 25 games, 479 replies, 374,855 verify steps), whose gate was open in v2 and has since passed; we use it for counts only. % E2
+
+\begin{table}[!htb]
+\caption{Probability $A_k$ that at least $k$ drafts are accepted, and the conditional $a_k=A_k/A_{k-1}$. Rows 1 to 3 are counts from the own-traffic draft-vocabulary run (95\% request bootstrap). Row 4 is the difference of two runs at 14 running requests, assuming positions 1 to 3 unchanged. Break-even for row 4 is 0.379, that is $a_4^{*}=0.838$.}\label{tab:perpos}
+\centering\footnotesize
+\begin{tabular}{@{}rlrr@{}}
+\toprule
+$k$ & $A_k$ [95\% CI] & $a_k$ & Geometric $A_k$ ($a=0.769$) \\
+\midrule
+1 & 0.7734 [0.7687, 0.7780] & 0.773 & 0.769 \\ % E2
+2 & 0.5917 [0.5844, 0.5993] & 0.765 & 0.591 \\ % E2
+3 & 0.4521 [0.4432, 0.4608] & 0.764 & 0.455 \\ % E2
+4 & 0.275 [0.246, 0.303] & 0.608 & 0.350 \\ % E5 E6
+\bottomrule
+\end{tabular}
+\end{table}
+
+The fourth-step gain is stable across context (+0.244 to +0.298 over five bins of 0 to 100K), so it is not a context mix. % E5
+
+
+
+\subsection{Time ledger}\label{app:time}
+
+Read the totals. Table~\ref{tab:ledger} splits the 7,200 s window of six single development runs by log-line arithmetic. % F4
+Prefill-side GPU time (new-token prefill, batch setup and scheduler stall together) is 1,287 s in a 2,048-yield control and 1,217 s in an 8,192 run before the later changes. It is 1,005, 1,026 and 1,058 s in three runs that carry them. % F4 F5 NEW:ledger-totals
+The server's own prefill timers agree in direction: 1,223 and 1,188 s against 1,082, 1,099 and 1,119 s. The fall is 159 to 212 s against the 8,192 run and 229 to 282 s against the control by the log lines, and 69 to 106 s and 104 to 141 s by the timers. % F10 NEW:ledger-totals
+The later changes include the host-path changes: the image-hash flag and incremental tool state. They are bundled, so the ledger cannot say which one moved prefill-side time. Only run 3 is the shipped set: run 1 lacks the drafter refit and run 2 adds one overlay we did not ship. % F6
+
+
+
+\paragraph{Method.}
+The server \citep{zheng2023sglang} logs a decode line every 40 forwards with 1 s stamps, so head, intervals and tail sum to 7,200 s exactly. % F4
+Decode time in an interval is 40 times the step, fitted on clean intervals (no prefill line, equal running count at both ends; $17.9+1.19R+0.27$ ms per 10K tokens of context for run 3; 27\% of the window is clean). % F4
+The rest is extra time. Where a prefill line is present, least squares splits it into a cost per prefill batch (setup), per new token and per cached token (stall), with a 300 s block bootstrap; elsewhere it is summed as measured. % F4
+Stream time (Table~\ref{tab:slots}) uses the scheduler's per-request timers over $14\times7{,}200=100{,}800$ stream-seconds. % F8
+
+\begin{table}[!htb]
+\caption{GPU wall time in seconds over the 7,200 s window (decode share in percent), and the fitted costs. Stall intervals are 95\% block-bootstrap. Ctrl: yield 2,048, before the later changes. A: yield 8,192, before them. B: Ctrl's code apart from the yield. Buckets sum to 7,200 by construction. Single runs; no kernel timers.}\label{tab:ledger}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{%
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+ & Run 1 & Run 2 & Run 3 & Ctrl & A & B \\
+\midrule
+Decode steps & 6,161 & 6,170 & 6,146 & 5,867 & 5,951 & 5,933 \\ % F4 F5
+Decode share (\%) & 85.6 & 85.7 & 85.4 & 81.5 & 82.6 & 82.4 \\ % F4 F5
+New-token prefill & 732 & 766 & 722 & 739 & 825 & 686 \\ % F4 F5
+Prefill batch setup & 171 & 120 & 298 & 242 & 9 & 129 \\ % F4 F5
+Scheduler stall & 102 & 139 & 38 & 306 & 382 & 420 \\ % F4 F5 F6
+\quad 95\% interval & 23 to 192 & 43 to 267 & $-56$ to 107 & 255 to 367 & 300 to 455 & 332 to 526 \\ % F6
+Prefill-side total (three rows above) & 1,005 & 1,026 & 1,058 & 1,287 & 1,217 & 1,234 \\ % NEW:ledger-totals
+Direct prefill timers & 1,082 & 1,099 & 1,119 & 1,223 & 1,188 & 1,179 \\ % F10
+Extra, no-prefill intervals & 21 & 0 & $-22$ & 42 & 19 & 31 \\ % F9
+Fit residual & $-4$ & $-8$ & 6 & $-11$ & 0 & $-11$ \\ % F4
+Head and tail & 17 & 12 & 12 & 15 & 13 & 13 \\ % F4 F5
+\midrule
+Per 1K new tokens (ms) & 74.6 & 76.4 & 69.9 & 71.9 & 84.0 & 76.5 \\ % F7
+Per prefill batch (ms) & 47.7 & 33.2 & 81.9 & 77.7 & 2.8 & 39.9 \\ % F7
+Per 10K cached tokens (ms) & 5.0 & 6.9 & 1.9 & 18.6 & 22.0 & 22.9 \\ % F6 F7
+\bottomrule
+\end{tabular}}
+\end{table}
+
+New-token cost is stable (70 to 84 ms per 1K tokens). Setup and stall trade off in the fit, so their sum is steadier than either: 273, 259 and 336 s in runs 1 to 3 and 549 s in the control. % F7 F6
+The stall term is a coefficient per cached token; that image hashing causes it rests on the flag that removes it. % F6
+
+\begin{table}[!htb]
+\caption{Stream time as a share of 100,800 stream-seconds (14 streams). The ``waiting'' row assumes prefill and decode batches do not overlap on the GPU. The two last rows split the ``no request'' row.}\label{tab:slots}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\resizebox{\ifdim\width>\linewidth\linewidth\else\width\fi}{!}{%
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+Share of stream time (\%) & Run 1 & Run 2 & Run 3 & Ctrl & A & B \\
+\midrule
+GPU decoding & 79.9 & 80.2 & 79.9 & 73.9 & 73.3 & 73.2 \\ % F8
+Waiting for non-decode GPU work & 13.0 & 13.0 & 13.2 & 16.4 & 14.9 & 15.2 \\ % F8
+Own prefill & 1.1 & 1.1 & 1.1 & 1.2 & 1.2 & 1.2 \\ % F8
+Queued in the server & 0.4 & 0.4 & 0.4 & 0.5 & 0.6 & 0.4 \\ % F8
+No request on the server & 5.7 & 5.3 & 5.4 & 7.9 & 10.0 & 10.0 \\ % F8
+\quad in-batch host gaps (measured) & 0.6 & 0.5 & 0.3 & 2.1 & 3.4 & 3.0 \\ % F8
+\quad not logged & 5.2 & 4.9 & 5.1 & 5.9 & 6.6 & 7.0 \\ % F8
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\paragraph{Checks that do not share the construction.}
+Direct prefill timers sit within 8\% of the log-line prefill seconds, tokens within 0.3\%, mean running requests within 1.1\% and the step model on intervals it was not fitted on within 1.4\%. The decode bucket carries about 50 s (1 SD) of calibration noise. % F4
+The server held a request in all but about 1 s of every window, and intervals without a prefill line hold $-22$ to $+42$ s of extra time against a timestamp noise of about 20 s, so idle GPU time cannot be told from model error below about 40 s. % F9
+
+\paragraph{Freed prefill.}
+Direct prefill seconds are 43 to 58 s lower (0.6\% to 0.8\% of the window) in the 8,192 pair than in the 2,048 controls, against 163 s (2.3\%) by arithmetic at the all-in 130 ms per 1K tokens (Sec.~\ref{sec:yield}). % F10 D7
+The two cloud controls differ from each other by 109 s, so the pair difference sits inside the spread between controls. At 11.2 levels per million tokens the timer value is worth at most 0.4 to 0.5 levels (inference). % F10
+
+\paragraph{Where the +11\% shows up.}
+From the 8,192 run before the later changes (A) to run 3, tokens per second on the window clock rise by a factor 1.108. Decode share contributes 1.033, accept length 1.046, running requests 1.055 and the step cost per running request 0.972. % F11
+The factors multiply by construction, so they locate the gain without attributing it. % F11
+
+\paragraph{Unobserved.}
+The ledger gives no kernel-level split of a decode step, which is one number, and none exists for the four-draft run.
+The 5.1\% of stream time that no log accounts for (about 5,100 stream-seconds in run 3, with no request on the server) has no timer. Tool execution, prompt assembly, image encoding and hand-over between games are candidates that no log separates. It fell by about 1,600 stream-seconds from A to run 3 together with the measured gaps, so the later changes did not act only on the gaps we can see. % F8
+At 14 streams the decode ceiling is 1,083 tokens per second (14 running requests times accept length 2.830 over the 36.6 ms step), and run 3 reaches 892 on the window clock. With this step and accept length, zero non-decode time and 14 running requests at every step would add at most 21\% tokens, about 8 levels at the curve's elasticity (inference). % F7 NEW:ceiling-bound
+
+

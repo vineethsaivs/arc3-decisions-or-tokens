@@ -1,0 +1,42 @@
+{
+  "record": "gate-results-2026-09-22-INTERIOR-mechanism-PASS-levels-UNDECIDED",
+  "kernel": "vineethsaivs/arc3-interior-a",
+  "read_against": "the predeclared_gate block inside arc3-interior-v1/q38-flashnext-manifest.json, written before the run",
+  "RESULT": {
+    "levels": 42, "zeros": 2, "mean": 1.680, "ex_ft09_mean": 1.583, "board_style_score": 10.04,
+    "actions_per_game": 118.3,
+    "control_ONEWAVE": {"levels": 46, "actions_per_game": 109.2},
+    "flashnext_family": [44, 40, 47, 41, 46]
+  },
+  "MECHANISM_PASSES_DECISIVELY": {
+    "metric": "interior_disagree / (interior_disagree + interior_agree), pooled over 25 games",
+    "measured": "368 / (368 + 2,589) = 12.45%",
+    "gate_line": "PASS at >= 5.0%, DEAD below",
+    "sanity_check": "interior_mask_cells > 0 required on a majority of games; measured 25 of 25, total 4,644 masked cells",
+    "games_with_any_disagreement": "17 of 25",
+    "worst_games": {"tn36": "54.3%", "tu93": "36.2%", "lf52": "31.8%", "sb26": "27.2%", "bp35": "25.5%", "tr87": "25.4%"},
+    "what_this_establishes": "The defect is REAL on the model we ship, not only in the 27B-era corpus. The offline learner realized 8.6% when simulated over that corpus; live on Flash-Next it realizes 12.45%, higher than predicted. On roughly one graded transition in eight the harness was telling the model the board changed when the play area had not moved."
+  },
+  "NO_DISPLACEMENT": {
+    "actions_per_game": "118.3 against the control's 109.2, i.e. UP, not down.",
+    "why_it_matters": "Max-harness lost levels by displacing play: 109.2 to 66.8 to 35.8 actions per game as machinery was added. This arm adds one host-computed observation field and no model-facing machinery, and the action budget is intact. The two results together separate the two failure modes cleanly."
+  },
+  "LEVELS_ARE_UNDECIDED_AND_I_AM_NOT_MOVING_THE_BAR": {
+    "measured": 42,
+    "gate_text_verbatim": "UNDECIDED_BY_BENCH: 31 to 46 levels. Report the counters, ship nothing, keep ONEWAVE.",
+    "position": "42 is inside the Flash-Next family (40 to 47) and inside the 12.5-level MDE, so it is a TIE on levels, not a regression. Rule 15(c) does not bar it. But the gate I wrote before the run says ship nothing in this band, and I am not going to reinterpret my own gate after seeing a number I like.",
+    "the_conflict_I_am_flagging_rather_than_resolving": "The same gate's own note says 'the 47-level bar cannot resolve this arm on levels alone. That is why the mechanism counter, not the level count, is the verdict.' That clause and the UNDECIDED clause contradict each other. I wrote both, before the run, and did not notice. Separately, CLAUDE.md rule 15(b) says a TIE with a verified mechanism fix belongs in the rotation rather than in a drawer, and this is exactly that case.",
+    "who_decides": "Promotion into a scored slot is the owner's decision. Everything needed to promote is prepared; nothing has been promoted."
+  },
+  "SUPPORTING_BUT_NOT_DECISIVE": {
+    "zeros": "2, against 5 on GG8, 8 on the sampling arm and 3 to 5 across the family. Best breadth this project has measured.",
+    "paired_vs_the_34_level_sampling_run": "12 up / 4 down / 9 tied",
+    "caution": "That comparison is against a REJECTED arm, not against ONEWAVE, because ONEWAVE's 46-level run predates this bench corpus. It is suggestive and it is not the control."
+  },
+  "IF_PROMOTED_THE_COMMANDS_ARE": [
+    "add a ROTATION line INTERIOR|arc3-interior-v1|candidates-interior|<this record>|1 in solution/kaggle/daily_submit.sh",
+    "solution/kaggle/daily_submit.sh sync",
+    "python3 solution/kaggle/submit_candidate.py --candidate candidates-interior   (dry run first, without --consume-daily-slot)"
+  ],
+  "IF_NOT_PROMOTED": "The honest next step is a replicate: the same bundle, byte identical, one more 25-game commit at about 2.4 GPU-h. n=1 at 42 against a family whose own spread is 40 to 47 cannot separate a tie from a small win, and this project has been burned by exactly that before (top_k 100 drew 44 then 28 on identical bytes)."
+}

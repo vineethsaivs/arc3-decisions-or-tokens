@@ -1,0 +1,18 @@
+served map: 65536 ids, max 248076, ids >= 248044: 25, file sha256 becfa41d
+franzen-l1a1y8-v1               5,676,531 tok  served 1.324%  traffic 32K 0.000%  traffic 64K 0.000%  [build set]
+franzen-l1a1y8r-v1              5,282,550 tok  served 1.472%  traffic 32K 0.000%  traffic 64K 0.000%  [build set]
+franzen-l1a1y8sv2-v1            5,787,421 tok  served 1.371%  traffic 32K 0.000%  traffic 64K 0.000%  [build set]
+franzen-l1a1y8sv2o16-v1         5,853,789 tok  served 1.418%  traffic 32K 0.000%  traffic 64K 0.000%  [build set]
+franzen-l1a1y8sv2r1-v1          6,111,365 tok  served 1.507%  traffic 32K 0.000%  traffic 64K 0.000%  [build set]
+franzen-l1a1y8sv2r2-v1          6,428,956 tok  served 1.390%  traffic 32K 0.000%  traffic 64K 0.000%  [build set]
+franzen-l1a1y8sv2r3-v1          6,420,021 tok  served 1.432%  traffic 32K 0.000%  traffic 64K 0.000%  [build set]
+franzen-l1a1y8sv2r3s4-v1        6,261,780 tok  served 1.407%  traffic 32K 0.047%  traffic 64K 0.014%  [OUT of build set]
+franzen-l1a1tbfc-v1             5,618,162 tok  served 1.468%  traffic 32K 0.031%  traffic 64K 0.010%  [OUT of build set]
+franzen-p448s14-v1              5,295,450 tok  served 1.305%  traffic 32K 0.073%  traffic 64K 0.014%  [OUT of build set]
+franzen-l1a1y8sv2r3hm32-v1      1,052,199 tok  served 1.556%  traffic 32K 0.031%  traffic 64K 0.010%  [OUT of build set]
+build set pooled: 41,560,633 tokens, 27,916 distinct ids, served map misses 1.416%
+top missed ids: 'Hmm'=0.304%, 'ĠHmm'=0.218%, 'Ġhmm'=0.123%, 'âľĵ'=0.033%, 'Alternatively'=0.029%, 'Ġpiston'=0.019%, 'ĠBFS'=0.017%, 'BBBB'=0.016%, '.ascii'=0.015%, 'ĠMOUSE'=0.011%, 'Alternative'=0.010%, 'ĠâīĪ'=0.009%
+'hmm' variants [('Hmm', 77264, False), ('Ġhmm', 84485, False), ('ĠHmm', 85152, False)]: 0.646% of tokens, 46% of the misses
+distinct ids outside the served map: 4,334 of 27,916; top 3 cover 46% of the missed mass
+leave-one-game-out rebuild at 32K (25 games): 0.106% pooled; beats the served map on 25/25 games
+leave-one-game-out rebuild at 64K (25 games): 0.038% pooled; beats the served map on 25/25 games

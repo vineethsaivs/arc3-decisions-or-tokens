@@ -1,0 +1,20 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-11",
+ "gate": "gate-predeclared-2026-10-10-franzen-l1a1y8sv2.json (declared 2026-10-10T06:25Z, before any run)",
+ "instrument": "25-game Kaggle replica (14 streams, 7,200 s window), one run, franzen_readout.py; plus a 300 s Kaggle probe of the probe build for install and liveness",
+ "control": "l1a1y8 run 1: 128 levels, mean 61.18, 780.7 tok/s, cache hit 95.3%, accept 2.70, openers 1,340; l1a1y8 passed its own pooled gate (gate-results-2026-10-10-franzen-l1a1y8.json)",
+ "arm": {
+  "kernel": "vineethsaivs/arc3-franzen-l1a1y8sv2p-a",
+  "version": 1,
+  "change": "l1a1y8 (l1a1 plus both fail-closed checks, yield after 8,192 tokens) plus the QSA pending-ring stride fix (franzen_overlays/qsaring_serve.py) and the pinned non-blocking M-RoPE delta upload (franzen_overlays/asyncmrope_serve.py). The probe build differs from l1a1y8sv2 only in the replica runtime (cell 19)."
+ },
+ "evidence": {
+  "bench_l1a1y8sv2_v1": "119 levels, mean game score 54.23, 1 game at 0; 799.7 tok/s (+2.4% on l1a1y8 run 1, above the 757.3 floor), decode 869.7 mean, accept 2.70 (within 0.05), cache hit 94.6% (within 2 points), KV max 0.89; openers 1,317 (4.72 actions each, under the 1,450 cap); 46 replies without a tool call; install lines for qsaring and asyncmrope; failclosed summary printed; 0 tracebacks, 0 analyzer give-ups, 0 scheduler exceptions",
+  "probe_l1a1y8sv2p_v1": "GPU_GATE PASS on an RTX PRO 6000 Blackwell (97,887 MiB, cc 12.0); READY after 520 s; install lines for asyncmrope, qsaring, wastefix, replycache, agentfix and d_prime present; failclosed summary {'games': 25, 'levels': 7, 'actions': 206}; 0 tracebacks",
+  "offline": "solution/sim/test_franzen_qsaring.py (192 of 256 groups corrupted with the shipped stride, 0 with the fix) and test_franzen_asyncmrope.py pass"
+ },
+ "verdict": "PROMOTE. Every predeclared item passes: l1a1y8 passed its pooled gate, this run holds the y8 mechanism (openers 1,317), serving is inside every bound and 2.4% faster, the run is clean, and 119 levels clears the 105 floor. The QSA fix is a correctness fix to sparse-attention index keys; the M-RoPE upload is lossless.",
+ "what_this_does_not_claim": "No quality gain is claimed for the QSA fix (the qsaparity probe could not see one above the server's own nondeterminism); 119 vs 128 and 124 is inside the replica's run-to-run spread.",
+ "promote": true
+}

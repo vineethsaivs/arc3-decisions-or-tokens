@@ -1,0 +1,21 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-30",
+ "gate": "gate-predeclared-2026-10-30-franzen-l1a1y8sv2r3lf15unst.json",
+ "read_at": "2026-10-30T02:57Z, after W1 and W2 (kaggle-lf15unst-1030-1, -2); W3 and the probe were not pushed",
+ "verdict": "KILL",
+ "reason": "m1 miss: untested-list openers 0.0 per run against a bar of 5. A miss is final under the gate, and no run is added after reading",
+ "cause": "a bug, found by reading the transcripts: the opener's valid_actions are engine names (ACTION1 to ACTION7) while history entries carry the model's names (UP, MOUSE(row=.., col=..)). unstick tested 'MOUSE' in the engine list, so the untested-object list never printed, and its unused-action line named actions already used under their aliases (168 such lines; one thinking block: 'Not helpful'). The offline test passed only because it fed display names. Fixed in unstick2 (both sides through the harness's _normalize_valid_actions, UNDO not listed); test_franzen_unstick2.py now feeds engine names and fails on the old code",
+ "measured": {
+  "W": {"kaggle-lf15unst-1030-1": {"levels": 131, "score": 58.55, "actions": 7797, "median_ratio": 0.636},
+        "kaggle-lf15unst-1030-2": {"levels": 127, "score": 58.58, "actions": 6643, "median_ratio": 0.615},
+        "mean": {"levels": 129.0, "score": 58.57, "actions": 7220, "median_ratio": 0.626}},
+  "A_pooled_7": {"levels": 123.4, "score": 54.85, "actions": 7105, "median_ratio": 0.674},
+  "m1": "stall-check openers 18.5 per run (PASS); untested-list openers 0.0 (FAIL)",
+  "m2": "0.73 of 3rd/5th/7th idle turns acted (27 of 37), bar 0.70: PASS",
+  "m3": "actions 7220 <= 7816 PASS; median 0.626 <= 0.724 PASS",
+  "no_harm": "levels 129.0 >= 120.9 PASS; score 58.57 >= 53.35 PASS",
+  "reported": "streaks of 5+ idle turns 1.50 per run (reference 2.75); 0 tracebacks in kernel.log and serve.log of both runs"
+ },
+ "note": "Two runs cannot separate 129 from 123.4 (byte-identical runs have scored 123 and 101). The stall check is live and acted on; the next candidate (unstick2 with the fix) carries it and gets its own predeclared gate"
+}

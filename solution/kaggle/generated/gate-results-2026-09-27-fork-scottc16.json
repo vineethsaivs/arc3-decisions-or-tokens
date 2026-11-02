@@ -1,0 +1,9 @@
+{
+  "arm": "arc3-fork-scottc16-a v1, byte-identical fork of scottlegrand/taaf-flashnext-sheetu12b-0922 v1",
+  "gate": "generated/gate-predeclared-2026-09-27-rank20-arms.json",
+  "result": {"levels": 49, "zero_level_games": 2, "actions_per_game": 111.1, "mean_final_score": 13.15, "clock": "7,200 s validation cap (scored path uses 7,920 s)"},
+  "control": {"arm": "GG7", "levels": 47, "mean_final_score": 10.54},
+  "single_point_check": "sb26 cleared 8 levels (GG7: 2). Excluding sb26: 41 vs 45. Excluding sb26 and ft09: 37 vs 41. Per game: 7 up, 8 down, 10 tied. A bench tie carried by one game.",
+  "board_evidence": "Kaggle lists this exact notebook's bestPublicScore as 5.19 on the hidden games; our best is 4.61.",
+  "verdict": "CLEARS the predeclared 48. Authorized as tonight's fallback over GG7 (generated/fork-scottc16-authorization-2026-09-28.json); the rank-20 arms can still supersede it before 21:06 PDT."
+}

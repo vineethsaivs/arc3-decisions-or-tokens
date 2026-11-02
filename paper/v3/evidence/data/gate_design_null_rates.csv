@@ -1,0 +1,15 @@
+design,noise_model,k,nA,bar,p_promote_null,p_promote_one_plus6,p_promote_one_plus3,p_promote_all_minus3,bench_jobs,source
+SCALE shared-control wave,run,2,8,1.5,0.074,0.868,0.408,0.002,24-31,scratchpad par/cmp2.py rerun 20000 trials
+SCALE shared-control wave,run,2,8,1.75,0.054,0.848,0.353,0.001,24-31,scratchpad par/cmp2.py rerun 20000 trials
+SCALE shared-control wave,run,2,6,1.75,0.058,0.824,0.342,0.001,22-29,scratchpad par/cmp2.py rerun 20000 trials
+SCALE shared-control wave,run,3,8,1.75,0.067,0.841,0.338,0.001,31-37,scratchpad par/cmp2.py rerun 20000 trials
+SCALE shared-control wave,run,3,8,2.0,0.040,0.809,0.276,0.001,31-37,scratchpad par/cmp2.py rerun 20000 trials
+SCALE shared-control wave,run,3,10,1.75,0.062,0.856,0.342,0.001,34-39,scratchpad par/cmp2.py rerun 20000 trials
+SCALE shared-control wave,run,3,10,2.0,0.038,0.819,0.277,0.000,34-39,scratchpad par/cmp2.py rerun 20000 trials
+SCALE shared-control wave,game,2,8,1.5,0.146,0.750,0.367,0.015,25-30,scratchpad par/cmp2.py rerun 20000 trials
+SCALE shared-control wave,game,2,8,1.75,0.119,0.727,0.338,0.010,25-30,scratchpad par/cmp2.py rerun 20000 trials
+SCALE shared-control wave,game,2,6,1.75,0.129,0.709,0.326,0.014,23-28,scratchpad par/cmp2.py rerun 20000 trials
+SCALE shared-control wave,game,3,8,1.75,0.150,0.709,0.315,0.015,33-37,scratchpad par/cmp2.py rerun 20000 trials
+SCALE shared-control wave,game,3,8,2.0,0.120,0.685,0.276,0.011,33-37,scratchpad par/cmp2.py rerun 20000 trials
+SCALE shared-control wave,game,3,10,1.75,0.147,0.717,0.315,0.014,35-39,scratchpad par/cmp2.py rerun 20000 trials
+SCALE shared-control wave,game,3,10,2.0,0.111,0.692,0.280,0.008,35-39,scratchpad par/cmp2.py rerun 20000 trials

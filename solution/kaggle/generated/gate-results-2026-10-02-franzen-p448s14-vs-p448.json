@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-02",
+  "plan": "docs/PLAN_2026-10-01.md",
+  "instrument": "25-game scored-run replica (7,200 s shared window)",
+  "control": {
+    "kernel": "vineethsaivs/arc3-franzen-p448-a",
+    "version": 1,
+    "readout": "kernel-outputs/franzen-p448-v1/readout.json"
+  },
+  "arm": {
+    "kernel": "vineethsaivs/arc3-franzen-p448s14-a",
+    "version": 1,
+    "change": "p448 at 14 admitted streams with 70 Mamba slots",
+    "readout": "kernel-outputs/franzen-p448s14-v1/readout.json"
+  },
+  "result": {
+    "levels": [
+      122,
+      117
+    ],
+    "harness_tok_s": [
+      618.9,
+      731.2
+    ],
+    "decode_tok_s": [
+      759.3,
+      812.7
+    ],
+    "running_mean": [
+      10.58,
+      12.32
+    ],
+    "kv_p90": [
+      0.65,
+      0.77
+    ],
+    "cache_hit_pct": [
+      93.08,
+      93.3
+    ],
+    "levels_at_75k_100k_150k": [
+      [
+        67,
+        81,
+        104
+      ],
+      [
+        64,
+        74,
+        95
+      ]
+    ]
+  },
+  "verdict": "SERVING mechanism works (+18.2% harness tokens per second, cache hits unchanged, KV p90 0.77) but levels are 117 against 122 and lower at matched tokens, so the gate fails. Within the measured run-to-run spread (the two controls differ by 5 levels); revisit in the stacked v2 with a replicate.",
+  "promote": false,
+  "what_this_does_not_claim": "One run per arm; level differences of 5 to 10 are inside the spread seen between identical controls."
+}

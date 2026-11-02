@@ -1,0 +1,40 @@
+{
+  "record": "gate-results-2026-09-20-GG8-GG10-mechanism-failed",
+  "read_against": "generated/gate-predeclared-2026-09-20-world-model-ladder.json, written before either kernel emitted a line",
+  "kernels": ["vineethsaivs/arc3-onewave-wm-gg8-a", "vineethsaivs/arc3-onewave-orch-gg10-a"],
+  "gpu_hours": 4.71,
+  "LEVELS": {
+    "GG8": {"levels": 35, "zeros": 5, "all_runs": "gave_up"},
+    "GG10": {"levels": 35, "zeros": 6, "all_runs": "gave_up"},
+    "control_ONEWAVE": 46,
+    "flashnext_family": [44, 40, 47, 41, 46],
+    "band": "35 is UNDECIDED-BY-BENCH (31 to 46) and below the 47 PASS line. It is NOT a REJECT."
+  },
+  "THE_VERDICT_IS_THE_MECHANISM_AND_IT_FAILED": {
+    "counter": "games in which the MODEL wrote a predict() that is not the prompt's worked example",
+    "method": "Parsed all 25 solver_analysis transcripts per arm. Every 'def predict' occurrence was classified by whether the prompt template's signature line, rows = [list(r) for r in board.split(chr(10))], appears within 300 characters. Template hits are prompt echo, one per rendered turn.",
+    "GG8": "6 of 25 (117 non-template definitions out of 1,142 total 'def predict' strings; the other 1,025 are the prompt)",
+    "GG10": "4 of 25",
+    "gate_line": "PASS needed >= 8 of 25",
+    "baseline_GG6": "5 of 25",
+    "verdict": "MECHANISM FAILED on both. Per the predeclared rule, on a mechanism failure the level total is NOT read as a verdict: the arm did not run."
+  },
+  "THE_HYPOTHESIS_I_HELD_THIS_MORNING_IS_REFUTED": {
+    "claim_made": "python_tool_sandbox.py opens a fresh TemporaryDirectory per call, so the model cannot hold a predict() between turns, and that is a sufficient mechanical explanation for arm V's 1 of 25 and GG6's 5 of 25.",
+    "test": "GG8 is that exact stack WITH apply_sandbox_persistence, so the model could hold code between calls.",
+    "result": "Adoption went 5 of 25 to 6 of 25. Within noise of no change.",
+    "conclusion": "A persistent sandbox was a real defect and its repair is worth keeping, but it is NOT what was limiting adoption. Do not carry the sufficient-explanation claim forward; it is refuted by its own test.",
+    "what_is_still_open": "Whether adoption is limited by the model's willingness, by the prompt, by the task being genuinely hard on this model, or by something not yet identified. The one thing now excluded is sandbox amnesia."
+  },
+  "A_GATE_DESIGN_DEFECT_WORTH_MORE_THAN_THE_ARM": {
+    "what": "Three of the four predeclared mechanism counters were UNMEASURABLE as written.",
+    "why": "The gate counts 'validate invoked', 'plan invoked' and \"memory['prelude']\" by their symbol names, but the prompt contains validate(predict 3 times, plan(predict twice and memory['prelude'] 4 times. The prompt renders once per turn, so every one of those reads 25 of 25 in every arm regardless of what the model did. Only 'def predict' was separable, and only because the template body gave it a signature to filter on.",
+    "rule": "A mechanism counter must be emitted HOST-SIDE into the events stream, never grepped out of a transcript that also contains the prompt that names it. If a counter's symbol appears in the prompt, that counter measures nothing.",
+    "already_fixed_forward": "apply_expect_halt writes expect_checked / expect_matched / expect_halts / expect_actions_abandoned into self.animation_counters, which solver._append_experiment_event already rolls into the events stream. Every future overlay must do the same. The max-harness stack should be audited for counters that only exist as prompt strings before it is pushed."
+  },
+  "WHAT_STAYS": [
+    "The persistent sandbox repair itself: the defect was real, the fix is correct, and it costs nothing.",
+    "The prompt deduplication fix: apply_abstaining_render's idempotence guard tested a different string than it inserted.",
+    "ONEWAVE keeps the rotation. Neither arm cleared its gate and rule 15(c) plus 15(d) both apply."
+  ]
+}

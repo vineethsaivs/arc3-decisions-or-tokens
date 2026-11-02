@@ -1,0 +1,25 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-28",
+ "gate": "gate-predeclared-2026-10-27-franzen-l1a1y8sv2r3lf.json: ship on m1 (W new prefill at most 9.70M per run), m2 (W generated tokens at least 6.40M), m3 (no blocked added-module imports and no __build_class__ errors in W transcripts), no harm (W levels at least pooled A - 2.5, and without W's best game at least A - 3) and a clean Kaggle probe of the pin build. No level gain claimed; a tie with a verified mechanism ships.",
+ "instrument": "offline: solution/sim/test_franzen_levelfirst.py and test_franzen_sandbox.py (all overlay orders); GCP G4 replica wave via ~/.cache/arc3-hunt/hunt_lf.sh (15 jobs, 10-27); Kaggle: 300 s per game probe, kernel.log, serve.log and transcripts",
+ "control": "the pin l1a1y8sv2r3kp12 v1; wave control l1a1y8sv2r3rq (4 concurrent runs pooled with 36 pin-family replica runs) and l1a1y8sv2r3hob on the held-out 25",
+ "arm": {
+  "kernel": "vineethsaivs/arc3-franzen-l1a1y8sv2r3kp12lf-a",
+  "version": 2,
+  "change": "the pin l1a1y8sv2r3kp12 plus overlay levelfirst (at a trim, earlier levels drain to a 12K tail before the usual drain; never drops a message the base trimmer keeps) and overlay imports (time with a no-op sleep, inspect, traceback, types, hashlib, pprint, timeit, dataclasses, typing, enum importable; class definitions and the missing builtins in the python sandbox; sys, builtins and pickle stay blocked)"
+ },
+ "evidence": {
+  "offline": "PASS: test_franzen_levelfirst.py (current level kept whole; post-trim context 34.8K against 55.4K on a three-level history; identical to the base on level 1, long levels and under budget; sandbox defines classes, imports the ten modules, sleep(30) twice in 0.1 to 0.5 s) and test_franzen_sandbox.py (all overlay orders); runtime_preflight --require-seal passes",
+  "m1_prefill": "PASS: W new prefill 9.37M per run against 10.39M pooled A (-9.8%; bar 9.70M)",
+  "m2_tokens": "PASS: W generated 6.511M per run against 6.394M pooled A (+1.8%; bar 6.40M)",
+  "m3_errors": "PASS: W transcripts (lf-w2-1, lf-w5-1) carry no blocked time/inspect/other added-module imports and no __build_class__ errors; only the deliberate sys/pickle/builtins blocks",
+  "no_harm": "PASS: W 8 runs 126, 123, 126, 120, 130, 124, 122, 123 = 124.2 levels against pooled A 124.0 (40 runs; concurrent A 133, 120, 121, 131); without W's best game (tn36) 118.6 against A 120.6 (bar A - 3 = 117.6)",
+  "held_out": "report only: W 87, 96 against concurrent A 82 and earlier A 80, 88",
+  "probe_v1": "NO READING: 10-28 09:21Z, model weight load 725 s, so the notebook's 720 s startup deadline released the benchmark before READY and the 300 s probe games ended 2 s after READY (0 tokens). 0 tracebacks; the server came up healthy and answered 200 OK. Not counted either way",
+  "probe_v2": "PASS: 10-28 09:58Z, weight load 454 s, deadline released the benchmark at 720 s and the server was READY 53 s later; games played: 7 levels (the kp12 probe on 10-26: 7), 221 actions, 228,802 generated tokens; 0 tracebacks in kernel.log and serve.log; all nine overlays installed (agentfix, imports, keepalive, levelfirst, memcap, promptobs, replycache, toolfast, wastefix); keepalive stopped when play began; watchdog attached; the three transcript tracebacks are the model's own snippet errors (TerminalStateActionError, StaleStateActionError)"
+ },
+ "promote": true,
+ "verdict": "PROMOTE. kp12lf passes m1, m2, m3 and no harm on the replica wave and installs, plays and runs clean on Kaggle (v2). It plays the pin's agent with less trim re-prefill and fewer dead snippets. Rollback: if its first live draw scores 0.00, or a day errors twice, re-pin l1a1y8sv2r3kp12 v1.",
+ "what_this_does_not_claim": "No level or score effect: W 124.2 against A 124.0 is a tie, and the expected effect (+2 to +3% effective compute, about +0.5 to +1 board point) is below what 8 runs resolve. levelfirst cannot fire in a 300 s probe (no trim), so its Kaggle evidence is install-only; its mechanism evidence is the replica wave. Both Kaggle probes today saw slow model loads (725 s and 454 s against 577 s READY on 10-26); in a scored run the kp12 keepalive covers that."
+}

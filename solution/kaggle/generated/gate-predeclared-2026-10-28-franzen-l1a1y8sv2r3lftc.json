@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-28",
+  "declared_before_results": true,
+  "candidate": "l1a1y8sv2r3lftc (bench W) against l1a1y8sv2r3lfk (bench A, same build serving Intel's Flash-Next); l1a1y8sv2r3kp12lftc (probe, would become the pin)",
+  "change": "serve ThinkingCap (bottlecapai's shorter-thinking post-train of Qwen3.8-Flash-Next; card: thinking tokens -38.5%, accuracy 88.8 against 89.8) in lamdang's Intel W4A16 AutoRound repackaging (Kaggle model lamdang/thinkingcap-qwen3-8-flash-next-w4a16-autoround v1, 181.25 GB, same tensor names, tokenizer and FR-Spec map) in place of Intel's Flash-Next; every other edit identical to the new pin's agent",
+  "why": "the clock binds (docs/research/2026-10-23-push/clock.md: the last tenth of the window still earns 7% of points), so fewer thinking tokens per decision could buy decisions; priors against: Swift 1.5 (also shorter thinking) lost twice on the September stack, and lower thinking effort cost Son Pham's team about 5 points",
+  "bench": "Kaggle ordinary commits, 25 public games, 7,200 s window, 14 streams; W and A pushed together (two GPU sessions), two pairs; Kaggle GPU quota only, no GCP spend",
+  "gate": {
+    "ship": "W mean levels >= pooled A + 8, where pooled A = the concurrent Kaggle A runs plus the 48 pin-family replica runs of 10-20 to 10-27 (about 124.1); AND W mean >= concurrent A mean + 5; AND no W run below 118; AND both W runs READY with 0 tracebacks in kernel.log and serve.log; then a clean Kaggle probe of l1a1y8sv2r3kp12lftc",
+    "early_stop": "if the first W run clears 118 levels or fewer, no second pair",
+    "report": "generated tokens, actions, draft accept length and tokens per second per run (serve.log), levels per game",
+    "power": "run SD about 6: a W mean of 2 against a known pooled mean has SE about 4.2, so a true +15 passes the +8 bar about 95% of the time and a true 0 about 3%; a true +8 about half. A tie does not ship: it would carry new risk (expert pruning list and drafter refit tuned on the base model; a rival's model input) for no measured gain"
+  },
+  "decision": "ship only on the rule above; the first live draw would be 10-30 at the earliest",
+  "input_risk": "the model is a rival's public Kaggle model; before pinning, copy it to our account if time allows, else pin with the rollback ready (an input removed mid-run errors the day without spending the slot; the job retries)",
+  "rollback": "re-pin l1a1y8sv2r3kp12lf v2 if the first live draw is 0.00 or a day errors twice"
+}

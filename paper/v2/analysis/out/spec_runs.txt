@@ -1,0 +1,40 @@
+== franzen-l1a1y8-v1  y8 (orig drafter, 64K map)
+   steps=3 draft_tokens=4 map=/kaggle/input/datasets/dfranzen/pennyroyal-v253/hot_tokens_64k.pt draft_kv=fp8_e4m3 max_running=14 d3=False hotmap_line=''
+   decode lines 4185, mean running 12.55
+   acc8 2.697 [2.680, 2.711]   acc14 2.678 [2.655, 2.697]   gen14 880.1 [871.4, 887.5]
+   clean step ms: 8:29.5[29.4,29.6](n=26), 10:32.1[31.8,32.4](n=63), 12:34.3[34.2,34.5](n=144), 13:35.7[35.5,35.8](n=283), 14:36.8[36.6,37.1](n=679)
+== franzen-l1a1y8r-v1  y8r
+   steps=3 draft_tokens=4 map=/kaggle/input/datasets/dfranzen/pennyroyal-v253/hot_tokens_64k.pt draft_kv=fp8_e4m3 max_running=14 d3=False hotmap_line=''
+   decode lines 4078, mean running 12.56
+   acc8 2.698 [2.681, 2.711]   acc14 2.673 [2.649, 2.696]   gen14 872.8 [862.1, 884.2]
+   clean step ms: 8:29.1[28.8,29.8](n=21), 10:32.1[31.8,32.4](n=72), 12:34.5[34.3,34.7](n=173), 13:35.7[35.6,35.9](n=318), 14:36.8[36.5,37.0](n=621)
+== franzen-l1a1y8sv2-v1  y8sv2
+   steps=3 draft_tokens=4 map=/kaggle/input/datasets/dfranzen/pennyroyal-v253/hot_tokens_64k.pt draft_kv=fp8_e4m3 max_running=14 d3=False hotmap_line=''
+   decode lines 4291, mean running 12.50
+   acc8 2.704 [2.688, 2.717]   acc14 2.684 [2.661, 2.706]   gen14 906.0 [895.7, 915.9]
+   clean step ms: 8:29.2[28.5,29.3](n=35), 10:31.7[31.6,31.9](n=73), 12:34.1[34.0,34.2](n=192), 13:35.4[35.3,35.6](n=311), 14:36.5[36.2,36.7](n=718)
+== franzen-l1a1y8sv2r1-v1  r1 (orig drafter)
+   steps=3 draft_tokens=4 map=/kaggle/input/datasets/dfranzen/pennyroyal-v253/hot_tokens_64k.pt draft_kv=fp8_e4m3 max_running=14 d3=False hotmap_line=''
+   decode lines 4338, mean running 13.13
+   acc8 2.699 [2.685, 2.713]   acc14 2.683 [2.665, 2.698]   gen14 924.8 [916.4, 931.8]
+   clean step ms: 12:34.2[34.1,34.4](n=78), 13:35.5[35.4,35.6](n=271), 14:36.5[36.3,36.6](n=910)
+== franzen-l1a1y8sv2r2-v1  r2 (D3)
+   steps=3 draft_tokens=4 map=/kaggle/input/datasets/dfranzen/pennyroyal-v253/hot_tokens_64k.pt draft_kv=fp8_e4m3 max_running=14 d3=True hotmap_line=''
+   decode lines 4333, mean running 13.19
+   acc8 2.827 [2.810, 2.841]   acc14 2.812 [2.791, 2.829]   gen14 973.3 [966.5, 979.4]
+   clean step ms: 12:34.2[34.0,34.4](n=59), 13:35.4[35.3,35.5](n=263), 14:36.5[36.4,36.7](n=916)
+== franzen-l1a1y8sv2r3-v1  r3 (D3, the pin)
+   steps=3 draft_tokens=4 map=/kaggle/input/datasets/dfranzen/pennyroyal-v253/hot_tokens_64k.pt draft_kv=fp8_e4m3 max_running=14 d3=True hotmap_line=''
+   decode lines 4318, mean running 13.18
+   acc8 2.830 [2.813, 2.844]   acc14 2.814 [2.791, 2.833]   gen14 975.3 [967.2, 982.6]
+   clean step ms: 12:34.3[33.8,34.5](n=47), 13:35.5[35.3,35.7](n=266), 14:36.6[36.5,36.8](n=1028)
+== franzen-l1a1y8sv2r3s4-v1  r3s4 (D3, 4 steps)
+   steps=4 draft_tokens=5 map=/kaggle/input/datasets/dfranzen/pennyroyal-v253/hot_tokens_64k.pt draft_kv=fp8_e4m3 max_running=14 d3=True hotmap_line=''
+   decode lines 3855, mean running 13.08
+   acc8 3.114 [3.091, 3.134]   acc14 3.089 [3.061, 3.113]   gen14 933.5 [926.7, 939.9]
+   clean step ms: 12:37.8[37.5,38.1](n=61), 13:40.1[39.9,40.2](n=249), 14:41.5[41.4,41.7](n=677)
+== franzen-l1a1y8sv2r3hm32-v1  hm32 (D3, 32K map) UNADJUDICATED
+   steps=3 draft_tokens=4 map=/tmp/sgl-intel/hotmap/arc-traffic-32768.pt draft_kv=fp8_e4m3 max_running=14 d3=True hotmap_line='hotmap: ARC traffic map 32768 ids (bitmap sha256 ad21d436929'
+   decode lines 4369, mean running 13.16
+   acc8 2.838 [2.820, 2.857]   acc14 2.818 [2.795, 2.841]   gen14 987.1 [979.3, 995.4]
+   clean step ms: 12:33.5[33.4,33.8](n=71), 13:35.2[35.0,35.4](n=261), 14:36.0[35.8,36.2](n=958)

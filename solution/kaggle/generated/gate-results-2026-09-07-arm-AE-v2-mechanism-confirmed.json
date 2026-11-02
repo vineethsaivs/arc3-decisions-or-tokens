@@ -1,0 +1,52 @@
+{
+ "schema_version": 1,
+ "created_at": "2026-09-07T17:20:00+00:00",
+ "arm": "AE v2",
+ "subject": "Housekeeping-band no-impact stop: MECHANISM CONFIRMED LIVE and correctly targeted. Levels and deaths both move the right way but stay inside noise.",
+ "run": {
+  "kernel": "vineethsaivs/arc3-q38-noimpact-ordinary-commit v2",
+  "games": 25,
+  "passes": 1,
+  "patch_confirmed_in_kernel_log": true
+ },
+ "levels_vs_control_pass0": {
+  "arm": 37,
+  "control": 33,
+  "delta": "+4",
+  "pass_matched": "5 up / 3 down / 17 tied, up-dn = +2 => TIE, inside the |up-dn| <= 8 null",
+  "ex_ft09_mean25": "+0.593 vs the control's 2-pass pool",
+  "note": "the tool's POOLED row compares 1 arm pass against the control's 2 pooled passes and is apples-to-oranges; the pass-matched row is the only valid read."
+ },
+ "mechanism_vs_predeclared_gate": {
+  "M1 deaths per run": {
+   "control": 0.806,
+   "arm_v1": 1.08,
+   "arm_v2": 0.6,
+   "predeclared_pass": "<= 0.55",
+   "verdict": "MISS by 0.05. Down 26% from control, but 15 observed deaths against 20.2 expected at the control rate is only ~1.15 Poisson sd. And deaths/run ran 0.806 -> 1.08 -> 0.60 across three single runs of near-identical configs, so this counter is itself noisy."
+  },
+  "M2 consumed-strip share": {
+   "control": "84%",
+   "arm_v1": "81.5%",
+   "arm_v2": "73.3%",
+   "verdict": "PASS, fell as predicted"
+  },
+  "M3 stops fire only on banded games": {
+   "stops": 10,
+   "games": "tn36 6, lp85 3, re86 1",
+   "band_replay": "a 60-press replay of the learner over the arm's own boards puts tn36 row 1 at 1.00 and lp85 col 27 at 0.94 (both real bands). re86's best axis is col 30 at 0.80 over 60 presses, below the 0.9 threshold, but the learner uses a rolling 20-press window where a transient band is legitimate. 9 of 10 stops on clearly banded games, 1 borderline.",
+   "verdict": "PASS. Not a false-positive machine."
+  },
+  "blind_batch_share": {
+   "control": "76%",
+   "arm_v2": "53.3%",
+   "note": "fell, consistent with the stop truncating blind sequences"
+  }
+ },
+ "verdict": "MECHANISM CONFIRMED, EFFECT UNRESOLVED. v1 proved the stop could not fire (it lived only in the multi-action-batch branch while the model issues 2,734 of 2,734 actions as single calls in python loops); v2's soft terminal fixed that and the stop now fires, targeted at real bands. Every outcome number moves the right way (+4 levels, deaths -26%, strip share -11pp, blind-batch share -23pp) and not one of them clears its noise band on a single 25-game pass.",
+ "next": "One replicate of v2 on Kaggle (2.4 of 10 remaining GPU-h) to test whether deaths/run stays near 0.60 or reverts toward 1.08. That is the cheapest test of the only counter that is supposed to move.",
+ "reproduce": [
+  "python3 solution/analysis/adjudicate_bench.py <benchmark.json> solution/analysis/fixtures/control-p2-50play.slim.json",
+  "python3 solution/analysis/death_mechanism_counters.py <dir of *_events.jsonl>"
+ ]
+}

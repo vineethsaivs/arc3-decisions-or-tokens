@@ -1,0 +1,129 @@
+## A. GPU wall time of the 7,200 s window (seconds; share of window)
+
+| bucket | r1 | r2 | r3 | control | y8sv2 | y8 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| decode steps |   6161  85.6% |   6170  85.7% |   6146  85.4% |   5867  81.5% |   5951  82.6% |   5933  82.4% |
+| prefill, new tokens (compute) |    732  10.2% |    766  10.6% |    722  10.0% |    739  10.3% |    825  11.5% |    686   9.5% |
+| prefill batch setup (per batch) |    171   2.4% |    120   1.7% |    298   4.1% |    242   3.4% |      9   0.1% |    129   1.8% |
+| scheduler stall (per cached token) |    102   1.4% |    139   1.9% |     38   0.5% |    306   4.3% |    382   5.3% |    420   5.8% |
+| no-prefill intervals, extra (idle, host gap) |     21   0.3% |      0   0.0% |    -22  -0.3% |     42   0.6% |     19   0.3% |     31   0.4% |
+| fit residual in prefill intervals |     -4  -0.1% |     -8  -0.1% |      6   0.1% |    -11  -0.2% |      0   0.0% |    -11  -0.2% |
+| head (before first Decode line) + tail |     17   0.2% |     12   0.2% |     12   0.2% |     15   0.2% |     13   0.2% |     13   0.2% |
+| **sum** |   7200 |   7200 |   7200 |   7200 |   7200 |   7200 |
+
+95% intervals (300 s block bootstrap of the prefill fit, 300 draws), seconds:
+
+- new-token compute: r1 732 [691, 777]; r2 766 [707, 840]; r3 722 [655, 768]; control 739 [690, 798]; y8sv2 825 [755, 886]; y8 686 [640, 750]
+- batch setup: r1 171 [32, 286]; r2 120 [-95, 263]; r3 298 [178, 466]; control 242 [108, 353]; y8sv2 9 [-128, 156]; y8 129 [-64, 250]
+- scheduler stall: r1 102 [23, 192]; r2 139 [43, 267]; r3 38 [-56, 107]; control 306 [255, 367]; y8sv2 382 [300, 455]; y8 420 [332, 526]
+
+Fitted costs (ms; 95% block-bootstrap interval):
+
+- per prefill batch: r1 47.7 [8.9, 79.7]; r2 33.2 [-26.3, 72.7]; r3 81.9 [48.9, 128.3]; control 77.7 [34.6, 113.3]; y8sv2 2.8 [-39.5, 48.3]; y8 39.9 [-19.7, 77.6]
+- per 1K new tokens: r1 74.6 [70.5, 79.2]; r2 76.4 [70.5, 83.8]; r3 69.9 [63.3, 74.4]; control 71.9 [67.2, 77.7]; y8sv2 84.0 [76.9, 90.3]; y8 76.5 [71.5, 83.7]
+- per 10K cached tokens: r1 5.0 [1.2, 9.5]; r2 6.9 [2.1, 13.2]; r3 1.9 [-2.8, 5.3]; control 18.6 [15.5, 22.3]; y8sv2 22.0 [17.3, 26.2]; y8 22.9 [18.1, 28.7]
+- F1 estimator (stall_servelog.py, per 10K cached, +- SE): r1 1.7 +- 2.6; r2 1.7 +- 2.7; r3 -1.3 +- 2.6; control 16.0 +- 2.7; y8sv2 13.4 +- 2.6; y8 20.6 +- 2.7
+- F1 small prefill at 60 to 120K context (ms, +- SE, n): r1 90 +- 24 (429); r2 76 +- 24 (429); r3 92 +- 24 (436); control 207 +- 33 (216); y8sv2 194 +- 25 (389); y8 229 +- 24 (388)
+
+## Counters of the window
+
+| quantity | r1 | r2 | r3 | control | y8sv2 | y8 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| intervals (clean / with prefill) | 4336 (1284 / 2025) | 4331 (1254 / 2042) | 4312 (1361 / 1970) | 4129 (1475 / 1630) | 4289 (1512 / 1702) | 4231 (1392 / 1735) |
+| window seconds in clean intervals, measured vs modeled | 1872 vs 1851 | 1825 vs 1814 | 1963 vs 1974 | 2149 vs 2116 | 2117 vs 2114 | 1970 vs 1961 |
+| decode steps rescaled to the clean-interval timestamps (s) | 6230 | 6208 | 6112 | 5959 | 5958 | 5960 |
+| decode step ms at 14 running, 75K context | 36.4 | 36.5 | 36.6 | 36.9 | 36.5 | 36.8 |
+| generated tokens in window, from Decode lines (M) | 6.150 | 6.453 | 6.426 | 5.658 | 5.799 | 5.707 |
+| same from ReqTimeStats, pro-rated (M) | 6.147 | 6.453 | 6.429 | 5.642 | 5.792 | 5.698 |
+| harness tokens, whole run (M) | 6.125 | 6.435 | 6.426 | 5.624 | 5.794 | 5.682 |
+| tokens/s: window (log) / harness | 854 / 846 | 896 / 890 | 892 / 885 | 786 / 774 | 805 / 800 | 793 / 781 |
+| decode-phase tokens/s (tokens / decode seconds) | 998 | 1046 | 1046 | 964 | 975 | 962 |
+| accept length, mean of Decode lines | 2.699 | 2.827 | 2.830 | 2.673 | 2.704 | 2.697 |
+| running requests: Decode-line mean / time-weighted / ReqTimeStats ratio | 13.13 / 13.10 / 0.995 | 13.19 / 13.15 / 0.993 | 13.18 / 13.14 / 0.993 | 12.81 / 12.80 / 0.990 | 12.50 / 12.52 / 0.989 | 12.49 / 12.52 / 0.990 |
+| cache hit (cached / input tokens, ReqTimeStats) | 95.4% | 95.3% | 95.1% | 94.0% | 94.6% | 95.4% |
+| new prefill tokens (M): window / whole run | 9.81 / 9.86 | 10.03 / 10.02 | 10.33 / 10.39 | 10.27 / 10.47 | 9.82 / 9.93 | 8.96 / 8.91 |
+| cached tokens (M), window | 202.4 | 201.9 | 200.2 | 164.6 | 173.6 | 183.1 |
+| prefill batches (lines) in window | 3593 | 3621 | 3633 | 3118 | 3228 | 3220 |
+| 14-slot decode ceiling tok/s (14 x accept / step) ; decode-phase rate / ceiling | 1038 ; 0.962 | 1085 ; 0.964 | 1083 ; 0.966 | 1013 ; 0.952 | 1037 ; 0.940 | 1028 ; 0.936 |
+| prefill seconds the cache saved at the marginal cost (inference) | 15089 | 15427 | 13991 | 11841 | 14589 | 14004 |
+| Decode lines with queue-req > 0 | 1.8% | 2.6% | 2.3% | 2.5% | 1.8% | 1.9% |
+| head: seconds / prefill lines / new tokens | 11 / 6 / 31232 | 11 / 5 / 31168 | 11 / 6 / 31872 | 14 / 11 / 75392 | 12 / 5 / 30784 | 11 / 6 / 31296 |
+| tail seconds | 6 | 1 | 1 | 1 | 1 | 2 |
+
+## Per-token cost split
+
+| quantity | r1 | r2 | r3 | control | y8sv2 | y8 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| GPU wall ms per generated token, all buckets | 1.171 | 1.116 | 1.121 | 1.272 | 1.242 | 1.262 |
+|   decode steps | 1.002 | 0.956 | 0.956 | 1.037 | 1.026 | 1.040 |
+|   prefill (compute + setup) | 0.147 | 0.137 | 0.159 | 0.173 | 0.144 | 0.143 |
+|   scheduler stall | 0.017 | 0.022 | 0.006 | 0.054 | 0.066 | 0.074 |
+| prefill ms per 1K new tokens, all-in direct (initial_prefill_elapsed) | 111.7 | 111.5 | 110.0 | 120.1 | 122.6 | 133.8 |
+| prefill ms per 1K new tokens, all-in log arithmetic (compute+setup+stall) | 102.4 | 102.3 | 102.4 | 125.4 | 123.9 | 137.7 |
+| prefill ms per 1K new tokens, marginal (fit) | 74.6 | 76.4 | 69.9 | 71.9 | 84.0 | 76.5 |
+| servelog.py decode share (F1 definition) | 84.6% | 84.6% | 84.2% | 80.0% | 81.2% | 80.8% |
+
+## Checks that do not share the construction
+
+| check | r1 | r2 | r3 | control | y8sv2 | y8 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| window closes: head + intervals + tail (s) | 7200 | 7200 | 7200 | 7200 | 7200 | 7200 |
+| timestamp noise, 1 SD (s): clean intervals / no-prefill intervals | 15 / 20 | 14 / 20 | 15 / 20 | 16 / 20 | 16 / 21 | 15 / 20 |
+| direct prefill s in window (ReqTimeStats) | 1082 | 1099 | 1119 | 1223 | 1188 | 1179 |
+| log-line prefill s (compute + setup + stall) | 1005 | 1026 | 1058 | 1287 | 1217 | 1234 |
+| direct minus log-line (s) / per request (ms) | 78 / 27 | 73 / 25 | 61 / 21 | -64 / -27 | -29 / -11 | -55 / -21 |
+| step model on the no-prefill intervals it was not fitted on: measured / modeled (s) | 1455 / 1455 | 1457 / 1468 | 1378 / 1389 | 1455 / 1446 | 1498 / 1481 | 1563 / 1541 |
+| server idle: seconds with 0 requests resident | 1.0 | 1.1 | 1.0 | 1.1 | 1.2 | 1.1 |
+| tokens: Decode lines / ReqTimeStats | 1.0005 | 1.0001 | 0.9996 | 1.0028 | 1.0013 | 1.0017 |
+
+## B. Stream-slot time (slot-seconds, 14 slots)
+
+| bucket | r1 | r2 | r3 | control | y8sv2 | y8 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| capacity: 14 slots x games alive |   100800 |   100800 |   100800 |   100800 |   100800 |   100800 |
+| decode phase, GPU decoding (progress) |    80518  79.9% |    80812  80.2% |    80526  79.9% |    74531  73.9% |    73891  73.3% |    73739  73.2% |
+| decode phase, waiting for non-decode GPU work (inference) |    13069  13.0% |    13066  13.0% |    13305  13.2% |    16535  16.4% |    15068  14.9% |    15332  15.2% |
+| own prefill |     1082   1.1% |     1099   1.1% |     1119   1.1% |     1223   1.2% |     1188   1.2% |     1179   1.2% |
+| queued in the server |      353   0.4% |      446   0.4% |      409   0.4% |      521   0.5% |      573   0.6% |      441   0.4% |
+| no request on the server |     5777   5.7% |     5378   5.3% |     5441   5.4% |     7990   7.9% |    10081  10.0% |    10110  10.0% |
+|   of which in-batch host gaps (measured) |      563   0.6% |      485   0.5% |      344   0.3% |     2092   2.1% |     3410   3.4% |     3030   3.0% |
+|   of which not logged |     5214   5.2% |     4893   4.9% |     5097   5.1% |     5898   5.9% |     6671   6.6% |     7080   7.0% |
+| games alive at 7,199 s |       15 |       15 |       16 |       18 |       17 |       14 |
+
+## Other 2,048-yield controls (GCP G4, same lineage as the control)
+
+| run | decode s (share) | new-token prefill | batch setup | scheduler stall [95%] | unattributed | edges | tokens/s window | running | in-batch gaps (slot-s) | direct prefill s |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| gcp-v1 | 5884 (81.7%) | 774 | 126 | 386 [299, 451] | 23 | 7 | 796 | 12.68 | 2731 | 1198 |
+| gcp-v2 | 5802 (80.6%) | 812 | 232 | 313 [254, 389] | 34 | 8 | 777 | 12.52 | 2936 | 1296 |
+
+## Direct prefill seconds across the yield family (whole run, sum of initial_prefill_elapsed)
+
+| run | requests | new prefill tokens (M) | prefill s | share of 7,200 s | ms per 1K new |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| gcp-l1a1-v1 | 2414 | 10.07 | 1219 |  16.9% | 121.1 |
+| gcp-l1a1-v2 | 2464 | 10.98 | 1328 |  18.4% | 121.0 |
+| franzen-l1a1tbfc-v1 | 2390 | 10.47 | 1258 |  17.5% | 120.1 |
+| franzen-l1a1y8-v1 | 2632 | 8.91 | 1193 |  16.6% | 133.8 |
+| franzen-l1a1y8r-v1 | 2552 | 9.63 | 1237 |  17.2% | 128.5 |
+| franzen-l1a1y8sv2-v1 | 2531 | 9.93 | 1217 |  16.9% | 122.6 |
+| franzen-l1a1y8sv2r1-v1 | 2889 | 9.86 | 1101 |  15.3% | 111.7 |
+| franzen-l1a1y8sv2r2-v1 | 2899 | 10.02 | 1117 |  15.5% | 111.5 |
+| franzen-l1a1y8sv2r3-v1 | 2874 | 10.39 | 1143 |  15.9% | 110.0 |
+
+D7 check (the pair-level contrast used for FRAMING D7):
+
+- new prefill tokens, GCP 2,048 pair 10.52M, yield-8,192 pair 9.27M: freed 1.25M tokens
+- D7 arithmetic: freed tokens x yield-pair average cost 131 ms per 1K = 164 s = 2.3% of the window
+- at the marginal cost 73 ms per 1K (fit, mean of r1, r2, r3, control): 91 s
+- direct timers: GCP pair mean 1274 s minus yield pair mean 1215 s = 58 s = 0.8%; spread inside the GCP pair 109 s
+- same-platform control (Kaggle, same lineage, 2,048): 1258 s minus yield pair mean 1215 s = 43 s = 0.6%
+
+## Throughput bridge (arithmetic identity on counters, not an attribution): tokens/s = decode share x (tokens / decode second)
+
+| from -> to | tokens/s ratio | decode share | decode-phase rate | accept length | running requests | rate / (accept x running) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| y8sv2 -> r1 | 1.060 | 1.035 | 1.024 | 0.998 | 1.051 | 0.977 |
+| y8sv2 -> r2 | 1.113 | 1.037 | 1.073 | 1.045 | 1.055 | 0.973 |
+| y8sv2 -> r3 | 1.108 | 1.033 | 1.073 | 1.046 | 1.055 | 0.972 |
+| control -> r3 | 1.136 | 1.048 | 1.084 | 1.059 | 1.029 | 0.995 |

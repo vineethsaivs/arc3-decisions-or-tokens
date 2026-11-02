@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-20",
+  "gate": "gate-predeclared-2026-10-12-franzen-l1a1y8sv2r3fbp.json (declared 08:55Z, before the kernel left the queue); promotion rule: docs/research/2026-10-19-top/PLAN.md section 7 (input-loss fallback)",
+  "instrument": "300 s per game Kaggle probe; kernel.log and serve.log",
+  "control": "l1a1y8sv2r3p v1 probe (the pin): READY 493 s, accept 2.707 at 8+ running (n 189), 38 shards",
+  "arm": {
+    "kernel": "vineethsaivs/arc3-franzen-l1a1y8sv2r3fbp-a",
+    "version": 1,
+    "change": "the pinned recipe l1a1y8sv2r3p on our own inputs: wheelhouse, drafter and TAAF bundle from our kernel vineethsaivs/arc3-input-copy-a v1, the model from jamalsaeedi/intel-qwen3-8-flash-next-w4a16-autoround (Transformers/default/1 and /ple/1 joined by a symlink view), D3 from vineethsaivs/flashnext-mtp-d3"
+  },
+  "evidence": {
+    "mounts": "PASS: 'fallback inputs: sha256 verified for 296 copied files'; 'model view /tmp/fallback-model 50 files match the original by name and size'; 'fallback-model | shards: 38 | PLE dtype: checkpoint default' (the pin: 38 shards, same PLE dtype)",
+    "boot": "PASS: GPU_GATE PASS; READY after 505 s (limit 720)",
+    "install": "PASS: 'watchdog: watching pid 478', 0 relaunches; 'd3draft: 29 mtp.* tensors spliced'; arm overlays memcap, toolfast, promptobs-lite, wastefix, replycache, agentfix; mem_fraction_static 0.955; '#OURS_FORM ok version=d_prime'",
+    "accept": "PASS: 2.683 at 8+ running (n 188) against the pin's 2.707, a difference of 0.024 (band 0.03)",
+    "clean": "PASS: 0 tracebacks, 0 OOM; failclosed summary {'games': 25, 'levels': 6, 'actions': 284}"
+  },
+  "verdict": "PROMOTE, input-loss fallback only. r3fbp v1 passed its predeclared probe gate on 2026-10-12 (gate-results-2026-10-12-franzen-l1a1y8sv2r3fbp.json) and plays the pin's agent on our own input copies. Use it only when a dfranzen input of the pin becomes unreadable: python3 solution/kaggle/promote_franzen_arm.py l1a1y8sv2r3fbp --gate-record solution/kaggle/generated/gate-results-2026-10-20-franzen-l1a1y8sv2r3fbp-promote.json --version 1 --pin",
+  "what_this_does_not_claim": "It does not remove the dependency on a third party: the model now comes from jamalsaeedi's public mirror instead of dfranzen's. Only the drafter, wheelhouse, bundle and D3 are ours.",
+  "promote": true
+}

@@ -1,0 +1,12 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-11",
+ "gate": "gate-predeclared-2026-10-11-franzen-l1a1y8sv3.json (declared 18:12Z, before the run)",
+ "arm": {"kernel": "vineethsaivs/arc3-franzen-l1a1y8sv3-a", "version": 1, "change": "l1a1y8sv2 plus --speculative-draft-kv-cache-dtype bf16"},
+ "evidence": {
+  "bench": "0 levels, 0 tokens: READY after 562 s, then the scheduler hit CUDA OOM at 18:20:49Z on the first large prefill (PLE short-conv, qwen4_exp.py:1125; 47 MiB free) and the server exited; the harness spent the window retrying a dead endpoint",
+  "cause": "the BF16 draft pool is 2.92 GB against 1.46 GB in FP8 (one slot per target token, 1,531,648 tokens), which took the last of the activation headroom at mem_fraction_static 0.96"
+ },
+ "verdict": "REJECT as built. BF16 draft KV only fits with less static memory (for example mem_fraction 0.945), which shrinks the target KV pool about 8%; not worth a slot unless the headroom question is settled first.",
+ "promote": false
+}

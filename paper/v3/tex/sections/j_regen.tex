@@ -1,0 +1,150 @@
+\section{Regeneration and compute}\label{app:regen}
+
+\subsection{Scripts from the v2 analysis}
+
+Most claims in Appendix~\ref{app:claims} come from a script in \texttt{paper/v2/analysis/} that reads recorded runs and writes small text or JSON files; none starts a run or needs a GPU. Seven are read from records or source code instead: A3, D14, E1, E9, F1, F2 and F3 (the time ledger re-derives part of F1). % A3 D14 E1 E9 F1 F2 F3
+Table~\ref{tab:regen} lists each script, its output, the claim ids it produces and its runtime. Scripts run on one CPU core with the Python standard library and no network unless marked. The three new analyses and the plateau figure also import the repository's simulator (\texttt{scheduler\_sim.py}, through \texttt{e5\_lib.py}) and read the recorded runs.
+The only cost is the development run itself: about 2 h 10 min and \$4 per 25-game run on the earlier rented VM with the same card (Sec.~\ref{app:compute} has current rates). % NEW:cost H1
+The leaderboard score cannot be regenerated; it is verified by submission ID (Sec.~\ref{sec:board}). % G7 V3-B2
+
+{\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.25\linewidth}>{\raggedright\arraybackslash}p{0.27\linewidth}>{\raggedright\arraybackslash}p{0.2\linewidth}>{\raggedright\arraybackslash}p{0.2\linewidth}@{}}
+\caption{Scripts, outputs, the claims they produce (Appendix~\ref{app:claims}) and runtimes. Paths under \texttt{out/} are in \texttt{paper/v2/analysis/}; \texttt{evidence/} paths are in \texttt{paper/v2/}. Runtimes come from the driver scripts' headers, or were timed on 2026-10-13 where marked.}\label{tab:regen}\\
+\toprule
+Script & Output & Claims & Runtime \\
+\midrule
+\endfirsthead
+\multicolumn{4}{@{}l}{\textit{Table~\ref{tab:regen}, continued}} \\
+\toprule
+Script & Output & Claims & Runtime \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\bottomrule
+\endlastfoot
+\multicolumn{4}{@{}p{0.96\linewidth}}{\textit{Replica runs (the only costly input; every script below reads recorded runs and starts none)}} \\*
+25-game replica run on a GCP G4 spot instance & \texttt{benchmark.json}, \texttt{serve.log} per run & inputs of every row below & 2 h 10 min; \$4 per run \\ % NEW:cost
+\midrule
+\multicolumn{4}{@{}p{0.96\linewidth}}{\textit{Instrument: \texttt{e4\_run\_all.sh}, about 2 min for all}} \\*
+\texttt{e4\_\allowbreak{}inventory.py} & \texttt{out/\allowbreak{}e4\_\allowbreak{}inventory.json} & inputs of the rows below & in driver \\ % none
+\texttt{e4\_\allowbreak{}identity.py} & \texttt{out/\allowbreak{}e4\_\allowbreak{}identity.txt} & supports B1 & in driver \\ % B1
+\texttt{e4\_\allowbreak{}noise.py} & \texttt{out/\allowbreak{}e4\_\allowbreak{}noise.txt}, \texttt{.json} & B1 to B5 & in driver \\ % B1 B5
+\texttt{e4\_\allowbreak{}protocol.py} & \texttt{out/\allowbreak{}e4\_\allowbreak{}protocol.txt}, \texttt{.json} & B5, B6, G3 & in driver \\ % B5 B6 G3
+\texttt{e4\_\allowbreak{}gates.py} & \texttt{out/\allowbreak{}e4\_\allowbreak{}gates.txt}, \texttt{.json} & B7 & in driver \\ % B7
+\texttt{e4\_\allowbreak{}serving.py} & \texttt{out/\allowbreak{}e4\_\allowbreak{}serving.txt}, \texttt{.json} & B8 & in driver \\ % B8
+\texttt{e4\_\allowbreak{}incidents.py} & \texttt{out/\allowbreak{}e4\_\allowbreak{}incidents.txt}, \texttt{.json} & B10, B12 & in driver \\ % B10 B12
+\texttt{e4\_\allowbreak{}wave\_\allowbreak{}recount.py} & \texttt{out/\allowbreak{}e4\_\allowbreak{}wave\_\allowbreak{}recount.txt} & B11 & in driver \\ % B11
+\texttt{e4\_\allowbreak{}board.py} & \texttt{out/\allowbreak{}e4\_\allowbreak{}board.txt}, \texttt{.json} & B11, G6 & in driver \\ % B11 G6
+\texttt{e4\_\allowbreak{}varcomp.py}, \texttt{e4\_\allowbreak{}stats.py}, \texttt{e4\_\allowbreak{}figure.py} & \texttt{out/\allowbreak{}e4\_\allowbreak{}varcomp.txt}, \texttt{e4\_\allowbreak{}fig\_\allowbreak{}data.csv} & run-level variance and figure data; no map claim & in driver (varcomp is the slowest) \\ % none
+\midrule
+\multicolumn{4}{@{}p{0.96\linewidth}}{\textit{Scoring theory: \texttt{e5\_run\_all.sh}, about 25 min on one core for all}} \\*
+\texttt{e5\_\allowbreak{}scorer.py} & \texttt{out/\allowbreak{}e5\_\allowbreak{}scorer.json} & A1, A2 & in driver; needs the competition wheel \\ % A1 A2
+\texttt{e5\_\allowbreak{}conversion.py} & \texttt{out/\allowbreak{}e5\_\allowbreak{}conversion.json} & C1, C3, C6 & about 8 min \\ % C1 C3 C6
+\texttt{e5\_\allowbreak{}ceiling.py}, \texttt{e5\_\allowbreak{}poolcheck.py} & \texttt{out/\allowbreak{}e5\_\allowbreak{}ceiling.json}, \texttt{e5\_\allowbreak{}poolcheck.json} & C2, C3 & in driver \\ % C2 C3
+\texttt{e5\_\allowbreak{}detect.py} & \texttt{out/\allowbreak{}e5\_\allowbreak{}detect.json} & C4, C9 & in driver \\ % C4 C9
+\texttt{e5\_\allowbreak{}curvecheck.py} & \texttt{out/\allowbreak{}e5\_\allowbreak{}curvecheck.json} & C5 & in driver \\ % C5
+\texttt{e5\_\allowbreak{}yield\_\allowbreak{}ceiling.py}, \texttt{f1\_\allowbreak{}curves.py} & \texttt{out/\allowbreak{}e5\_\allowbreak{}yield\_\allowbreak{}ceiling.json}, \texttt{f1\_\allowbreak{}curves.json} & C7 & in driver; \texttt{f1\_curves.py} about 2 min alone \\ % C7
+\texttt{e5\_\allowbreak{}ablation.py}, \texttt{e5\_\allowbreak{}equiv.py} & \texttt{out/\allowbreak{}e5\_\allowbreak{}ablation.json}, \texttt{e5\_\allowbreak{}equiv.json} & C8 & in driver \\ % C8
+\texttt{e5\_\allowbreak{}fluid.py}, \texttt{e5\_\allowbreak{}scalelaw.py}, \texttt{e5\_\allowbreak{}hazard.py}, \texttt{e5\_\allowbreak{}patience.py} & \texttt{out/\allowbreak{}e5\_\allowbreak{}*.json} & supporting checks; no map claim & in driver \\ % none
+\midrule
+\multicolumn{4}{@{}p{0.96\linewidth}}{\textit{Yield: \texttt{yield\_all.sh}, about 3 min for all}} \\*
+\texttt{yield\_\allowbreak{}runs.py} & \texttt{out/\allowbreak{}yield\_\allowbreak{}runs.md}, \texttt{.json} & run table behind D1 to D3 & in driver \\ % D1 D3
+\texttt{yield\_\allowbreak{}stats.py} & \texttt{out/\allowbreak{}yield\_\allowbreak{}stats.md}, \texttt{.json} & D1, D3, D4, D7, D8, D10 & in driver \\ % D1 D10 D3 D4 D7 D8
+\texttt{yield\_\allowbreak{}mech.py} & \texttt{out/\allowbreak{}yield\_\allowbreak{}mech.md}, \texttt{.json} & D5, D6 & in driver \\ % D5 D6
+\texttt{yield\_\allowbreak{}rd.py} & \texttt{out/\allowbreak{}yield\_\allowbreak{}rd.md}, \texttt{.json} & D12 & in driver \\ % D12
+\texttt{yield\_\allowbreak{}pertoken.py} & \texttt{out/\allowbreak{}yield\_\allowbreak{}pertoken.md}, \texttt{.json} & D13 & in driver \\ % D13
+\texttt{yield\_\allowbreak{}board.py}, \texttt{yield\_\allowbreak{}arm\_\allowbreak{}diff.py} & \texttt{out/\allowbreak{}yield\_\allowbreak{}board.md}, \texttt{yield\_\allowbreak{}arm\_\allowbreak{}diff.md} & board context and cell-level diffs of arms; no map claim & in driver \\ % none
+\texttt{framing\_\allowbreak{}stats\_\allowbreak{}check.py} & prints only & D1, D2, G5 & 8 s (timed) \\ % D1 D2 G5
+\texttt{framing\_\allowbreak{}final\_\allowbreak{}check.py} & prints only & B2, B4, D2, D9, E6 & 9 s (timed) \\ % B2 B4 D2 D9 E6
+\midrule
+\multicolumn{4}{@{}p{0.96\linewidth}}{\textit{Speculative decoding: \texttt{run\_spec.sh}, about 1.5 min without \texttt{spec\_vocab.py} (timed)}} \\*
+\texttt{spec\_\allowbreak{}runs.py} & \texttt{out/\allowbreak{}spec\_\allowbreak{}runs.txt} & per-run serving table (input) & 31 s (timed) \\ % none
+\texttt{spec\_\allowbreak{}step.py} & \texttt{out/\allowbreak{}spec\_\allowbreak{}step.txt} & E4 & 3 s (timed) \\ % E4
+\texttt{spec\_\allowbreak{}contrasts.py} & \texttt{out/\allowbreak{}spec\_\allowbreak{}contrasts.txt} & E5, E7 & 58 s (timed) \\ % E5 E7
+\texttt{spec\_\allowbreak{}hist.py} & \texttt{out/\allowbreak{}spec\_\allowbreak{}hist.txt} & E2 & under 1 s (timed) \\ % E2
+\texttt{spec\_\allowbreak{}greedy.py} & \texttt{out/\allowbreak{}spec\_\allowbreak{}greedy.txt} & E3 & 1 s (timed) \\ % E3
+\texttt{spec\_\allowbreak{}model.py} & \texttt{out/\allowbreak{}spec\_\allowbreak{}model.txt} & E6 & under 1 s (timed) \\ % E6
+\texttt{spec\_\allowbreak{}vocab.py} & \texttt{out/\allowbreak{}spec\_\allowbreak{}vocab.txt} & E8 & needs the served tokenizer and vocabulary file; uv with torch, offline; not timed \\ % E8
+\texttt{solution/\allowbreak{}sim/\allowbreak{}test\_\allowbreak{}franzen\_\allowbreak{}qsaring.py} & \texttt{out/\allowbreak{}spec\_\allowbreak{}qsaring.txt} & E10 & CPU torch from the uv cache; a first run downloads about 1.5 GiB \\ % E10
+\midrule
+\multicolumn{4}{@{}p{0.96\linewidth}}{\textit{Leaderboard, components, time and figures}} \\*
+\texttt{e7\_\allowbreak{}board.py} & \texttt{evidence/\allowbreak{}board\_\allowbreak{}draws.csv}, \texttt{board\_\allowbreak{}stats.json} & G1 to G5, G7 & 1 s (timed); \texttt{-{}-refresh} re-pulls the Kaggle listing \\ % G1 G5 G7
+\texttt{e6\_\allowbreak{}pin\_\allowbreak{}components.py} & \texttt{evidence/\allowbreak{}e6\_\allowbreak{}pin\_\allowbreak{}components.json} & A4 & under 1 s (timed) \\ % A4
+\texttt{e6\_\allowbreak{}stack\_\allowbreak{}numbers.py} & \texttt{evidence/\allowbreak{}e6\_\allowbreak{}stack\_\allowbreak{}numbers.json} & replica and board numbers of the component table & not timed \\ % none
+\texttt{e6\_\allowbreak{}license\_\allowbreak{}probe.py}, \texttt{e6\_\allowbreak{}fetch\_\allowbreak{}license\_\allowbreak{}threads.py} & \texttt{evidence/\allowbreak{}e6\_\allowbreak{}license\_\allowbreak{}probe.json}, \texttt{e6\_\allowbreak{}arcagi3\_\allowbreak{}rules.md}, \texttt{e6\_\allowbreak{}license\_\allowbreak{}threads.md} & G7 (rules); licences, Appendix~\ref{app:licences} & network, read-only; not timed \\ % G7
+\texttt{time\_\allowbreak{}ledger.py} & \texttt{out/\allowbreak{}time\_\allowbreak{}ledger.txt}, \texttt{.json} & F1, F4 to F11 (time ledger, Appendix~\ref{app:time}) & about 3 s \\ % F1 F4 F5 F6 F7 F8 F9 F10 F11
+v2 figure scripts (\texttt{fig\_\allowbreak{}*.py}) & \texttt{paper/\allowbreak{}v2/\allowbreak{}figs/} & v2 figures; v3 redraws its own (below) & matplotlib via uv \\ % none
+\midrule
+\multicolumn{4}{@{}p{0.96\linewidth}}{\textit{Checks on the curve and the noise (Appendix~\ref{app:curve-checks})}} \\*
+\texttt{new\_\allowbreak{}token\_\allowbreak{}steps.py} & \texttt{out/\allowbreak{}new\_\allowbreak{}token\_\allowbreak{}steps.json}, \texttt{tex/\allowbreak{}sections/\allowbreak{}tab\_\allowbreak{}steps.tex} & N1 (N1.1 to N1.8) & about 20 s \\ % N1
+\texttt{new\_\allowbreak{}plateau\_\allowbreak{}pool.py} & \texttt{out/\allowbreak{}new\_\allowbreak{}plateau\_\allowbreak{}pool*.json}, \texttt{tex/\allowbreak{}sections/\allowbreak{}tab\_\allowbreak{}plateau.tex} & N2, C9 & mode \texttt{raw} (eight-, ten- and 21-run pools) about 45 min on a busy laptop, the other raw modes not timed; mode \texttt{fit}, seconds \\ % N2 C9
+\texttt{fig\_\allowbreak{}plateau.py} & \texttt{paper/\allowbreak{}v2/\allowbreak{}figs/\allowbreak{}fig\_\allowbreak{}plateau.pdf} & N2, C9 (v2 only) & matplotlib via uv; not timed \\ % N2 C9
+\texttt{new\_\allowbreak{}noise\_\allowbreak{}model.py} & \texttt{out/\allowbreak{}new\_\allowbreak{}noise\_\allowbreak{}model.json}, \texttt{tex/\allowbreak{}sections/\allowbreak{}tab\_\allowbreak{}noisemodel.tex} & N3-1 to N3-14 & about 20 min; \texttt{-{}-quick} about 2 min; \texttt{-{}-partb} seconds \\ % N3-1 N3-14
+\end{longtable}
+}
+
+\subsection{Scripts added for v3}
+Every V3 claim names its source in Appendix~\ref{app:claims}; most were recomputed from the CSV and text files in \texttt{paper/v3/evidence/data/}, which were fetched read-only from the Kaggle API, the cloud job API and the run folders. % V3-B1 V3-C6
+Table~\ref{tab:regen3} lists the scripts. They run with \texttt{python3 -I -B} from the repository root, on one CPU core, with the standard library unless marked.
+
+\begin{table}[!htb]
+\caption{Scripts added for v3 (paths under \texttt{paper/v3/analysis/}).}\label{tab:regen3}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.30\linewidth}>{\raggedright\arraybackslash}p{0.40\linewidth}>{\raggedright\arraybackslash}p{0.24\linewidth}@{}}
+\toprule
+Script & What it does & Claims \\
+\midrule
+\texttt{v3\_\allowbreak{}board\_\allowbreak{}trim.py} & board statistics from \texttt{board\_draws.csv} and the paired decision test's per-state table & V3-B4 to V3-B6, V3-T4, V3-T5 \\
+\texttt{v3\_\allowbreak{}trim\_\allowbreak{}parser.py} & re-parses first actions of the decision test (dict form) & V3-T8 \\
+\texttt{forum\_\allowbreak{}topic.py} & fetches one forum topic anonymously (network, read-only) & V3-R4 \\
+\texttt{gate\_\allowbreak{}sim/\allowbreak{}par/\allowbreak{}cmp2.py} & simulates the round-A wave gate on 16 recorded runs & V3-X14 \\
+\texttt{figs/\allowbreak{}*.py} & the fifteen v3 figures; each asserts the numbers it plots (matplotlib via uv); the five added on 2026-10-31 read run folders and Kaggle's submission list & Figures~\ref{fig:loop} to \ref{fig:finetune}, \ref{fig:selection}, \ref{fig:tried}, \ref{fig:trainnoise}, \ref{fig:clock} to \ref{fig:scroll}, \ref{fig:draws} \\
+\texttt{harness\_\allowbreak{}read.py} & per-run levels, score, actions and counters of the harness program, and each gate item against the pooled control (the tool-fix and replay arms are read by \texttt{solution/\allowbreak{}analysis/\allowbreak{}harness\_2026-10/\allowbreak{}gates/}) & V3-W19 to V3-W29 \\
+\texttt{harness\_\allowbreak{}gates/\allowbreak{}*.py} & the gate readers of each change (copies of \texttt{solution/\allowbreak{}analysis/\allowbreak{}harness\_\allowbreak{}2026-10/\allowbreak{}gates}), run from the repository root & V3-W20 to V3-W27 \\
+\texttt{discovery\_\allowbreak{}read.py} & where the clock goes per level from the transcripts (long-level share, when the winning code first appears, history checks, plan failures, tool errors), per group; writes \texttt{figs/\allowbreak{}data/\allowbreak{}discovery\_\allowbreak{}levels.csv} and \texttt{discovery\_\allowbreak{}summary.json} (stdlib, about 20 s) & V3-W31 \\
+\texttt{start\_\allowbreak{}time\_\allowbreak{}read.py} & when play started against when the server was ready in each 15-stream replica run; writes \texttt{figs/\allowbreak{}data/\allowbreak{}start\_\allowbreak{}times.csv} & V3-W32 \\
+\texttt{build\_\allowbreak{}claims\_\allowbreak{}appendix.py} & builds Table~\ref{tab:claims}; \texttt{-{}-check} lists ids cited without a row & all \\
+\texttt{v3\_\allowbreak{}style\_\allowbreak{}check.py} & counts numbers per prose sentence and paragraph, words per section, dashes and record codes in the body & none \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Compute and cost}\label{app:compute}
+Table~\ref{tab:compute} sums every lane from 2026-10-13 00:00Z to 2026-10-21 01:00Z: about 130 GPU-hours on the RTX PRO 6000 and about \$222 to \$244 at list prices. % V3-C6
+Billing was not read, so these are list-price sums, not billed spend; disks, snapshots and longer bucket storage are not costed. % V3-C6
+Kaggle's scored runs are free and do not draw on the weekly development quota. % V3-C5
+v2 did not total compute before 2026-10-13; its unit costs were a development run of about 2.2 free Kaggle GPU-hours or about \$4 and 2 h 10 min on the rented VM. % H1 V3-C8
+
+\begin{table}[!htb]
+\caption{Compute from 2026-10-13 00:00Z to 2026-10-21 01:00Z, all on the RTX PRO 6000, at list prices. Vertex job-hours are priced at \$1.74 (Spot machine and disk) to \$2.42 (with the listed training fee, which may not apply to Spot).}\label{tab:compute} % V3-C1 V3-C3 V3-C4 V3-C5 V3-C6 V3-C8 V3-X11
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{0.9}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.27\linewidth}r>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{0.39\linewidth}@{}}
+\toprule
+Lane & GPU-h & Cost & What ran \\
+\midrule
+Rented VM (Compute Engine Spot) & 95.9 & \$159.54 & from 2026-10-16: RE-ARC-3 play data, the rejection-sampling fine-tune and its runs, round-A rollouts and the reference member; 6 preemptions, 45 refused starts \\ % V3-C3
+Vertex AI jobs & 33.0 & \$57.45 to \$79.90 & from 2026-10-20: the calibration run, eight concurrent identical runs, probes, trainer smoke runs, two round-A members \\ % V3-C4
+Kaggle development quota & 1.0 & free & the paired decision test and the keepalive probe \\ % V3-C5
+One-off items & n/a & about \$5 & bucket copy, image builds and pulls, one day of storage \\ % V3-C2 V3-C6
+Total & about 130 & about \$222 to \$244 & \\ % V3-C6
+\midrule
+\multicolumn{4}{@{}l}{\textit{Unit costs (list prices)}} \\
+Development run, rented & 2.23 to 2.25 & \$3.88 to \$5.45 & 2 h 17 min from submission to end \\ % V3-X8 V3-X11
+Development run, Kaggle & 2.2 to 2.4 & free & weekly quota of 30 GPU-hours \\ % V3-C8
+Probe, 300 s per game & 0.25 to 0.38 & \$0.44 to \$0.92 & \\ % V3-C8
+Concurrent wave, 12 per arm & 24 jobs & \$93 to \$131 & one round \\ % V3-X13
+Round-A member, stopped at step 16 & 2.55 & \$4.45 to \$6.18 & a full 57-step member is about \$23 to \$27 expected \\ % V3-C8 V3-G16
+Spot waste & n/a & \$15.45 & two preempted development runs (\$7.46) and checkpoint-free trainer attempts (\$7.99) \\ % V3-C8
+\bottomrule
+\end{tabular}
+\end{table}
+
+The round-A program has its own caps, set by the author: no new round at \$500 or more of program spend and a stop at \$700; its ledger read about \$110 to \$115 at 2026-10-21 01:00Z. % V3-C7
+On 2026-10-20 the Vertex quota was 14 Spot GPUs in each of the two regions that hold our inputs; the most we ran at once was 8, and Spot stockouts, not quota, limited the day. % V3-X7 V3-X9
+Two container traps had to be fixed first: the driver mount was missing from the job's path, and inputs left in the container's page cache slowed the weight load past the notebook's 12-minute deadline until we evicted them. % V3-X10
+The GRPO trainer also runs as a Vertex job and matched the VM step for step on a smoke run, about 14\% slower. % V3-X15
+The Vertex calibration run and its Kaggle twin cleared 126 and 129 levels, inside one run's spread. % V3-X2 V3-X6

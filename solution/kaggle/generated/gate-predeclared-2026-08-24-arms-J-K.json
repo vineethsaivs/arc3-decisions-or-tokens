@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-24T03:22:11.153891+00:00",
+  "subject": "Predeclared gates for arms J and K, written BEFORE either was built or pushed",
+  "why_these_two": "Sampling is the only axis that moves per-draw sigma, and sigma is an ASSET on a public board that keeps a maximum over the ~37 draws left before Milestone 2. Arm H (temperature 0.9) was promoted today on exactly that argument. These two arms take the next step on each of the two sampling knobs that actually reach vLLM at runtime: temperature, and the top_k truncation that CAPS what temperature can do.",
+  "controls": {
+    "arm_H_temp_0.9": {
+      "levels": 35,
+      "zero_level_games": 4,
+      "mean": 6.722,
+      "board_draws": [
+        "pending"
+      ]
+    },
+    "shipped_temp_0.6": {
+      "levels": [
+        33,
+        29
+      ],
+      "zero_level_games": [
+        5,
+        7
+      ],
+      "board_draws": [
+        1.87,
+        2.39
+      ],
+      "note": "two byte-identical measurements, pooled mean 31"
+    }
+  },
+  "MEASURED_NOISE_FLOOR": {
+    "source": "solution/kaggle/generated/gate-results-2026-08-24-arms-H-I.json",
+    "value": "about 4 levels in total and 2 in zero-level games, one sigma, on 25 games",
+    "consequence_for_these_gates": "A single 25-game commit CANNOT resolve a 2 to 4 level effect. These gates are therefore SAFETY SCREENS, not capability tests: their job is to reject a clear loser (as temperature 0.3 was, at 22 levels, 11 below), not to prove a winner. For arms that land inside the noise band, the tiebreak is per-draw sigma, and that is a recorded variance bet rather than a capability promotion. Any claim stronger than that from a single commit is invalid by construction."
+  },
+  "shared_preconditions": [
+    "All 25 games run and hold their full 7,920s slot.",
+    "Peak GPU KV cache usage strictly below 0.90.",
+    "KV cache size 398,272 tokens, which confirms fp8 KV is live rather than a silent relaunch to stock vLLM.",
+    "Zero 'maximum context length' errors.",
+    "Generation throughput within 20% of the control's 418.6 tok/s."
+  ],
+  "arms": {
+    "q38-ctxwin-temp12-v1": {
+      "kernel": "vineethsaivs/arc3-q38-ctxwin-temp12-ordinary-commit",
+      "change": "LOCAL_ANALYZER_TEMPERATURE 0.9 -> 1.2. Single variable against arm H.",
+      "control": "arm H (35 levels)",
+      "hypothesis": "The temperature dose-response so far is 0.3 -> 22, 0.6 -> 33 and 29, 0.9 -> 35: monotone increasing over everything tested, with only the 0.3 point separated from the rest by more than the noise floor. This arm finds the top of the curve. It should also raise per-draw sigma further, which is the real prize.",
+      "PROMOTE_requires_all_of": [
+        "total_levels >= 33",
+        "zero_level_games <= 5",
+        "paired sign test against arm H shows gained >= lost"
+      ],
+      "REJECT_if_any_of": [
+        "total_levels <= 29",
+        "any shared precondition fails",
+        "the model emits malformed tool calls at a materially higher rate than the control"
+      ],
+      "INCONCLUSIVE_band": "30 to 32 levels. A tie is not a capability promotion, but at a tie the HIGHER temperature ships, on the recorded variance argument.",
+      "prediction_recorded_in_advance": "I expect this to land between 30 and 36, i.e. inside the noise band, and I expect the honest verdict to be a variance bet rather than a capability win. If it lands at or below 29 that is a real finding: it locates the top of the dose-response between 0.9 and 1.2 and fixes 0.9 as the shipping value."
+    },
+    "q38-ctxwin-topk100-v1": {
+      "kernel": "vineethsaivs/arc3-q38-ctxwin-topk100-ordinary-commit",
+      "change": "LOCAL_ANALYZER_TOP_K 20 -> 100 at temperature 0.9. Single variable against arm H.",
+      "control": "arm H (35 levels)",
+      "hypothesis": "top_k = 20 is Qwen's own recommended value and it is a HARD CAP on what temperature can achieve: at top_k=20 raising temperature only reshapes probability among the same 20 candidates, so the diversity that arm H is being shipped for is being clamped before it reaches the sampler. top_p = 0.95 is left in place as the real truncation, and 100 rather than -1 keeps a safety ceiling. Mechanistically this should raise sigma MORE than another temperature step does, because it removes the binding constraint rather than pushing against it.",
+      "PROMOTE_requires_all_of": [
+        "total_levels >= 33",
+        "zero_level_games <= 5",
+        "paired sign test against arm H shows gained >= lost"
+      ],
+      "REJECT_if_any_of": [
+        "total_levels <= 29",
+        "any shared precondition fails",
+        "the model emits malformed tool calls at a materially higher rate than the control"
+      ],
+      "INCONCLUSIVE_band": "30 to 32 levels, same tiebreak as above.",
+      "mechanism_check_to_run_regardless_of_outcome": "Measure the distribution of per-game outcomes, not just the total. If top_k=100 is doing what it is supposed to do, the per-game spread should WIDEN even when the total does not move. That widening is the thing we are buying, and it is measurable in one commit even though the mean is not."
+    }
+  },
+  "what_would_make_BOTH_arms_the_wrong_experiment": "If per-draw board sigma turns out to be driven by the hidden game set rather than by our sampling, then no sampling knob moves it and both arms are noise. The test: our two draws of the SAME 0.6 config were 1.87 and 2.39 (spread 0.52) and an earlier pair was 1.68 and 1.05 (spread 0.63). If the temperature 0.9 draws show a similar spread rather than a wider one over the next several submissions, sampling is not the source of sigma and this whole line should be dropped in favour of capability work.",
+  "overlay_sha256": {
+    "apply_sampling.py": "3a0d485ee2c1921c9277a94d691fa5024eac2a275054f56b290b718593714acf"
+  },
+  "self_check": "solution/sim/test_sampling.py, 10 checks, all passing at the time of writing"
+}

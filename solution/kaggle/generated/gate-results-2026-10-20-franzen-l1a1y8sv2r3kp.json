@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-20",
+  "gate": "docs/research/2026-10-19-top/PLAN.md section 2.5 (declared 2026-10-19 before the arm existed): solution/sim/test_keepalive.py checks 1 to 7, then one Kaggle probe of r3kp that installs, plays and has 0 tracebacks; no READY-time criterion (the probe runs the commit path and READY measures node speed)",
+  "instrument": "offline: solution/sim/test_keepalive.py on taaf's localhost competition arcade (passed 10-20, docs/PROGRESS.md); Kaggle: 300 s per game probe, kernel.log and serve.log",
+  "control": "the pin r3p (l1a1y8sv2r3p v1), whose agent r3kp shares; the keepalive acts only before READY",
+  "arm": {
+    "kernel": "vineethsaivs/arc3-franzen-l1a1y8sv2r3kp-a",
+    "version": 1,
+    "change": "the pin l1a1y8sv2r3p plus franzen_overlays/keepalive.py: after the warmup RESET, a daemon thread re-sends RESET on the warmup game only, every 9 min while /health is not 200, at most 5 times; it stops at READY, the first analyzer reply or the game's first action"
+  },
+  "evidence": {
+    "offline": "PASS: 8 checks; without the keepalive the card closed 15.05 min after the warmup RESET; with it RESETs at 9.05 to 45.06 min, only on the warmup game, none after READY, READY at 50 min leaves no game gave_up (that check needs ARC3_HTTP_RETRIES=360, which the watchdog sets)",
+    "install": "PASS: GPU_GATE PASS; 'arm overlay keepalive' line; 'watchdog: watching pid 481; in-place HTTP retries 360', 0 relaunches; 'd3draft: 29 mtp.* tensors spliced'; '#OURS_FORM ok version=d_prime'",
+    "keepalive_path": "PASS: the release came at 722 s with the server still loading, the warmup RESET went out at 732 s, and the thread stopped at 966 s with 'keepalive stopped after 0 RESET(s): the game is playing' (READY under 9 min after the release, so no RESET was due)",
+    "plays": "PASS: 25 games, 64 actions, 1 level (lp85), every game ended at its 300 s probe budget; low counts because this node reached READY at about 960 s (serve.log 'fired up' 15:16:29), leaving about 70 s of play",
+    "clean": "PASS: 0 tracebacks, 0 OOM"
+  },
+  "verdict": "PROMOTE. r3kp installs, plays and runs clean on Kaggle, and its keepalive started and stopped as designed. It plays the pin's agent (family A). Rollback (PLAN 2.5): if the first live r3kp draw scores 0.00, or a day errors twice, re-pin r3p that day.",
+  "what_this_does_not_claim": "The live RESET path did not fire on Kaggle (the server came up within 9 minutes of the release); only the offline test exercises it. No level or score effect is claimed: the keepalive only guards against a slow boot ending the run idle.",
+  "promote": true
+}

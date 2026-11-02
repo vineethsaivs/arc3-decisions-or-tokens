@@ -1,0 +1,31 @@
+Licence for the files written by the author of this repository
+==============================================================
+
+Scope. "Our files" are the paper and its text, figures and figure data, the analysis and figure scripts, the overlay
+and build code under solution/kaggle (except third-party subdirectories named in THIRD_PARTY.md), the tests we wrote,
+the gate records and the research notes. Every third-party file keeps its own licence; THIRD_PARTY.md lists them.
+
+1. Paper, Writeup, figures, figure data, gate records and research notes: Creative Commons Attribution 4.0
+   International (CC BY 4.0), https://creativecommons.org/licenses/by/4.0/legalcode
+
+2. Code written by the author (scripts, overlays, build and test code): your choice of either
+   (a) CC BY 4.0 (as the Kaggle competition rules ask), or
+   (b) MIT No Attribution (MIT-0, as arcprize.org asks for public-domain-style licensing), text below.
+   You may use our code under whichever you prefer.
+
+MIT No Attribution
+
+Copyright 2026 Vineeth Sai Varikuntla
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+documentation files (the "Software"), to deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+The Qwen model, the Intel quantized weights, the drafter models and any other model weights are not part of this
+repository and are under their own licences (see THIRD_PARTY.md).

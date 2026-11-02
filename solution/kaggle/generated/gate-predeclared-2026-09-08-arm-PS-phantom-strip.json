@@ -1,0 +1,60 @@
+{
+ "schema_version": 1,
+ "created_at": "2026-09-08T19:00:00+00:00",
+ "predeclared_before_any_result": true,
+ "written_while": "no PS kernel had been pushed; GPU was saturated by rcarry replicate 3 and arm GG2",
+ "arm": "PS (phantom strip)",
+
+ "THE_DEFECT_verified_first_hand": {
+  "statement": "The context trimmer is billed for text the model is never shown, and evicts real content to pay for it.",
+  "half_one_already_known": "tool_agent.py:2267 stores thinking as assistant_message['reasoning']; chat_template.jinja reads message.reasoning_content and renders '' when absent. Proven with jinja2 against the real template in generated/reasoning-carry-defect-2026-08-27.json. Arm rcarry repaired this for the newest 2 turns and is in the daily rotation.",
+  "half_two_which_is_THIS_ARM": "_estimate_request_input_tokens (tool_agent.py:1959) does json.dumps({'messages': messages}) over the WHOLE message dicts, and _estimate_tokens (618) charges (len+2)//3. Verified by reading both functions. So every retained assistant turn is billed for its `reasoning` at full length while showing the model nothing.",
+  "the_scale_measured_by_me_today": "Across 1,305 real analyzer turns from a 25-game run, mean section sizes are: SYSTEM PROMPT 13,189 chars, THINKING 5,249, USER PROMPT 3,067, ASSISTANT 1,553, MODEL RESPONSE META 960, ANALYZER STATUS 430. THINKING is 1,750 estimated tokens against 2,003 for everything else in a turn, so 47% of a retained turn's estimated cost is phantom.",
+  "the_consequence_measured_today": "The trimmer fires on 24.7% of turn transitions and destroys a median of 9 messages each time, 2,837 per 25-game run (solution/analysis/history_eviction_rate.py)."
+ },
+
+ "what_the_arm_does": "One method plus one call line in tool_agent.py. Before the trimmer estimates, drop `reasoning` from assistant messages outside the reasoning-carry window. Messages are COPIED. ZERO tokens are added; tokens are only stopped from being spent. Overlay solution/kaggle/anim_overlay/apply_phantom_strip.py, bundle vineethsaivs/arc3-q38-phantom-v1, kernel vineethsaivs/arc3-ps-phantom-strip-a.",
+
+ "measured_effect_on_the_estimate_before_any_GPU": {
+  "method": "the SHIPPED _estimate_tokens, run on synthetic histories built from the measured section means",
+  "4 retained turns": "25.0% of the request freed",
+  "6 retained turns": "33.3%",
+  "8 retained turns": "37.4%",
+  "10 retained turns": "39.9%"
+ },
+
+ "why_it_is_not_arm_AB": "AB carried a model-authored generalisation ACROSS a level reset, feeding the model stale beliefs, and lost 55 levels against 76. This arm carries nothing and creates nothing. It only deletes, and only text the model provably never reads.",
+ "why_it_cannot_be_inert": "There is nothing to read. Advisory prose measures inert on Qwen-27B (predict() called 0 times in 25 games; the summarized-knowledge block populated on 0.8% of turns). This ships zero characters.",
+
+ "MECHANISM_GATE_checked_first": {
+  "counter": "phantom_reasoning_stripped, via the existing _bump_animation_counter, is EXACTLY ZERO when the mechanism is absent because the method does not exist in the control and the key is never created.",
+  "expected_magnitude": "roughly one firing per assistant message beyond the carry window, order 600-900 across 25 games",
+  "second_readout_needs_no_new_code": "run solution/analysis/history_eviction_rate.py on BOTH artifact sets. It parses `history_messages: N` printed at tool_agent.py:2419.",
+  "predeclared_readouts": {
+   "trimmer fire rate": {"control": "24.7% of turn transitions", "arm must show": "<= 18%"},
+   "median peak retained": {"control": 33, "arm must show": ">= 40"},
+   "median floor after eviction": {"control": 5, "arm must show": ">= 8"}
+  },
+  "if_those_do_not_move": "the strip freed nothing and the level count is UNINTERPRETABLE. Check the counters before reading levels."
+ },
+
+ "PRIMARY_GATE_on_total_levels_pass_matched": {
+  "control": "q38-undo-v1: 35 levels, 3 zeros, mean25 5.858, ex-ft09 5.507. Control family n=2 with q38-temp09-v1: 35.0 / 6.290 / 5.957.",
+  "REJECT": "<= 29 levels AND paired |up - dn| >= 11. Independent reject: ex-ft09 < 4.55 regardless of ft09.",
+  "PROMOTE": ">= 36 levels, OR 30-35 levels with all three eviction readouts moving as predicted. A tie with a verified mechanism fix clears the ~21% prior under rule 15(b).",
+  "UNDECIDED-BY-BENCH": "everything else. Single-run sd is 3.6 to 7.5 levels; do not read a 2-to-4 level move in either direction.",
+  "REPLICATE_BEFORE_ANY_ROTATION_CHANGE": "one run decides nothing. This is the 2026-09-07 arm-AE lesson and the 2026-09-08 rcarry lesson."
+ },
+
+ "WHAT_THIS_RESULT_WOULD_KILL_BEYOND_THE_ARM": "If the counters fire, the eviction rate falls, retained turns rise about 40%, and levels come back <= 29, then 'the budget is spent on phantoms and that is why we die' is FALSE, and COMPACTION dies with it: if handing the model 40% more real history costs levels, summarising the deleted part cannot help either. Record that and stop spending GPU on the trimmer.",
+
+ "THE_HONEST_PRIOR_stated_before_the_run": {
+  "expectation": "a TIE. Say so now so a tie cannot be re-narrated as a win.",
+  "strongest_attack_on_this_arm": "The context dose-response already tested an increase of this magnitude and TIED: 48,128 -> 64,512 is +34% budget and returned 30 levels against 33. If retained-turn COUNT is the operative variable, this is already measured as no better.",
+  "the_only_defence": "that arm refilled its extra budget with more phantom reasoning and more over-charged images, so only a minority became content the model reads, whereas this converts phantom to real at 100%. That is a real difference and it is smaller than the bench noise.",
+  "nearest_precedent": "arm imgtok fixed the same class of _estimate_tokens over-charge, freed about 22% of the budget, and returned 33 levels, a tie.",
+  "prior_of_being_better": "35 to 45%. That clears the 20.7% promote bar and nothing more."
+ },
+
+ "offline_evidence": "solution/sim/test_phantom_reasoning.py, 8 checks, all against a real copy of the shipped bundle: anchor uniqueness and idempotence, the carry window keeps exactly the newest 2, ALIASING (the caller's dicts are untouched, which is the bug that would silently disable rcarry), the estimate falls >= 20%, a reasoning-only message is left alone so no empty turn is emitted, correct degradation with the env unset, composition with rcarry in one bundle, and tool-call/tool-result pairing preserved."
+}

@@ -1,0 +1,66 @@
+== FRANZEN-era byte-identical pairs (levels | mean game score)
+  p448      122  106 d= +16 |  55.72  46.88 d= +8.84
+  p448s14   117  111 d=  +6 |  53.51  52.15 d= +1.35
+  l1a1y8    128  124 d=  +4 |  61.18  56.99 d= +4.20
+  dpctl     123  101 d= +22 |  57.82  44.59 d=+13.23
+  L1        116  113 d=  +3 |  51.67  49.70 d= +1.97
+  l1a1      113  109 d=  +4 |  53.80  49.21 d= +4.59
+levels: pooled SD 8.25 on 6 df, 95% CI [5.32, 18.17] (SS 408.5)
+mean game score: pooled SD 4.98 on 6 df, 95% CI [3.21, 10.96] (SS 148.8)
+  |d| sorted [3, 4, 4, 6, 16, 22]; two largest pairs hold 91% of SS; robust sigma (median|d|/0.6745/sqrt2) 5.24
+  leave-one-pair-out SD: -p448 7.49, -p448s14 8.84, -l1a1y8 8.95, -dpctl 5.77, -L1 8.99, -l1a1 8.95
+Kaggle-only pairs (3): pooled SD 7.16 on 3 df, 95% CI [4.06, 26.71] (SS 154.0)
+GCP-only pairs (3): pooled SD 9.21 on 3 df, 95% CI [5.22, 34.34] (SS 254.5)
+FRANZEN + rep/start (gameplay-equivalent, 7 df): pooled SD 7.76 on 7 df, 95% CI [5.13, 15.78] (SS 421.0)
+  y8 family (6 runs, gameplay-neutral riders [inference]): [128, 124, 119, 128, 122, 129] mean 125.0 SD 4.00 on 5 df
+  y8 family + hm32, s4, o16 (9 runs): [128, 124, 119, 128, 122, 129, 126, 120, 120] SD 3.91
+
+== Q38-era byte-identical sets (older stack, ~35 levels)
+  q38-deathmem   [42, 33]
+  q38-topk100    [44, 28]
+  q38-ctxwin     [33, 29]
+  q38-rcarry     [31, 46, 30]
+q38 memo sets (4 sets): pooled SD 8.21 on 5 df, 95% CI [5.13, 20.14] (SS 337.2)
+q38 + GG2 + AE v2/v3 (6 sets): pooled SD 7.42 on 7 df, 95% CI [4.91, 15.11] (SS 385.7)
+ALL byte-identical sets, both eras: pooled SD 7.82 on 13 df, 95% CI [5.67, 12.59] (SS 794.2)
+  relative SD (SD / mean levels): Franzen 7.2%, q38 20.7%
+
+== first run minus replicate, Franzen pairs: [16, 6, 4, 22, 3, 4]; replicate lower in 6 of 6 (one-sided sign test p = 0.0156 for 6 of 6)
+  mean gap 9.2 +- 3.2 (paired t df 5 = 2.84)
+
+== MDE (two-sided alpha .05, power .80), K runs per arm; known-sigma z-sum 2.802, t-sum at 6 df 3.353
+  K   MDE sd=8.3    sd=5.2 sd=18.2 (hi95)  t6 sigma-hat  own-var t
+  1         32.7      20.8           72.0          39.1        nan
+  2         23.1      14.7           50.9          27.7       44.3
+  3         18.9      12.0           41.6          22.6       25.0
+  4         16.3      10.4           36.0          19.6       19.6
+  6         13.3       8.5           29.4          16.0       14.8
+  8         11.6       7.3           25.5          13.8       12.4
+ 12          9.4       6.0           20.8          11.3        9.9
+
+Runs per arm to detect a true shift of D levels (z, sigma = 8.25): 
+  D=  5: K=43 per arm (86 runs, 187 GPU-h, $344)
+  D= 10: K=11 per arm (22 runs, 48 GPU-h, $88)
+  D= 15: K=5 per arm (10 runs, 22 GPU-h, $40)
+  D= 17: K=4 per arm (8 runs, 17 GPU-h, $32)
+  D= 25: K=2 per arm (4 runs, 9 GPU-h, $16)
+
+== Monte Carlo (20000 trials), true sigma = pooled sd
+  K=2: MDE 23.1; known-sigma power 0.800 size 0.050; own-variance t power 0.350 size 0.051
+  K=3: MDE 18.9; known-sigma power 0.799 size 0.052; own-variance t power 0.567 size 0.048
+  K=4: MDE 16.3; known-sigma power 0.808 size 0.046; own-variance t power 0.647 size 0.048
+
+== False-positive rate of a naive one-run rule (arm run minus control run >= T, true effect 0)
+  T= 0: win-call prob normal(sd 8.3) 0.500, normal(sd 5.2) 0.500, empirical A/A (12 labelled comparisons) 0.500; |d|>=T in 1.00 of pairs
+  T= 5: win-call prob normal(sd 8.3) 0.334, normal(sd 5.2) 0.250, empirical A/A (12 labelled comparisons) 0.250; |d|>=T in 0.50 of pairs
+  T=10: win-call prob normal(sd 8.3) 0.196, normal(sd 5.2) 0.089, empirical A/A (12 labelled comparisons) 0.167; |d|>=T in 0.33 of pairs
+  T=15: win-call prob normal(sd 8.3) 0.099, normal(sd 5.2) 0.022, empirical A/A (12 labelled comparisons) 0.167; |d|>=T in 0.33 of pairs
+  T=20: win-call prob normal(sd 8.3) 0.043, normal(sd 5.2) 0.003, empirical A/A (12 labelled comparisons) 0.083; |d|>=T in 0.17 of pairs
+  T=25: win-call prob normal(sd 8.3) 0.016, normal(sd 5.2) 0.000, empirical A/A (12 labelled comparisons) 0.000; |d|>=T in 0.00 of pairs
+
+  same rule with K=2 runs pooled per arm (normal model):
+  T= 5: 0.272
+  T=10: 0.113
+  T=15: 0.035
+
+wrote <repo>/paper/v2/analysis/out/e4_noise.json

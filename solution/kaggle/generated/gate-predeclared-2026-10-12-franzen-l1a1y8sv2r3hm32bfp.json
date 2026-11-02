@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "declared_at": "2026-10-12T14:05Z, before the push",
+  "arm": "l1a1y8sv2r3hm32bfp: the map probe build l1a1y8sv2r3hm32p with BF16 MTP-draft KV and the target KV pool capped at 1,375,552 tokens (BF16DRAFTCAP). One edit differs from hm32p",
+  "why": "vLLM #60023 measured FP8 KV in the MTP layer's attention lowering conditional acceptance at depth 2 and beyond (0.66 to 0.72 FP8 vs 0.74 to 0.80 BF16 on Flash-Next). The 10-11 plan expected near zero on top of D3, which was trained with FP8 draft KV emulated, and never ran it once D3 shipped; the 10-11 arm l1a1y8sv3 died of an OOM because SGLang sized the pool as if the draft were FP8. The cap keeps total KV bytes about 0.2 GB under today's. This probe measures the accept change cheaply with this week's spare quota; it cannot promote anything",
+  "instrument": "300 s per game Kaggle probe, 25 games; kernel.log, serve.log Decode lines (accept at 8+ running on probe contexts)",
+  "control": "l1a1y8sv2r3hm32p v1 probe: accept 2.721 at 8+ running (the D3 probes read 2.683 to 2.721), READY 550 s",
+  "required": {
+    "install": "server args show speculative_draft_kv_cache_dtype bf16 and max_total_tokens 1375552; boot shows a draft KV pool in bfloat16 and '#tokens: 1375552'; the hotmap line and every pin install line",
+    "health": "READY within 640 s, 0 tracebacks, 0 OutOfMemoryError, no 'free device mem' reading under 0.30 GiB",
+    "signal_for_a_replica": "accept at 8+ running at least 2.771 (control + 0.05, above the 0.04 spread of D3 probes)"
+  },
+  "pass": "health and install pass and the signal clears: run the replica l1a1y8sv2r3hm32bf next week against the hm32 replica, gated on gen throughput at 14 running at least +1.5%, KV-full retractions at most 2, levels at least 105",
+  "fail": "drop BF16 draft KV on D3; record the accept reading"
+}

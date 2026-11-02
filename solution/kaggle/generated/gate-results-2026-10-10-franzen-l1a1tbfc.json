@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-10",
+  "predeclared": "gate-predeclared-2026-10-10-franzen-l1a1tbfc.json",
+  "arm": {"kernel": "vineethsaivs/arc3-franzen-l1a1tbfc-a", "version": 1,
+          "change": "l1a1 plus a strict thinking budget of 10,240 tokens plus both fail-closed checks"},
+  "evidence": {
+    "run": "109 levels over 25 games, 1 at 0, mean game score 48.01; 773.9 tok/s; cache hit 94.0%; accept length 2.67; READY 670 s",
+    "mechanism": "thinking_counters: replies cut at the cap with no tool call 0 (L1 runs: 29 per run); 67 replies past the budget all made a call and 66 ran; max reasoning tokens 10,241; responses without a tool call 1 of 2,376 (p448s14 family 36 to 39)",
+    "clean": "0 tracebacks, 0 analyzer give-ups, 0 scheduler exceptions",
+    "context": "the same budget on L1 (GCP l1tb) scored 115; l1a1 runs 113 and 109"
+  },
+  "verdict": "HOLD. The mechanism works exactly as designed, and levels tie (109 here, 115 on L1, against the l1a1 family's 109 to 113). The predeclared rule gives lossy-decode ties to the incumbent, so it is not promoted, and no replicate is spent on it this week because the yield arm (l1a1y8, 128 levels on its first run) is the stronger candidate for the same slot.",
+  "promote": false
+}

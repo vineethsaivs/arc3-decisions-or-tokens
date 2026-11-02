@@ -1,0 +1,43 @@
+{
+  "record": "gate-results-2026-09-19-arm-onewave-sampling-REJECTED",
+  "written": "2026-09-19T23:45:00-07:00",
+  "arm": "arc3-onewave-sampling-a",
+  "bundle": "arc3-onewave-sampling-v1",
+  "candidate": "candidates-onewave-sampling",
+  "change": {
+    "file": "serving_setup.py",
+    "LOCAL_ANALYZER_TEMPERATURE": "0.6 -> 0.9",
+    "LOCAL_ANALYZER_TOP_K": "20 -> 100",
+    "parent": "ONEWAVE (arc3-flashnext-onewave-v1)",
+    "landed": "verified at serving_setup.py:2941 and :2943 in the shipped bundle"
+  },
+  "gate_predeclared_before_push": {
+    "PASS": ">= 52 levels",
+    "REJECT": "<= 30 levels",
+    "UNDECIDED": "31-51, ship anyway if >= 46 for the variance argument"
+  },
+  "result": {
+    "levels": 34,
+    "zero_level_games": 8,
+    "games": 25,
+    "all_runs_ended": "gave_up",
+    "verdict": "REJECT"
+  },
+  "why_reject_although_34_is_inside_the_undecided_band": [
+    "34 is below the 46 floor the gate set for shipping an undecided arm.",
+    "Its own parent ONEWAVE benched 46 on the same 25 games, so this is 46 -> 34, a 12-level drop sitting right on the measured 12.5-level MDE.",
+    "Against the four-run Flash-Next control family (44, 40, 47, 41; mean 43.0, sd 3.16) it is 2.85 sd low.",
+    "Rule 15(c): never ship a measured regression. Rotation stays ONEWAVE."
+  ],
+  "what_this_adds_to_the_campaign": {
+    "claim": "The temperature 0.9 and top_k 100 sampling settings are a Qwen3.8-27B result and do not transfer to Flash-Next.",
+    "origin_of_those_values": "27B dose-response: temp 0.3 -> 22, 0.6 -> 33 and 29, 0.9 -> 35, 1.2 -> 31; top_k 100 -> 44 then 28 on a byte-identical replicate (pooled a tie).",
+    "consequence": "Both halves were already weak on the model they were measured on, and on the model we now ship the pair is worse than the 0.6 / 20 incumbent. Do not re-run the sampling family on Flash-Next without a mechanism argument that is new."
+  },
+  "slot_impact": "None. The 2026-09-20 daily draw (submission 56374177) fired at 00:06 UTC carrying ONEWAVE, before this bench finished. No slot was spent on the rejected arm.",
+  "artifacts": {
+    "kernel": "vineethsaivs/arc3-onewave-sampling-a",
+    "benchmark_json": "/tmp/onewave-sampling/benchmark.json",
+    "kernel_log": "/tmp/onewave-sampling/kernel.log"
+  }
+}

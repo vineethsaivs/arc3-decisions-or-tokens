@@ -1,0 +1,8 @@
+{
+  "arm": "arc3-gg7-swift-a v1: GG7 (keith stack, concurrency 28, 7,920 s, ctx 48,128, MTP 3) with the model swapped to Swift 1.5 and temperature 0.6 -> 1.0",
+  "control": "GG7: 47 levels, 2 zeros, 109.4 actions/game",
+  "result": {"levels": 38, "zero_level_games": 4, "mean_final_score": 5.95, "actions_per_game": 146.3, "generation_tok_s": 205.4},
+  "paired": "3 up, 9 down; ex-sb26 36 vs 45",
+  "cross_check": "Swift on the rank-20 runtime also fell 45 -> 38 with +39% actions per game. Two independent stacks agree.",
+  "verdict": "REJECT. Swift 1.5 acts more and decides worse on ARC-AGI-3 games under both harnesses. Whatever rank 3 does with it, a drop-in swap does not reproduce it."
+}

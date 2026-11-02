@@ -1,0 +1,37 @@
+{
+  "gate": "NEMOTRON 25-game bench, read against the gate predeclared BEFORE the run",
+  "date": "2026-09-12",
+  "kernel": "vineethsaivs/arc3-nemotron-bench-c",
+  "predeclared": "generated/gate-predeclared-2026-09-12-nemotron-bench.json. PASS >= 51 levels. REJECT <= 30 levels with all gates passed, or zero-level games >= 8.",
+  "ALL_THREE_GATES_PASSED": {
+    "hardware": "PASS, NVIDIA RTX PRO 6000 Blackwell",
+    "serving": "PASS, Maximum concurrency for 48,128 tokens per request: 44.36x",
+    "tool_call": "PASS with parser qwen3_coder"
+  },
+  "RESULT": {
+    "levels": 1,
+    "zero_level_games": 24,
+    "mean": 0.080,
+    "ex_ft09_mean": 0.084,
+    "actions": 4282,
+    "verdict": "REJECT. Both conditions are met, and not marginally: 1 level against a REJECT line of 30, and 24 zeros against a line of 8."
+  },
+  "THE_CONTROL_IT_IS_READ_AGAINST": "Same harness, same agent tree, same 25 games, same 7,920 s clock, same concurrency. Flash-Next family: 40 / 44 / 47 levels, 3 / 5 / 2 zeros.",
+  "IT_IS_NOT_A_STARVED_INSTRUMENT_AND_HERE_IS_THE_EVIDENCE": {
+    "errors": "0 HTTP 400s, 0 HTTP 500s, 0 tool-parse failures, 0 'Unknown action' rejections, 0 context-length errors. All 25 games ended gave_up on the clock, which is normal.",
+    "it_was_thinking_hard": "112,601 generated tokens per game against Flash-Next's 73,659, i.e. 1.53x MORE.",
+    "it_was_acting": "171.3 actions per game against 102.0, i.e. 1.68x MORE.",
+    "output_was_not_degenerate": "657 tokens per action against 722, essentially the same, so it was not emitting stubs.",
+    "reading": "The model served, spoke our tool protocol, thought more and acted more, and cleared one level. This is not a plumbing failure. Something about the loop or the model is wrong, not the wiring."
+  },
+  "THE_LEADING_HYPOTHESIS_AND_IT_IS_NOT_CONFIRMED": {
+    "claim": "Its reasoning may be discarded between turns, so it re-derives from scratch every decision and flails.",
+    "mechanism": "The server ran with --reasoning-parser nemotron_v3, so vLLM splits thinking into reasoning_content. tool_agent.py:1037 READS that correctly (it falls back to reasoning_content). But line 2267 WRITES it back as assistant_message['reasoning']. If Nemotron's chat template renders reasoning_content, as the vLLM convention implies and as Flash-Next's template provably does (the GG5 defect), the thinking is dropped on the way back in.",
+    "consistency": "It fits the shape: more actions, similar per-action effort, no accumulation. An agent with no memory of why it acted would act more and learn less.",
+    "WHY_IT_IS_NOT_CONFIRMED": "I do not have Nemotron's chat_template.jinja locally and have not verified that it reads reasoning_content rather than reasoning. Calling this proven would repeat the two mistakes I already made today. It is a hypothesis with a precedent in this exact codebase.",
+    "the_cheap_decisive_test": "Re-run with NO --reasoning-parser. The thinking then stays inline in `content`, which is carried verbatim, so nothing can be dropped. One flag, and it discriminates the hypothesis from 'the model is unsuited' in a single run."
+  },
+  "WHAT_IS_SETTLED_REGARDLESS": "Integration is not the obstacle and never was after the parser fix. Nemotron fits the card, loads in 92 s, serves at 44.36x concurrency against the incumbent's 5.99x measured on a matched control, and speaks our tool protocol unmodified. Whatever is wrong is above the wiring.",
+  "WHAT_THIS_DOES_NOT_LICENSE": "It does not license 'Nemotron is a bad model'. It licenses 'Nemotron in THIS harness, with the reasoning parser active, scored 1 level'. CLAUDE.md's own 2026-09-09 scoping note exists because seven arms were closed as 'overlays are exhausted' when all seven had run on one model. The same discipline applies in reverse here.",
+  "COST": "About 2.4 GPU-h, plus three 20-minute iterations that each surfaced a real scaffolding defect."
+}

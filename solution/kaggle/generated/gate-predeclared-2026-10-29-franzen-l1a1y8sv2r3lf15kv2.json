@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-29",
+  "declared_before_results": true,
+  "declared_at": "2026-10-29T08:36Z, before any keepvars2 run was pushed (first push 08:37:09Z)",
+  "candidate": "l1a1y8sv2r3lf15kv2 (W2) against the lf15 agent (A); l1a1y8sv2r3kp12lf15kv2 (probe, would become the pin)",
+  "change": "franzen_overlays/keepvars2.py: keepvars v1 plus (a) kept variables restored before the available names are computed and retained functions restored, (b) names about to be kept join the available set before functions are collected, so a function that reads kept data is retained, (c) frozensets kept; prompt adds kept variables to what a retained function may read",
+  "history": "keepvars v1 (gate-predeclared-2026-10-29-franzen-l1a1y8sv2r3lf15kv.json) KILLED: its full wave cut NameErrors per call to 0.51 of A against a 0.50 bar (Vertex 3 W 0.46; Kaggle pair 44 vs 76, 0.58). Its m2 and no-harm items passed on the pooled wave (actions 7,594 vs 7,355; levels 127.8 vs 125.7; score 57.6 vs 55.6). Kaggle transcripts show the defect: 'Your function moves was not retained: unavailable dependencies: CELLS, DIRS, S1, S2', and function NameErrors on earlier-bound defs rose 4 -> 17 in the pair",
+  "wave": "Kaggle only (free quota; GCP credits are about $58 over the $500 floor by estimate): W2 now, A (l1a1y8sv2r3lf15) when the v1 probe frees its slot, then W2 + W2. A pooled with kva, s15w-1..4 (Vertex, 10-28/29) and Kaggle lf15 10-29",
+  "gate": {
+    "m1_nameerrors": "W2 NameErrors per python call <= 0.50 x pooled A's (same counter as v1: calls whose result has 'NameError: name ... is not defined')",
+    "m1b_functions": "W2 earlier-bound 'def' NameErrors (kd_census.py) per call <= the Kaggle A runs' rate, and 'unavailable dependencies' notes naming a variable kept at that point are gone in W2 (counted as notes per call; W2 <= 0.5 x A)",
+    "m2_actions": "W2 actions per run <= pooled A x 1.10 and W2 median actions/baseline on cleared levels <= pooled A + 0.05",
+    "no_harm": "W2 mean levels >= pooled A - 2.5 and W2 mean game score >= pooled A - 1.5",
+    "probe": "Kaggle probe of l1a1y8sv2r3kp12lf15kv2 installs and plays, 0 tracebacks in kernel.log and serve.log"
+  },
+  "decision": "ship (pin for the remaining draws) on m1, m1b, m2, no_harm and the probe; a tie with the mechanism verified ships; kill on any miss; no further runs are added after reading",
+  "rollback": "re-pin l1a1y8sv2r3kp12lf15 v1 if the first live draw is 0.00 or a day errors twice"
+}

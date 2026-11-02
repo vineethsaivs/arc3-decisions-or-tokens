@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-25T03:31:18.728523+00:00",
+  "subject": "Predeclared gates for arms T and U, written BEFORE either was pushed.",
+  "context": "Arm S (world model survives death) returned 42 levels against a five-run family mean of 33.8 and the highest shipped-scorer mean this project has recorded (8.638). It is now taking real board draws in the daily rotation. Arm K taught us what happens next if we do not check: its first run was 44 and its byte-identical replicate returned 28.",
+  "gate_rules_in_force": "solution/kaggle/generated/gate-amendment-2026-08-24-remove-variance-ratchet.json",
+  "shared_preconditions": [
+    "All 25 games run and hold their full 7,920s slot.",
+    "Peak GPU KV cache usage strictly below 0.90.",
+    "KV cache size 398,272 tokens.",
+    "Zero 'maximum context length' errors.",
+    "ZERO tracebacks from tool_agent.py in the kernel log. Both arms carry a source change, so a crash is the main risk and any traceback is an automatic REJECT."
+  ],
+  "arms": {
+    "q38-deathmem-rerun-v1": {
+      "kernel": "vineethsaivs/arc3-q38-deathmem-rerun-ordinary-commit",
+      "change": "NOTHING. Byte-identical replicate of arm S.",
+      "purpose": "Arm S is already taking board draws. This is the cheapest possible insurance against repeating the arm-K mistake: if arm S's 42 was a lucky draw the way arm K's 44 was, we want to know before it consumes many of the 36 remaining slots. It also yields arm S's OWN paired per-game level-diff sd, which the gate amendment requires before any variance claim about a config.",
+      "cannot_be_promoted": true,
+      "what_it_would_falsify": "Return at or below 34 (the family mean plus nothing) and arm S's 42 was substantially luck: drop it from the rotation and give the slots back to A-temp09. Return 40 or above and arm S is the first change since the context-window raise with two independent runs behind it, and it should take the majority of the remaining draws.",
+      "prediction_recorded_in_advance": "I expect 34 to 44. Given the family's single runs span 28 to 44, one replicate cannot settle this on its own; it can only catch a collapse. That is the point, and it is worth 2h15m of an idle GPU session."
+    },
+    "q38-deathmem-topk100-v1": {
+      "kernel": "vineethsaivs/arc3-q38-deathmem-topk100-ordinary-commit",
+      "source_dataset": "vineethsaivs/arc3-q38-deathmem-topk100-v1",
+      "change": "Arm S plus LOCAL_ANALYZER_TOP_K 20 -> 100. Verified single-variable against arm S: identical src tree hash, one differing line in setup_commands.json.",
+      "purpose": "A ROTATION CANDIDATE, not a science experiment. top_k 100 pooled +3.7 levels over two runs, a tie that leans positive and was never shown to be harmful; arm S is +8.2. The two touch unrelated mechanisms (sampler truncation and world-model persistence), so a combined config is a reasonable third horse. Under the 2026-08-24 rule it needs only a ~21% prior of beating arm S to deserve draws, and splitting draws across equal-mean configs costs exactly zero.",
+      "ADD_TO_ROTATION_if": [
+        "no traceback",
+        "total_levels >= 34",
+        "zero_level_games <= 5"
+      ],
+      "REJECT_if_any_of": [
+        "any traceback",
+        "total_levels <= 28",
+        "any shared precondition fails"
+      ],
+      "explicitly_not_claimed": "That this is better than arm S. A single 25-game run cannot show that: single runs of one identical config span 28 to 44 on this instrument. The board draws decide it, not the bench."
+    }
+  },
+  "overlay_sha256": {
+    "apply_death_memory.py": "e30d8cb2807e66e2c63d6f197eba400058d5075bf8699de565a59e61f835de2e",
+    "apply_sampling.py": "3a0d485ee2c1921c9277a94d691fa5024eac2a275054f56b290b718593714acf"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "arm": "arc3-r20cfg-a v2: GG7 agent on rank 20's serving and schedule (context 102,985, MTP 0, bf16 KV 5 GiB, max_num_seqs 7, concurrency 7, 1,900 s per game)",
+  "gate": "generated/gate-predeclared-2026-09-27-rank20-arms.json",
+  "result": {"levels": 37, "zero_level_games": 2, "actions_per_game": 61.6, "mean_final_score": 7.28},
+  "control": {"arm": "GG7", "levels": 47, "actions_per_game": 109.4},
+  "mechanism": "vLLM: GPU KV cache 202,895 tokens, Maximum concurrency for 102,985 tokens 1.97x (GG7 at 48,128 with MTP 3: 122,325 tokens). Mean running 3.55, waiting 2.6. Generation 162.7 tok/s against GG7's ~236: turning MTP off cost about a third of the decode rate and freed only 1.66x the KV, not the 3x a public note suggested. Actions per game fell 44%.",
+  "v1": "fp8 KV died at engine init: NotImplementedError: Qwen3.8-Flash-Next QSA requires a BF16 main KV cache.",
+  "verdict": "REJECT. Rank 20's serving knobs do not transfer to keith's vLLM stack: their runtime is a different container that serves fp8 KV. The faithful port (arc3-r20-w7-a v2) is the test of their runtime."
+}

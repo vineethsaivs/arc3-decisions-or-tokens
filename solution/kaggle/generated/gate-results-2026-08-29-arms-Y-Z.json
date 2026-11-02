@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-29T21:00:00+00:00",
+  "subject": "Gate results for arm Y (reasoning carry) and arm Z (cross-level carry). Both NOT PROMOTED. Both mechanisms confirmed live, so these are real results, not instrument failures.",
+  "control": "q38-temp09-v1, the exact bundle that drew our banked 2.65: 35 levels, 4 zero-level games",
+  "noise_context": "A byte-identical rerun of this control returned 29 where the original returned 33. One sigma is about 4 levels; the n=1 vs n=1 MDE is about 12.6.",
+  "arm_Y_reasoning_carry": {
+    "kernel": "vineethsaivs/arc3-q38-rcarry2-ordinary-commit",
+    "levels": 31, "control_levels": 35, "zeros": 4, "control_zeros": 4,
+    "paired_sign_test": "2 gained / 5 lost over 25 games",
+    "MECHANISM_GATE": "PASS. taaf_setup_env.json in the run shows REASONING_CARRY_TURNS=2 and REASONING_CARRY_MAX_CHARS=6000, and the shipped tool_agent.py contains _carry_reasoning. The overlay was live.",
+    "VERDICT": "TIE BAND (30 to 39) with the sign test running against the arm. Under the predeclared rule ties go to the incumbent, so the incumbent keeps the slot. NOT PROMOTED.",
+    "what_this_does_and_does_not_say": "It does NOT say the defect is not real. The key-name mismatch between `reasoning` and `reasoning_content` is proven against the model's own chat template, and 96% of the model's output really is discarded. It says that feeding two turns of prior chain-of-thought back in does not buy levels on this bench. That is consistent with Qwen's own guidance not to replay previous thinking, so the most likely reading is that the discarded reasoning is genuinely not useful to the next turn, not that the fix failed to apply."
+  },
+  "arm_Z_cross_level_carry": {
+    "kernel": "vineethsaivs/arc3-q38-xlevel-ordinary-commit",
+    "levels": 29, "control_levels": 35, "zeros": 7, "control_zeros": 4,
+    "paired_sign_test": "4 gained / 8 lost over 25 games",
+    "MECHANISM_GATE": "PASS, cleanly. All 18 transcripts containing a level transition also contain the harness note 'Carried across levels, measured by the harness'. None of the 7 transcripts without a transition contain it. That is exactly the designed behaviour.",
+    "VERDICT": "REJECT band (<= 29) under the predeclared gate. NOT PROMOTED.",
+    "AN_INTERNAL_NOISE_MEASUREMENT_THAT_MATTERS": {
+      "observation": "Zero-level games went 4 to 7. But the note is emitted ONLY after a level transition, and those 7 games never had one, so they never saw the note. The overlay was provably INERT in every game that scored zero.",
+      "consequence": "At least 3 games flipped to zero in a region where this overlay could not have acted. Those 3 games contributed levels to the control. So a substantial part of the 6-level deficit is pure run-to-run noise, measured INSIDE the arm itself rather than against a separate replicate.",
+      "why_this_is_useful": "It is the first time we have an internal control on a single bench run: a subset of games where the treatment is guaranteed absent. Any future overlay that activates only under a condition gets the same free noise estimate.",
+      "what_it_does_NOT_license": "Moving the verdict. The gate was predeclared and hash-pinned before the run, 29 is in the REJECT band, and the sign test also runs against the arm. The verdict stands. This observation belongs in the record, not in a re-scored result."
+    },
+    "retest_condition": "Worth one retest on the 190-game bench once GCP capacity lands, because the mechanism is confirmed working and the effect is not separated from noise. Do NOT retest on the 25-game bench: it cannot resolve this."
+  },
+  "process_note": "Both gates were predeclared mechanism-first before either run, for the arm-V reason. Both mechanisms passed, which is the first time this project has run an arm where the overlay demonstrably did what it was built to do and the levels still did not follow."
+}

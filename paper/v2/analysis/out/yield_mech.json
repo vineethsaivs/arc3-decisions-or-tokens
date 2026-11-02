@@ -1,0 +1,457 @@
+[
+ {
+  "run": "franzen-p448s14-v1",
+  "yield": 2048,
+  "games": 25,
+  "usage": true,
+  "join_ok_games": 24,
+  "invocations": 1770,
+  "fresh": 1210,
+  "resume_tools": 492,
+  "resume_bare": 68,
+  "other_openers": 0,
+  "nudges": 0,
+  "openers_total": 1770,
+  "ends": {
+   "executed": 1188,
+   "yield": 565,
+   "timeout": 12,
+   "stop": 5
+  },
+  "turns": 1205,
+  "requests": 2571,
+  "req_per_turn": 2.133609958506224,
+  "req_per_invocation": 1.452542372881356,
+  "resume": 565,
+  "fresh_structural": 1205,
+  "completion_tokens": 5297203,
+  "growth_tokens": 8510537,
+  "new_prefill_total": 12537541,
+  "new_prefill_by": {
+   "fresh_first": 7624969,
+   "resume_first": 3475025,
+   "within": 1437547
+  },
+  "requests_by": {
+   "fresh_first": 1200,
+   "resume_first": 560,
+   "within": 810
+  },
+  "trims": 102,
+  "trim_new_prefill": 5408045,
+  "new_prefill_mean_by": {
+   "fresh_first": 6354.140833333333,
+   "resume_first": 6205.401785714285,
+   "within": 1774.7493827160495
+  },
+  "mean_appended": {
+   "fresh_first": 1792.1151079136691,
+   "resume_first": 1457.515037593985,
+   "within": 556.8310387984981
+  },
+  "resume_opener_tokens_est": 900.6839987954868,
+  "resume_share_of_growth": 0.05630242690434211,
+  "resume_share_upper": 0.09111034944093423,
+  "gen_per_turn_mean": 4396.01908713693,
+  "clean_turns": 1188,
+  "observed_resume_in_clean_turns": 546,
+  "replay_resume_in_clean_turns": {
+   "2048": 546,
+   "8192": 135,
+   "0": 0
+  }
+ },
+ {
+  "run": "franzen-p448s14rep-v1",
+  "yield": 2048,
+  "games": 25,
+  "usage": true,
+  "join_ok_games": 24,
+  "invocations": 1765,
+  "fresh": 1138,
+  "resume_tools": 596,
+  "resume_bare": 31,
+  "other_openers": 0,
+  "nudges": 4,
+  "openers_total": 1769,
+  "ends": {
+   "executed": 1116,
+   "yield": 634,
+   "stop": 5,
+   "timeout": 10
+  },
+  "turns": 1131,
+  "requests": 2618,
+  "req_per_turn": 2.314765694076039,
+  "req_per_invocation": 1.48328611898017,
+  "resume": 634,
+  "fresh_structural": 1131,
+  "completion_tokens": 5292247,
+  "growth_tokens": 8492235,
+  "new_prefill_total": 12694445,
+  "new_prefill_by": {
+   "fresh_first": 6871789,
+   "resume_first": 4264626,
+   "within": 1558030
+  },
+  "requests_by": {
+   "fresh_first": 1127,
+   "resume_first": 630,
+   "within": 860
+  },
+  "trims": 104,
+  "trim_new_prefill": 5597974,
+  "new_prefill_mean_by": {
+   "fresh_first": 6097.417036379769,
+   "resume_first": 6769.247619047619,
+   "within": 1811.6627906976744
+  },
+  "mean_appended": {
+   "fresh_first": 1822.0421860019176,
+   "resume_first": 1451.2643097643097,
+   "within": 514.1562867215041
+  },
+  "resume_opener_tokens_est": 937.1080230428057,
+  "resume_share_of_growth": 0.0655471928988572,
+  "resume_share_upper": 0.10151049753097977,
+  "gen_per_turn_mean": 4679.263483642794,
+  "clean_turns": 1116,
+  "observed_resume_in_clean_turns": 587,
+  "replay_resume_in_clean_turns": {
+   "2048": 587,
+   "8192": 144,
+   "0": 0
+  }
+ },
+ {
+  "run": "franzen-l1a1tbfc-v1",
+  "yield": 2048,
+  "games": 25,
+  "usage": true,
+  "join_ok_games": 24,
+  "invocations": 1656,
+  "fresh": 1088,
+  "resume_tools": 568,
+  "resume_bare": 0,
+  "other_openers": 0,
+  "nudges": 1,
+  "openers_total": 1657,
+  "ends": {
+   "executed": 1069,
+   "yield": 572,
+   "timeout": 9,
+   "stop": 6
+  },
+  "turns": 1084,
+  "requests": 2376,
+  "req_per_turn": 2.1918819188191883,
+  "req_per_invocation": 1.434782608695652,
+  "resume": 572,
+  "fresh_structural": 1084,
+  "completion_tokens": 5617686,
+  "growth_tokens": 8577931,
+  "new_prefill_total": 10352260,
+  "new_prefill_by": {
+   "fresh_first": 5792948,
+   "resume_first": 3640126,
+   "within": 919186
+  },
+  "requests_by": {
+   "fresh_first": 1082,
+   "resume_first": 567,
+   "within": 726
+  },
+  "trims": 108,
+  "trim_new_prefill": 5736684,
+  "new_prefill_mean_by": {
+   "fresh_first": 5353.92606284658,
+   "resume_first": 6419.975308641975,
+   "within": 1266.0964187327825
+  },
+  "mean_appended": {
+   "fresh_first": 1787.496,
+   "resume_first": 1471.2490421455939,
+   "within": 562.1625
+  },
+  "resume_opener_tokens_est": 909.0865421455939,
+  "resume_share_of_growth": 0.05532140267857132,
+  "resume_share_upper": 0.08953114684648314,
+  "gen_per_turn_mean": 5182.367158671586,
+  "clean_turns": 1069,
+  "observed_resume_in_clean_turns": 523,
+  "replay_resume_in_clean_turns": {
+   "2048": 523,
+   "8192": 154,
+   "0": 0
+  }
+ },
+ {
+  "run": "franzen-l1a1y8-v1",
+  "yield": 8192,
+  "games": 25,
+  "usage": true,
+  "join_ok_games": 25,
+  "invocations": 1339,
+  "fresh": 1155,
+  "resume_tools": 149,
+  "resume_bare": 35,
+  "other_openers": 0,
+  "nudges": 1,
+  "openers_total": 1340,
+  "ends": {
+   "executed": 1144,
+   "yield": 185,
+   "timeout": 7,
+   "stop": 3
+  },
+  "turns": 1154,
+  "requests": 2622,
+  "req_per_turn": 2.2720970537261698,
+  "req_per_invocation": 1.9581777445855115,
+  "resume": 185,
+  "fresh_structural": 1154,
+  "completion_tokens": 5682211,
+  "growth_tokens": 8481119,
+  "new_prefill_total": 8846329,
+  "new_prefill_by": {
+   "fresh_first": 5297087,
+   "resume_first": 1294660,
+   "within": 2254582
+  },
+  "requests_by": {
+   "fresh_first": 1147,
+   "resume_first": 185,
+   "within": 1290
+  },
+  "trims": 98,
+  "trim_new_prefill": 5080381,
+  "new_prefill_mean_by": {
+   "fresh_first": 4618.210113339145,
+   "resume_first": 6998.1621621621625,
+   "within": 1747.737984496124
+  },
+  "mean_appended": {
+   "fresh_first": 1810.0346117867166,
+   "resume_first": 1466.9759036144578,
+   "within": 490.8726265822785
+  },
+  "resume_opener_tokens_est": 976.1032770321794,
+  "resume_share_of_growth": 0.019105161003794637,
+  "resume_share_upper": 0.028712956391721424,
+  "gen_per_turn_mean": 4923.926343154246,
+  "clean_turns": 1144,
+  "observed_resume_in_clean_turns": 185,
+  "replay_resume_in_clean_turns": {
+   "2048": 625,
+   "8192": 185,
+   "0": 0
+  }
+ },
+ {
+  "run": "franzen-l1a1y8r-v1",
+  "yield": 8192,
+  "games": 25,
+  "usage": false,
+  "join_ok_games": 0,
+  "invocations": 1296,
+  "fresh": 1146,
+  "resume_tools": 124,
+  "resume_bare": 25,
+  "other_openers": 0,
+  "nudges": 1,
+  "openers_total": 1297,
+  "ends": {
+   "executed": 1130,
+   "yield": 151,
+   "stop": 8,
+   "unknown": 1,
+   "timeout": 6
+  },
+  "turns": 1145,
+  "requests": 2441,
+  "req_per_turn": 2.131877729257642,
+  "req_per_invocation": 1.8834876543209877,
+  "resume": 151,
+  "fresh_structural": 1145
+ },
+ {
+  "run": "franzen-l1a1y8sv2-v1",
+  "yield": 8192,
+  "games": 25,
+  "usage": false,
+  "join_ok_games": 0,
+  "invocations": 1317,
+  "fresh": 1123,
+  "resume_tools": 149,
+  "resume_bare": 45,
+  "other_openers": 0,
+  "nudges": 0,
+  "openers_total": 1317,
+  "ends": {
+   "executed": 1104,
+   "yield": 196,
+   "stop": 11,
+   "timeout": 6
+  },
+  "turns": 1121,
+  "requests": 2522,
+  "req_per_turn": 2.249776984834969,
+  "req_per_invocation": 1.914958238420653,
+  "resume": 196,
+  "fresh_structural": 1121
+ },
+ {
+  "run": "franzen-l1a1y8sv2o16-v1",
+  "yield": 8192,
+  "games": 25,
+  "usage": false,
+  "join_ok_games": 0,
+  "invocations": 1387,
+  "fresh": 1217,
+  "resume_tools": 158,
+  "resume_bare": 12,
+  "other_openers": 0,
+  "nudges": 0,
+  "openers_total": 1387,
+  "ends": {
+   "executed": 1199,
+   "yield": 171,
+   "timeout": 9,
+   "stop": 8
+  },
+  "turns": 1216,
+  "requests": 2473,
+  "req_per_turn": 2.033717105263158,
+  "req_per_invocation": 1.782984859408796,
+  "resume": 171,
+  "fresh_structural": 1216
+ },
+ {
+  "run": "franzen-l1a1y8sv2r1-v1",
+  "yield": 8192,
+  "games": 25,
+  "usage": false,
+  "join_ok_games": 0,
+  "invocations": 1518,
+  "fresh": 1325,
+  "resume_tools": 145,
+  "resume_bare": 48,
+  "other_openers": 0,
+  "nudges": 0,
+  "openers_total": 1518,
+  "ends": {
+   "executed": 1309,
+   "yield": 194,
+   "timeout": 10,
+   "stop": 5
+  },
+  "turns": 1324,
+  "requests": 2876,
+  "req_per_turn": 2.1722054380664653,
+  "req_per_invocation": 1.8945981554677207,
+  "resume": 194,
+  "fresh_structural": 1324
+ },
+ {
+  "run": "franzen-l1a1y8sv2r2-v1",
+  "yield": 8192,
+  "games": 25,
+  "usage": false,
+  "join_ok_games": 0,
+  "invocations": 1521,
+  "fresh": 1321,
+  "resume_tools": 166,
+  "resume_bare": 34,
+  "other_openers": 0,
+  "nudges": 0,
+  "openers_total": 1521,
+  "ends": {
+   "executed": 1306,
+   "yield": 200,
+   "stop": 4,
+   "timeout": 11
+  },
+  "turns": 1321,
+  "requests": 2885,
+  "req_per_turn": 2.1839515518546557,
+  "req_per_invocation": 1.8967784352399737,
+  "resume": 200,
+  "fresh_structural": 1321
+ },
+ {
+  "run": "franzen-l1a1y8sv2r3-v1",
+  "yield": 8192,
+  "games": 25,
+  "usage": false,
+  "join_ok_games": 0,
+  "invocations": 1450,
+  "fresh": 1236,
+  "resume_tools": 178,
+  "resume_bare": 36,
+  "other_openers": 0,
+  "nudges": 0,
+  "openers_total": 1450,
+  "ends": {
+   "executed": 1219,
+   "yield": 215,
+   "stop": 7,
+   "timeout": 9
+  },
+  "turns": 1235,
+  "requests": 2862,
+  "req_per_turn": 2.317408906882591,
+  "req_per_invocation": 1.9737931034482759,
+  "resume": 215,
+  "fresh_structural": 1235
+ },
+ {
+  "run": "franzen-l1a1y8sv2r3s4-v1",
+  "yield": 8192,
+  "games": 25,
+  "usage": false,
+  "join_ok_games": 0,
+  "invocations": 1451,
+  "fresh": 1257,
+  "resume_tools": 155,
+  "resume_bare": 39,
+  "other_openers": 0,
+  "nudges": 1,
+  "openers_total": 1452,
+  "ends": {
+   "executed": 1241,
+   "yield": 194,
+   "stop": 7,
+   "timeout": 9
+  },
+  "turns": 1257,
+  "requests": 2817,
+  "req_per_turn": 2.2410501193317423,
+  "req_per_invocation": 1.9414197105444522,
+  "resume": 194,
+  "fresh_structural": 1257
+ },
+ {
+  "run": "franzen-l1a1y0sv2-v1",
+  "yield": 0,
+  "games": 25,
+  "usage": false,
+  "join_ok_games": 0,
+  "invocations": 1350,
+  "fresh": 1250,
+  "resume_tools": 100,
+  "resume_bare": 0,
+  "other_openers": 0,
+  "nudges": 41,
+  "openers_total": 1391,
+  "ends": {
+   "executed": 1191,
+   "request_error": 159
+  },
+  "turns": 1209,
+  "requests": 2612,
+  "req_per_turn": 2.160463192721257,
+  "req_per_invocation": 1.9348148148148148,
+  "resume": 141,
+  "fresh_structural": 1209
+ }
+]

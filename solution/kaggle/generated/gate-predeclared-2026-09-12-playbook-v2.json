@@ -1,0 +1,23 @@
+{
+  "gate": "PLAYBOOK v2: does the repaired debrief carry INFORMATION, and does information help?",
+  "date": "2026-09-12",
+  "kernel": "vineethsaivs/arc3-playbook-v2-a",
+  "dataset": "vineethsaivs/arc3-q38-flashnext-playbook-v2, a NEW slug. Never a version of playbook-v1, because rule 15(f) pins dataset sources by slug with no version and a v1 republish would silently change what arc3-fourwave-playbook-a already runs.",
+  "null": "vineethsaivs/arc3-fourwave-bench-a, 35 levels, 5 zeros, ALREADY RUN. Same 4-wave schedule (concurrency 7, 1,950 s), no lesson carrying. v1 on that null read 40 levels, 3 zeros, +1.12 sd.",
+  "single_variable": "The debrief PROMPT and the DEDUPE. Everything else, including the schedule, the model, the harness and the convention-14 filter, is identical to v1.",
+  "why_v1_did_not_test_the_mechanism": "v1's playbook filled 1,737 of 1,800 characters with twelve paraphrases of 'run cheap single-variable probes and drop falsified hypotheses'. Its prompt demanded 'STRATEGY ONLY' and then enumerated four clauses of one idea, and its dedupe compared exact strings while the twelve averaged 0.155 pairwise Jaccard. So the treatment carried no information and the +5 levels was noise at 1.1 sd. generated/playbook-content-is-redundant-2026-09-12.json.",
+  "THE_MECHANISM_GATE_COMES_FIRST_AND_IT_IS_THE_POINT": {
+    "read": "artifacts/cross_game_playbook.json BEFORE the level total.",
+    "PASS_the_mechanism": "The entries describe DIFFERENT things. Concretely: at most 3 of the entries mention 'hypothes*' (v1: 10 of 12), and mean pairwise stemmed containment is below 0.20 (v1's twelve collapse to 1 at that threshold). At least half should read as a trigger and a response rather than a maxim.",
+    "FAIL_the_mechanism": "Another set of paraphrases. If that happens the repair did not work and the level total is not worth reading at all: the debrief prompt is the wrong instrument for this and the next move is Continual Harness's executable form, not a third wording.",
+    "why_this_order": "I promoted v1 on its level total and read its content afterwards, which reversed the decision within minutes. The gate for that arm already said to read the mechanism first."
+  },
+  "THE_OUTCOME_GATE_second": {
+    "reference": "Null 35. v1 40. Control family on the ONE-wave schedule is 43.0 with sd 3.16 (n=4), so an arm-minus-null difference has sd 4.47 and the 80%-power MDE is 12.5 levels.",
+    "PASS": ">= 48 levels against the 35 null, i.e. outside the measured null.",
+    "UNDECIDED": "36 to 47. Positive but not separated. Replicate before any promotion, and do NOT repeat the mistake of promoting an undecided reading on economics alone when the mechanism has not been read.",
+    "REJECT": "<= 34 levels, or zero-level games >= 8."
+  },
+  "cost": "about 2.4 GPU-h. The null already exists, so this is one run rather than a pair.",
+  "status_when_written": "Built and dataset published; NOT pushed. Only 2.92 GPU-h were free with two runs in flight, and their results reorder what is worth running. Push when quota frees."
+}

@@ -1,0 +1,27 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-04",
+ "plan": "docs/PLAN_2026-10-01.md",
+ "instrument": "25-game scored-run replica (7,200 s shared window)",
+ "control": "pooled p448s14 (two runs): 114 levels, mean game score 52.8, 730 tok/s, levels at 150K tokens per game 95 and 91; its scored draw was 28.97",
+ "arm": {
+  "kernel": "vineethsaivs/arc3-franzen-p448s14h71-a",
+  "version": 1,
+  "change": "p448s14 plus ARC3_CONTEXT_DRAIN_TOKENS 46K (keeps about 71K of history after a trim instead of about 59K)"
+ },
+ "result": {
+  "levels": 113,
+  "mean_game_score": 51.16,
+  "harness_tok_s": 699.3,
+  "decode_tok_s": 807.6,
+  "running_mean": 12.35,
+  "cache_hit_pct": 92.6,
+  "kv_p90": 0.82,
+  "kv_max": 0.95,
+  "new_prefill_tokens": 14831247,
+  "large_prefills": 132,
+  "levels_at_75k_100k_150k": [58, 71, 95]
+ },
+ "verdict": "HOLD. Keeping more history does not buy levels at matched tokens (95 at 150K per game, the same as the pin's runs) and it costs throughput: trims come more often, so new prefill rises 17% (14.8M against 12.7M), large re-prefills 132 against 113, cache hits 92.6% against 93.3%, and harness tokens per second fall 4%. Levels 113 against 114, game score 51.2 against 52.8. The longer-history lever from rellik13 and Lord Han Solo does not transfer to Franzen's agent at 128K context.",
+ "promote": false
+}

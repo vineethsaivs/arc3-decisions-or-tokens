@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "declared_at": "2026-10-21 about 02:48Z, before any job of the wave was submitted (first submission 02:49:55Z); decision rules amended 02:55Z, see decision_rules.amended",
+  "question": "Does yielding a turn after 8,192 generated tokens instead of 2,048 gain levels by changing decisions, or only by generating more tokens? The evidence so far (+12.5 levels, 9 runs at 8,192 against 21 at 2,048) is confounded: the runs were not interleaved (controls 10-03 to 10-10, treated 10-10 to 10-12), seven of the nine treated runs carry serving changes and generate 17% more tokens, and only the two token-matched runs separate decisions from tokens (+15, p 0.33). paper/v3/review/skeptic.md issue 1; paper/v2/framing/FRAMING.md section 5 rows D1 to D13; paper/v3/framing/FRAMING_v3.md section 9.",
+  "design": {
+    "type": "two arms, concurrent, interleaved submission, blocked by region",
+    "arms": {
+      "y8": {
+        "arm": "l1a1y8sv2r3rq",
+        "what": "the pinned replica (l1a1y8sv2r3) plus the reqlog overlay; yields after 8,192 generated tokens. The same notebook ran as rq1020-1 to rq1020-8 on 2026-10-20",
+        "notebook_sha256": "a8e2e846639bb9b2d3d685254fed25060113241a93463f470584b4ce733b0b20",
+        "gcs": [
+          "gs://arc3-rep-uc1/arms/candidates-franzen-l1a1y8sv2r3rq/submission.ipynb",
+          "gs://arc3-rep-ue4/arms/candidates-franzen-l1a1y8sv2r3rq/submission.ipynb"
+        ]
+      },
+      "y2": {
+        "arm": "l1a1y8sv2r3rqy2",
+        "what": "l1a1y8sv2r3rq without the YIELD8K edit (build_franzen_arms.py without()); yields after Franzen's 2,048 generated tokens",
+        "notebook_sha256": "e695102c96ba5a0e7e2ac17d4f530ef9166e944fb1e3f3f195240b2998da66d1",
+        "gcs": [
+          "gs://arc3-rep-uc1/arms/candidates-franzen-l1a1y8sv2r3rqy2/submission.ipynb",
+          "gs://arc3-rep-ue4/arms/candidates-franzen-l1a1y8sv2r3rqy2/submission.ipynb"
+        ]
+      }
+    },
+    "byte_difference": "26 cells compared, notebook and cell metadata equal; one line of cell 7 (the LOCAL_ANALYZER_* environment cell) differs: y8 \"    'LOCAL_ANALYZER_YIELD_TOKENS': '8192',  # arm y8: yield 4x less often\", y2 \"    'LOCAL_ANALYZER_YIELD_TOKENS': '2048',\". kernel-metadata.json differs only in id and title (unused on Vertex). Both carry reqlog, so the comparison is symmetric. Every one of the 117 existing arms builds byte-identical after the builder change (in-memory sha256 of each built notebook before and after; --self-check 118 ok).",
+    "n_per_arm": 8,
+    "region_split": "4 runs per arm in us-central1 (gs://arc3-rep-uc1, names yw-*-c-N) and 4 in us-east4 (gs://arc3-rep-ue4, names yw-*-e-N). A job not RUNNING after 30 min moves to the other region under the same name (vertex_submit.sh --overflow 30); the reader records the region where each run completed.",
+    "submission_order": "interleaved ABBA inside each region, regions alternating, 15 s apart: c-1 y8, y2; e-1 y8, y2; c-2 y2, y8; e-2 y2, y8; c-3 y8, y2; e-3 y8, y2; c-4 y2, y8; e-4 y2, y8 (paper/v3/review/OPEN_ITEMS.md, Interleaved yield wave)",
+    "runtime": "Vertex AI g4-standard-48 Spot (1x RTX PRO 6000 96 GB), image replica:v4, notebook timeout 15,000 s, env ARC3_REQLOG_DIR=/vtx/run/reqlog on both arms; the 25 public demonstration games, 14 streams, one 7,200 s shared window (the replica)"
+  },
+  "validity": {
+    "valid_run": "the run completes: DONE with rc=0, benchmark.json with 25 games, READY seen in notebook.log or kernel.log, and its progress.txt notebook is the arm's own (sha prefix or arms/ path). A server death (watchdog relaunch) or an OOM in a run that completes does not invalidate it: it is counted (intention to treat) and flagged, and a sensitivity read without flagged runs is reported.",
+    "preempted_or_failed": "a run that does not complete (Vertex FAILED or CANCELLED, rc not 0, fewer than 25 games, no READY) is rerun once under NAME-r with the same arm, in the same region if it has capacity; the rerun replaces it. A restart Vertex makes on its own after a preemption starts the run from scratch and counts as the same run if it completes.",
+    "read_when": "every launched run is valid or its one rerun has finished. No interim look at levels: the reader prints no verdict while any run lacks DONE.",
+    "minimum": "6 valid runs per arm, else NO READ",
+    "manipulation_check": "required for any read: every y8 run's transcripts show yield_tokens 8192 and every y2 run's 2048, and resume openers per game in y8 are below half of y2's (D5 measured about 70% fewer: 151 to 215 against 565 to 634 per run)"
+  },
+  "primary_outcome": {
+    "measure": "levels per run, summed over the 25 demonstration games (benchmark.json levels_completed)",
+    "estimate": "Delta = mean(y8) - mean(y2)",
+    "test": "Welch t, two-sided, alpha 0.05; bootstrap 95% CI on Delta (runs resampled within arm, 20,000 draws, seed 20261021); exact run-label permutation p reported as a robustness check"
+  },
+  "paired_per_game": "for each of the 25 games, d_g = mean levels over y8 runs minus mean over y2 runs; report every d_g, games up, down and tied, and a two-sided sign test on the untied games. Supporting only: it cannot overturn the primary.",
+  "secondary_outcomes": {
+    "tokens_per_game": "generated tokens per game (benchmark.json solver_note tokens=N), per run averaged over 25 games; Welch t and the ratio y8/y2. Under identical serving the yield's own token effect is bounded by the freed prefill, at most 2.3% of GPU time (D7)",
+    "resume_openers_per_game": "invocations whose previous invocation did not execute an action (paper/v2/analysis/yield_mech.py definition), from the per-game transcripts; per run averaged over 25 games; Welch t and the ratio y8/y2. Also yield ends (status turn_token_budget) and requests per game",
+    "levels_at_matched_tokens_per_game": "for each game g, T_g = min(median tokens of g over y8 runs, median over y2 runs); a run's matched levels = sum over g of the levels whose completing action falls at or below T_g cumulative generated tokens (franzen_readout.py level_tokens: per-action generated tokens from benchmark.json history, which sum to 98.0% of the harness's per-game totals on rq1020-1, the rest generated after a game's last action, so the cut is exact to the action). Delta_matched with Welch t and bootstrap 95% CI. Also the fixed marks 100K, 150K, 200K, 250K and 300K tokens per game, as D10 (games that stopped earlier keep their final levels), with games reaching each mark",
+    "per_token_clear_rate": "Mantel-Haenszel rate ratio y8 over y2 across (game, level) strata, exposure = generated tokens from the previous clear (or start) to this clear, or to the game's end if never cleared (paper/v2/analysis/yield_pertoken.py method B); run-cluster bootstrap 95% CI (2,000 draws)",
+    "serving_parity": "harness tok/s, cache hit, accept length, new prefill tokens per run (franzen_readout.py on serve.log); reported, not tested",
+    "region": "Delta inside each region and their mean (region-stratified); reported only",
+    "data_sources": "small files only reach the Mac: benchmark.json, serve.log, kernel.log, notebook.log, progress.txt, DONE (solution/gcp/vertex_fetch.sh, about 6 MB a run) and the per-game transcripts (under 4 MB each, 56 MB a run, parsed in a temporary directory and deleted; a per-run summary is kept). The harness's per-request logs (working/<game>_p0_requests.jsonl, 25 to 132 MB each, 1.7 GB a run) and the reqlog blobs stay in GCS."
+  },
+  "decision_rules": {
+    "token_explained": "levels y8's extra tokens could buy: (mean generated tokens per run, y8 minus y2, in millions) x 11.2 levels per million tokens (D7 and D9's generous tail rate), floored at 0",
+    "A_decisions": "Delta > 0 with Welch p < 0.05, AND (the bootstrap CI's lower bound on Delta is above token_explained, OR the Delta_matched bootstrap 95% CI is above 0, OR the per-token rate ratio CI is above 1)",
+    "B_tokens": "Delta > 0 with Welch p < 0.05 and none of A's three conditions: the gain fits the extra tokens",
+    "C_null": "Welch p >= 0.05. Reported with the CI; if the CI's upper bound is below +12.5 the non-interleaved family estimate (D1) is excluded",
+    "D_harm": "Delta < 0 with Welch p < 0.05",
+    "amended": "2026-10-21 02:55Z, after the 16 jobs were submitted (02:49:55Z to 02:53:41Z) and while all 16 were still PENDING: no run had started and no wave data existed. Why: the 02:48Z rules (kept verbatim in superseded_rules_0248Z) called B on any positive token difference and leaned on Delta_matched, but the reader's A/A test on rq1020-1 to 8 (4 against 4 of the y8 notebook) gave levels at matched tokens an SD of 11.0 and 9.7 against 6.1 and 6.7 for levels, so the matched CI alone cannot separate decisions from tokens. With serving identical the token difference is small by design (A/A ratio 0.992), and token_explained prices it directly. B_open was folded into B. Both rule sets are reported when the wave reads."
+  },
+  "meaning_for_the_paper": {
+    "framing": "paper/v3/framing/FRAMING_v3.md section 9: the message is a question until this test reads",
+    "A_decisions": "yield wins at matched tokens: restore the title 'Decisions, Not Tokens: What Moved an Offline ARC-AGI-3 Agent and What Did Not' and the one message; contribution 3 becomes 'a context lever, tested interleaved'; a causal verb for the yield is allowed with this test cited",
+    "B_tokens": "the yield's levels come with its extra tokens: the message becomes 'tokens matter more than the budget curve says; decisions moved only one way (down, by imitation)'; contribution 3 reports the yield as a token effect and the curve as underpricing throughput",
+    "C_null": "the yield's gain did not survive an interleaved test: FRAMING section 9's 'if not' branch ('tokens matter more than the budget curve says; decisions moved only one way, down, by imitation'), with the family gain attributed to what differed between the families (serving changes with +17% tokens, and the day); contribution 3 becomes a negative result and evidence for the measurement kit (an uninterleaved family misled). If the CI includes effects of +9 or more, say the test cannot exclude them",
+    "D_harm": "the yield at 8,192 lowered levels when interleaved: decisions moved only down; report it and flag the pin to the owner (this wave does not repin)"
+  },
+  "power": {
+    "method": "Student t with 14 df (for equal n the Welch statistic equals the pooled one; Welch df is at most 14), alpha 0.05 two-sided, 8 vs 8, simulated noncentral t (200,000 draws, seed 20261021); MDE80 = (t_0.975 + t_0.80) x SE with t_0.975 = 2.145, t_0.80 = 0.868. Recompute: python3 -I paper/v3/analysis/yield_wave_read.py --power",
+    "sd_5.95": {
+      "source": "eight concurrent byte-identical Vertex replicas rq1020-1 to 8 (V3-X3)",
+      "se": 2.975,
+      "mde80": 8.96,
+      "mde80_normal_approx": 8.34,
+      "power_at_delta": {
+        "1.0": 0.061,
+        "5.0": 0.346,
+        "9.0": 0.805,
+        "12.5": 0.974
+      }
+    },
+    "sd_8.25": {
+      "source": "six identical pairs (B4, CI 5.3 to 18.2)",
+      "se": 4.125,
+      "mde80": 12.43,
+      "mde80_normal_approx": 11.56,
+      "power_at_delta": {
+        "1.0": 0.056,
+        "5.0": 0.204,
+        "9.0": 0.527,
+        "12.5": 0.804
+      }
+    },
+    "reading": "the wave detects the non-interleaved +12.5 with power 0.97 at the concurrent SD and 0.80 at the pair SD; it cannot resolve the curve's token share (about +5, D9) or the freed-prefill bound (at most about +0.5, D7). A null therefore rules out an effect as large as +12.5 but not one of +5"
+  },
+  "reference_data": "the y8 arm's notebook already ran 8 times concurrently on 2026-10-20 (rq1020-1 to 8: 115 to 132 levels, mean 124.6, SD 5.95). Those runs are not pooled into the y8 arm: they are not interleaved with any y2 run. They test the reader only.",
+  "cost_and_time": "16 replicas at $3.90 to $5.40 each = $62 to $86 (Spot, management fee unsettled), up to $97 with two reruns; about 2h20m from submission when both regions have capacity (14 G4 per region quota; 8 per region needed)",
+  "owner": "paper track; the coordinator launches; nothing here submits a job",
+  "superseded_rules_0248Z": {
+    "A_decisions": "Delta > 0 with Welch p < 0.05, AND (Delta_matched bootstrap 95% CI above 0, OR the per-token rate ratio CI above 1)",
+    "B_tokens": "Delta > 0 with Welch p < 0.05, Delta_matched CI includes 0, the rate ratio CI includes 1, and y8 generated more tokens per game than y2",
+    "B_open": "Delta > 0 with Welch p < 0.05, Delta_matched CI includes 0, the rate ratio CI includes 1, and y8 did not generate more tokens: the cause stays open (paper: keep the question title, no causal verb)",
+    "C_null": "as now",
+    "D_harm": "as now"
+  }
+}

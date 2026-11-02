@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-24T03:48:29.523797+00:00",
+  "subject": "AMENDMENT to gate-predeclared-2026-08-24-arms-J-K.json. Written BEFORE arms J and K returned.",
+  "written_before_readout": true,
+  "amends": "solution/kaggle/generated/gate-predeclared-2026-08-24-arms-J-K.json",
+  "amends_sha256": "ba629688575603124cc3e74817fcd6044a34ce4cbe2fe9d79aa848f4ddb222fd",
+  "amends_is_not_edited": "The original predeclared file is left byte-identical on purpose. A predeclared gate that gets edited after its arms are pushed is not a predeclared gate. This record supersedes one clause in it and nothing else.",
+  "the_defect": {
+    "clause": "INCONCLUSIVE_band: '30 to 32 levels. A tie is not a capability promotion, but at a tie the HIGHER temperature ships, on the recorded variance argument.'",
+    "why_it_is_wrong": "It is a one-way ratchet. On a NULL arm whose true 25-game total is the pooled 31 with sigma 3.6 to 4.3, that wording PROMOTES about 35% of the time and REJECTS about 35%, so the hotter config ships roughly 65% of the time on pure noise, with no stopping condition. Applied repeatedly it is a biased random walk toward higher temperature on an axis whose only separated measurement is that 0.3 is bad.",
+    "and_its_justification_does_not_hold": [
+      "Cross-game score sd is a near-linear function of the arm MEAN across all 14 q38 arms (r = 0.693, slope 0.995, p = 0.006), so a higher-mean arm looks higher-variance automatically. Temp09's observed cross-game sd of 8.965 is almost exactly what its mean alone predicts (8.897).",
+      "57% of temp09's excess variance over the incumbent is ONE game, vc33-5430563c (35.71 at temp09 against 21.08, 21.43 and 0.78 elsewhere).",
+      "The highest-dispersion arm in the whole corpus is context-hysteresis at sd 9.527, with a LOWER mean, at temperature 0.6. That breaks the claimed monotone temperature-to-variance relation outright.",
+      "Cross-game sd is not board sigma anyway. One real config has produced a board sigma of 0.014 (the anim pair, 1.17 then 1.19)."
+    ],
+    "who_wrote_it": "This session, 2026-08-24. It is my error and it is corrected here rather than quietly dropped."
+  },
+  "superseding_rule": {
+    "1_ties_go_to_the_incumbent": "Delete every 'at a tie the higher-variance config ships' clause. An arm that does not clear its bar does not ship, in either direction.",
+    "2_gate_on_the_paired_per_game_sign_test": "Not on the 25-game level TOTAL. The total has sigma 3.6 to 4.3 for one run and 5.1 to 6.1 for an arm-minus-control difference, giving roughly 30% power against a true +4. The paired sign test is the instrument that promoted the one arm this project has that replicated (11 gained / 3 lost, p = 0.029, and independently 10/3, p = 0.046).",
+    "3_variance_claims_need_the_right_measurement": "Any 'this arm buys sigma' argument must be measured as the paired per-game level-diff sd from a BYTE-IDENTICAL pair of the same config, which is the only quantity that is pure run noise. The 0.6 config's value is 4.29. Until the temp-0.9 replicate returns that number, the variance argument is a hypothesis, not a rationale.",
+    "4_reject_only_on_confidently_negative_evidence": "A false PROMOTE is nearly free: the public board keeps our maximum, the daily slot is free, and a bad config can be rolled back. A false REJECT permanently deletes a lever, and four rejections on record (history budget 64512, the image-token estimator fix, the output cap, LB-9 Anim) sit between 35% and 68% probability of being real. Bar: REJECT at total_levels <= 29; everything above that is INCONCLUSIVE and the incumbent keeps shipping."
+  },
+  "applies_to": [
+    "q38-ctxwin-temp12-v1 (arm J)",
+    "q38-ctxwin-topk100-v1 (arm K)",
+    "every gate written after this date"
+  ],
+  "what_it_does_NOT_change": "The temperature-0.9 submission already made today (55731318) stands. The board keeps our maximum, so a submission cannot lose points, and arm H did clear every numeric condition of its own predeclared gate (35 levels, 4 zero-level games, 6 gained / 5 lost). What is retracted is the STRENGTH of the variance rationale recorded in q38-temperature-09-authorization-2026-08-24.json, not the submission.",
+  "corrected_noise_language": {
+    "wrong": "'+/- 4 levels on 25 games', which was the single observed realization |33 - 29| = 4, not a standard deviation",
+    "right": {
+      "sigma_one_run_25_game_level_total": "3.6 to 4.3",
+      "sigma_arm_minus_control_difference": "5.1 to 6.1",
+      "mde_80_percent_power_at_n1_vs_n1": "about 12.6 levels",
+      "note": "The paired per-game sign test is strictly more powerful than either total."
+    }
+  },
+  "board_points_per_bench_level": {
+    "value": 0.0672,
+    "fit": "board = -0.080 + 0.0672 * bench_levels over our 7 draws with known bench level counts; residual sd 0.288, indistinguishable from the per-draw board sigma of about 0.315",
+    "caveat": "REFUTED as a cross-config constant by the adversarial verifier: the two byte-identical board pairs imply per-config sigmas of 0.014 and 0.445, a 31x spread. Use it as an order-of-magnitude conversion only, never as a promotion criterion."
+  }
+}

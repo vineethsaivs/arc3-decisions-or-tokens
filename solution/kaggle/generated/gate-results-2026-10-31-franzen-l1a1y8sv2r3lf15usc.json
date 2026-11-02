@@ -1,0 +1,43 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-31",
+ "gate": "solution/kaggle/generated/gate-predeclared-2026-10-31-franzen-l1a1y8sv2r3lf15usc.json",
+ "instrument": "Kaggle replica, 25 public games, 15 streams, 7,200 s window; W = kaggle-lf15usc-1031-1..3 (usc, uscb, uscc); read by solution/analysis/harness_2026-10/gates/usc_gate.py",
+ "arm": {
+  "kernel": "vineethsaivs/arc3-franzen-l1a1y8sv2r3kp12lf15usc-a",
+  "version": 1,
+  "change": "the pin l1a1y8sv2r3kp12lf15us8 plus franzen_overlays/scroll.py"
+ },
+ "evidence": {
+  "checks": [
+   "PASS m1 scroll openers in bp35 and lf52: mean 23.7 >= 3, min 21 >= 1",
+   "PASS m1 scroll openers in other games: max 0 <= 2 per run",
+   "PASS m1 code blocks reading group: mean 46.3 >= 15, min 41 >= 5",
+   "PASS m2 at-stall turns that act 0.72 (42/58) >= 0.70",
+   "PASS m3 actions 6813 <= A x 1.10 (7816)",
+   "PASS m3 median actions/baseline 0.654 <= A + 0.05 (0.724)",
+   "PASS no harm levels 121.0 >= A - 2.5 (120.9)",
+   "PASS no harm score 54.10 >= A - 1.5 (53.35)"
+  ],
+  "runs": [
+   "W kaggle-lf15usc-1031-1: levels 111 score 48.67 actions 5735 med 0.591",
+   "W kaggle-lf15usc-1031-2: levels 122 score 53.31 actions 7335 med 0.725",
+   "W kaggle-lf15usc-1031-3: levels 130 score 60.31 actions 7369 med 0.646",
+   "W mean: levels 121.0 score 54.10 actions 6813 med 0.654",
+   "A vertex-kva: levels 129 score 57.66 actions 7050 med 0.694",
+   "A vertex-s15w-1: levels 120 score 52.42 actions 7008 med 0.645",
+   "A vertex-s15w-2: levels 125 score 55.98 actions 6766 med 0.696",
+   "A vertex-s15w-3: levels 122 score 52.89 actions 7519 med 0.705",
+   "A vertex-s15w-4: levels 135 score 59.71 actions 8639 med 0.639",
+   "A kaggle-lf15-1029: levels 123 score 54.63 actions 7147 med 0.644",
+   "A kaggle-lf15-1029-2: levels 110 score 50.66 actions 5608 med 0.698",
+   "A mean: levels 123.4 score 54.85 actions 7105 med 0.674",
+   "W runs read: 3 of 3"
+  ],
+  "probe": "franzen-l1a1y8sv2r3kp12lf15usc-v1: 0 tracebacks in kernel.log and serve.log, 7 levels and 193 actions (first fetch returned 0 files, refetch 30)"
+ },
+ "gate_verdict": "PASS on every predeclared item (no-harm levels 121.0 against a bar of 120.9)",
+ "promote": false,
+ "verdict": "NOT PROMOTED, by judgement. The gate's decision text says usc ships only if it passes (a necessary condition). It passes narrowly, but W levels 111, 122, 130 (mean 121.0, score 54.10) sit below both the pin it would replace (us8 W: 132, 128, 127, mean 129.0, score 60.66) and the control (123.4). The mechanism fires (about 24 scroll openers per run in bp35 and lf52, 0 elsewhere) but bp35 stayed at 1 level in all three runs and lf52 at 2, 3, 4 (us8 runs: lf52 3 in run 1). A point estimate below the incumbent, with no gain in the target games, is not a reason to replace it; the difference to us8 (-8) is about 1.2 standard errors, unresolved. Rollback not applicable: seg8 stays the pin.",
+ "what_this_does_not_claim": "That scroll hurts: three runs cannot resolve 8 levels. Only that it showed no benefit on the games it targets and the slot carries the best passed config."
+}

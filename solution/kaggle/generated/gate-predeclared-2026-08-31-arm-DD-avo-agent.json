@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-31T19:40:00+00:00",
+  "arm": "DD",
+  "name": "AVO: durable memory, a turn-indexed phase loop, a stagnation supervisor, and an exploit deadline",
+  "predeclared_before_any_result": true,
+  "bundle": "vineethsaivs/arc3-q38-avo-v1",
+  "kernel": "vineethsaivs/arc3-q38-avo-ordinary-commit",
+  "control": "arc3-q38-undo-v1: 35 levels, 3 zero-level games. Chosen over the temp09 control (35 levels, 4 zeros) because this bundle also carries the undo fix, so against q38-undo-v1 the AVO agent is the SINGLE variable.",
+  "provenance_and_a_correction_this_repo_owes_itself": {
+    "source": "jakobbrggen/taaf-kaggle-source v26, published 2026-08-31T16:57Z, branch experiment/avo commit 49720d3, CC0.",
+    "THE_CORRECTION": "jakobbrggen is NOT Tufa Labs. Leaderboard membership shows Tufa Labs (rank 3, 4.71) as dlorah/driessmit1/infinitecreativity/jeroencottaar/pressman1/stefano1283; jakobbrggen is team 'Helmut AGI', rank 354 of 2669, score 1.72, BELOW our 2.65. CLAUDE.md, MEMORY.md and the arm-BB gate all describe his polyphony bundle as 'the top of the board publishes its agent', and that is wrong. Nothing here is adopted because a leader runs it.",
+    "why_adopt_it_anyway": "It is a reimplementation of NVIDIA's published AVO harness, which scored 100.00 RHAE on all 183 levels of the public 25 wrapped around Claude Opus 5 against roughly 30% for the same model bare (published 2026-08-21). NVIDIA's own caveat is that this is not a controlled ablation. Treat 100.00 as a ceiling claim about a frontier model.",
+    "and_a_warning": "the same author abandoned polyphony for AVO after five days. Read that as evidence polyphony did not work for him either."
+  },
+  "why_this_arm_now": "Seven consecutive harness overlays (R, V, W, Y, Z, X, AA) have landed inside the 25-game bench noise floor, three with mechanisms confirmed live. Independently, 86 public duck forks all score between 1.70 and 2.70 on the board and we are at 2.65, so the lineage's ceiling is visible in public data. Rank 5 is 4.27 and rising. Parameter tuning inside this lineage cannot reach it.",
+  "MECHANISM_GATE_check_this_first": {
+    "condition_1": "taaf_setup_env.json shows ARC3_AVO_AGENT=1. Upstream reads this flag through a pickled dataclass field our bundle does not have, so the overlay moved the read to analyzer-construction time. If this fails the arm was a no-op and the levels mean nothing.",
+    "condition_2": "the events stream carries avo_turns > 0. The overlay merges AvoAgent.avo_counters into the existing experiment event, so this is readable from artifacts without a transcript.",
+    "condition_3": "avo_exploit_turns > 0 on most games, i.e. the exploit deadline actually fired at 60% of the 7,920s budget.",
+    "condition_4": "avo_interventions > 0 somewhere, i.e. the supervisor found a stall to speak into."
+  },
+  "what_each_mechanism_is_worth_ON_OUR_STACK_stated_before_the_run": {
+    "1_durable_memory": "LARGELY INERT and predicted so. AvoAgent._harvest_memory reads _summarized_knowledge, which our own transcript measurement found populated on 0.8% of turns (World model: 3 of 386; Cross-level notes: 0 of 3,715). Only the action-effect half, which the harness observes itself, will carry. Do NOT credit this mechanism if the arm moves.",
+    "2_phase_loop": "LIVE. Host-injected, always-visible, rotates on turn index rather than model self-report, so it passes the rule that killed arms V and W. THIS IS ALSO THE MAIN WAY THE ARM CAN LOSE: phase 1 says 'do not act this turn unless the situation is already unambiguous', and 46-47% of our analyzer turns already execute zero actions because one q38 round trip costs 113-130s against a 60s yield budget.",
+    "3_supervisor": "LIVE, and it spends zero environment actions, which is exactly why it survives where W5d hopeless-kill and stall-RESET died. Those forfeited points to free clock; this only changes the prompt.",
+    "4_exploit_deadline": "LIVE, and it targets our sharpest measured waste: 71 of 75 runs make NO level progress in their final 33 minutes, 48% of completions land in the first quarter of the clock and 8% in the last."
+  },
+  "PRIMARY_VERDICT": {
+    "measure": "total levels over the 25 games, plus the paired per-game sign test against the 35-level control.",
+    "STRONG_PROMOTE": ">= 47 levels. AVO becomes the base for everything.",
+    "PROMOTE": "40 to 46, or the sign test clearly favours the arm.",
+    "TIE": "30 to 39 with no sign-test separation. The incumbent keeps the submission slot.",
+    "REJECT": "<= 29 levels.",
+    "ties_go_to_the_incumbent_for_the_SUBMISSION_SLOT": "explicitly, and never promote on a variance argument.",
+    "A_SECOND_READING_THAT_MATTERS_MORE_THAN_THE_TOTAL": "count games reaching LEVEL 2+. Rank 5 at 4.27 is already past the pure-breadth ceiling of roughly 3.1, so an arm that converts zeros to level-1 clears without adding depth cannot reach the target even if it wins the level total."
+  },
+  "honest_prior": "0.30 that this returns >= 40 levels, 0.10 that it returns >= 47. The mechanism argument is the best we have had for a prompt-side arm because all four additions are host-injected rather than agent-opt-in, but three of the four have never been measured on an open-weight model by anyone, and the one published number is a frontier-model ceiling.",
+  "known_confounds_declared_before_the_run": [
+    "The undo fix rides along. It is in both this arm and the chosen control, so it is not a confound against q38-undo-v1, but it IS one against the temp09 control at 35/4.",
+    "The 25-game bench cannot resolve effects below about 12.6 levels at n=1, and a second estimate on record puts that at 29. This run can reject a clear loser and cannot prove a small winner.",
+    "The public 25 is systematically unrepresentative: an independent paper reports all 25 are reachable by non-intelligent strategies, and the field's public-to-board ratios run 2-4x inflated."
+  ],
+  "cost": "~2.4 GPU-h, one ordinary commit, zero submission slots.",
+  "offline_test": "solution/sim/test_avo_agent.py, 24 checks against the patched shipped modules, all passing.",
+  "DEFECT_FOUND_WHILE_THE_ARM_WAS_RUNNING_recorded_before_any_result": {
+    "what": "AvoMemory is stored at `runtime_dir / 'avo_memory.json'` where `runtime_dir = state_path.parent`. In our solver, `state_path = self._artifacts_dir() / f'{run_stem}_{RUNTIME_STATE_FILENAME}'` (solver.py:1524), so the parent is the ONE artifacts directory shared by every game in the run. All 25 games therefore read and write a SINGLE memory file, concurrently.",
+    "why_it_matters": "AvoAgent._harvest_memory calls memory.record_action every turn from `_last_action_result`, which the harness observes itself, so the file WILL be populated even though the _summarized_knowledge half is inert at 0.8%. Those entries are action effects, and an action effect is game-specific. Game B is then handed game A's 'UP: changed the board' under a preamble that says 'Treat it as established unless the current frame contradicts it; do not spend actions rediscovering it.' The plausible sign of that confound is NEGATIVE.",
+    "it_is_upstream_not_our_port": "the same construction appears in the v26 tree; nothing in our overlay introduced it.",
+    "CONSEQUENCE_FOR_THIS_RUN": "arm DD v1 is DOWNGRADED, before any number is read, from a measurement of AVO to an INTEGRATION SMOKE TEST. It answers 'does the subclass run for 2h12m on 25 games without crashing, and do the counters appear', and nothing more. Its level total must NOT be quoted as evidence about AVO in either direction.",
+    "THE_FIX": "make the memory path per game: `runtime_dir / f'{state_path.stem}_{MEMORY_FILENAME}'`. One line. The `previous_dir == runtime_dir` early return stays correct, because each game gets a fresh AvoAgent so the first call always loads and later calls in the same game correctly do not reload.",
+    "arm_DD2": "vineethsaivs/arc3-q38-avo2-ordinary-commit carries the fix and is the arm that actually measures AVO."
+  }
+}

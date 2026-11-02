@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-24T17:27:20.094008+00:00",
+  "subject": "Predeclared gates for arms P and Q, written BEFORE either was built or pushed. Follow-ups to arm K.",
+  "context": "Arm K (LOCAL_ANALYZER_TOP_K 20 -> 100 at temperature 0.9) returned 44 levels against an incumbent 35 and a pooled 0.6/0.9 control mean of 32.3, with ONE zero-level game against 4 to 7, and it cleared tr87-cd924810, one of the two games no configuration had ever solved. That is the largest matched-commit result in this project's history. It is n=1 and needs confirmation.",
+  "arms": {
+    "q38-topk100-rerun-v1": {
+      "kernel": "vineethsaivs/arc3-q38-topk100-rerun-ordinary-commit",
+      "change": "NOTHING. Byte-identical rerun of arm K from the same source dataset.",
+      "purpose": "Confirmation, and the only honest way to price arm K. Our instrument's arm-minus-control difference has sigma 5.1 to 6.1 levels, so a single +11.7 is z = 1.9 to 2.3, suggestive but not settled. This run also yields arm K's OWN paired per-game level-diff sd, which is the quantity the 2026-08-24 gate amendment requires before any variance claim can be made about a config.",
+      "cannot_be_promoted": true,
+      "what_it_would_falsify": "If it returns at or below 35, arm K's 44 was substantially luck and the promotion rests on the zero-level count and the mean alone. If it returns 40 or above, top_k is the largest lever this project has found and the whole sampling-truncation axis deserves the remaining GPU."
+    },
+    "q38-topk-unclamped-v1": {
+      "kernel": "vineethsaivs/arc3-q38-topk-unclamped-ordinary-commit",
+      "change": "LOCAL_ANALYZER_TOP_K 100 -> -1 (truncation disabled) at temperature 0.9. Single variable against arm K.",
+      "control": "arm K (44 levels)",
+      "hypothesis": "top_k = 20 is Qwen's recommended value and it was a HARD CAP on what temperature could do: at 20 candidates a raised temperature only reshapes probability inside the same 20 tokens. Relaxing it to 100 apparently moved +11.7 levels and cut zero-level games from 4-7 to 1, which is a breadth effect consistent with the model finally being able to explore. The dose question is whether 100 is still binding. -1 removes truncation entirely and leaves top_p = 0.95 as the only nucleus control, which is the clean limit of the same mechanism. This is NOT a small dose point: the previous step on this axis was worth an order of magnitude more than any sampling change we have tested.",
+      "PROMOTE_requires_all_of": [
+        "total_levels >= 44",
+        "zero_level_games <= 1",
+        "paired sign test against arm K shows gained - lost >= 4"
+      ],
+      "REJECT_if_any_of": [
+        "total_levels <= 35",
+        "any shared precondition fails",
+        "malformed tool calls at a materially higher rate than arm K"
+      ],
+      "INCONCLUSIVE_band": "36 to 43 levels. Ties go to the INCUMBENT (arm K), per the 2026-08-24 amendment. There is no variance tiebreak.",
+      "prediction_recorded_in_advance": "I expect 36 to 44, i.e. inconclusive, because top_p = 0.95 probably already truncates below 100 candidates on most steps, which would make 100 and -1 nearly the same sampler. If that is right, arm K's value comes from escaping 20, not from the exact ceiling, and 100 should ship."
+    }
+  },
+  "shared_preconditions": [
+    "All 25 games run and hold their full 7,920s slot.",
+    "Peak GPU KV cache usage strictly below 0.90.",
+    "KV cache size 398,272 tokens (confirms fp8 KV is live).",
+    "Zero 'maximum context length' errors."
+  ],
+  "gate_rules_in_force": "solution/kaggle/generated/gate-amendment-2026-08-24-remove-variance-ratchet.json",
+  "gate_rules_summary": [
+    "Ties go to the incumbent. No variance tiebreak.",
+    "Gate on the paired per-game sign test, not the level total.",
+    "REJECT only on confidently negative evidence; a false promote is nearly free because the board keeps our maximum."
+  ],
+  "overlay_sha256": {
+    "apply_sampling.py": "3a0d485ee2c1921c9277a94d691fa5024eac2a275054f56b290b718593714acf"
+  }
+}

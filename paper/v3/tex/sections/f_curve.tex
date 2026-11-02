@@ -1,0 +1,48 @@
+\section{Checks on the curve and the noise}\label{app:curve-checks}
+
+Four checks bear on the curve of Sec.~\ref{sec:curve} and the noise of Sec.~\ref{sec:measure}.
+They use development runs on the demonstration set only, and the curve was built after most of what they test. The tables call the ceiling of Sec.~\ref{sec:curve} the plateau, and a development run a replica.
+
+\paragraph{Runs needed to see a serving gain.}
+At the curve's elasticity of 0.31, +11\% tokens is worth 4.2 of 124 levels. Seeing it takes about 32 runs per arm at the SD of eight identical runs made on one day (5.95) and 61 at the pairs' SD (8.25), both two-sided, as every detection number in the paper is (Table~\ref{tab:detect}). % C4 V3-X13 V3-W12
+Our promotion tests use two runs per arm.
+
+\begin{table}[!htb]
+\centering\footnotesize
+\caption{Runs per arm needed to see a token gain on the replica (80\% power, two-sided 5\% level, normal approximation, shown before rounding; round up for the stated power). The gain is the curve's prediction (elasticity 0.31 on levels) out of 124 levels. SD 5.95: eight byte-identical runs made on one day (six started together); SD 8.25: the pooled SD of the six identical pairs. Every detection number in the paper is two-sided at an identical-run SD.}\label{tab:detect}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}rrrr@{}}
+\toprule
+Extra tokens & Gain (levels) & SD 5.95 & SD 8.25 \\
+\midrule
++5\% & 1.9 & 153.1 & 294.2 \\ % C4 V3-W12
++11\% & 4.2 & 31.6 & 60.8 \\ % C4 V3-W12
++26\% & 9.9 & 5.7 & 10.9 \\ % C4 V3-W12
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Past serving steps.}
+Table~\ref{tab:steps} sets twelve earlier steps that moved tokens per second against the curve. Fitted together they give an elasticity of 0.45 (95\% interval 0.13 to 0.77 at the pooled SD of 8.25; 0.29 to 0.61 at 4.1), next to the curve's 0.31. % N1.3
+The pruning step carries the fit: $+19.5$ levels at $+11.2\%$ tokens against 3.3 predicted. Without it the estimate is 0.02 ($-0.48$ to 0.53), and the ten steps after pruning lean below the curve at the shipped family's SD. % N1.4
+One step's noise (8 to 12 levels) swamps the curve's prediction (4.5 levels at most), so the steps neither confirm nor refute the curve. We built it after all of them, and none of the 29 promotion-test records of this stack holds a level prediction from tokens. % N1.5 N1.8
+
+\input{sections/tab_steps}
+
+\paragraph{Plateau against pool size.}
+The plateau estimate rises as more runs are pooled, because a level that no pooled attempt cleared stays stuck and pooling unsticks some (Table~\ref{tab:plateau}). % N2
+The share of it that a replica run earns is 94\% at eight runs, 92\% at ten and 82\% to 85\% when 21 to 34 runs are pooled, and extrapolates to 85\% to 91\%: about 90\%. The 94\% is the eight-run value, not an extrapolation. % N2 C9
+A bootstrap over the eight runs gives a simulated share of 94.7\% (93.4\% to 96.0\%), so pool size moves it more than run sampling does. The elasticity stays at 0.31 to 0.33 from two to ten pooled runs, so the 4-level price does not move. % N2 C3
+The plateau used here is the expected score at unlimited budget with each level redrawn from its recorded attempts; counting every level that any attempt cleared would give 70.9 on the eight-run pool. On the older September stack the run share is 59\% at 31 runs, so the near-plateau result is specific to our stack. % N3-11 N2
+
+\input{sections/tab_plateau}
+
+
+
+\paragraph{A noise model and the stuck mass.}
+A model that clears every level independently at its recorded rate, under the replica's token budget, predicts run SDs of 5.2, 6.4 and 5.7 levels, against 3.9, 5.5 and 8.25 observed (Table~\ref{tab:noisemodel}); the standard error of each prediction is 0.3 to 0.8. % N3-3
+It matches the stable groups and underpredicts the identical pairs by a factor 1.44 in SD (the chance of an SD this high under the model is 0.05). The gap is the pairs' common first-minus-second shift of 9.2 levels, which holds 62\% of their sum of squares; around it the pairs' SD is 5.6 against the model's 5.7. Tokens per second and slot contention do not explain it. % N3-7
+Completion explains 84\% to 90\% of within-game score variance on our replica, as the forum post reports (84.7\%, by our reading of its definition \citep{borro19802026forum732932}), but the two largest games hold 27\% to 32\% of it, against 65\% there. % N3-9
+Of the points the nine yield runs lose to unreached levels, 57\% sit on levels that none of 30 runs cleared; the table splits the rest by tokens spent. % N3-12
+
+\input{sections/tab_noisemodel}

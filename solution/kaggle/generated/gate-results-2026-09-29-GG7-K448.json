@@ -1,0 +1,9 @@
+{
+  "arm": "arc3-gg7-k448-a v1: GG7 on michaeltgao/duck2-k448pub (NVFP4 REAP keep-448 Flash-Next), KV 5 -> 18.5 GiB, max_num_seqs 5 -> 12, MTP 3 -> 0, --quantization modelopt_mixed",
+  "control": {"arm": "GG7", "levels": 47, "zeros": 2, "mean_final_score": 10.54, "actions_per_game": 109.4},
+  "result": {"levels": 50, "zeros": 3, "mean_final_score": 13.53, "actions_per_game": 133.6},
+  "single_point_check": "sb26 2 vs 2. Excluding sb26: 48 vs 45. Excluding sb26 and ft09: 44 vs 41. Per game 7 up, 7 down, 11 tied; the gains are depth (lp85 5, re86 5, tu93 5, tr87 4).",
+  "mechanism": "vLLM: Maximum concurrency for 48,128 tokens 14.83x (GG7 2.54x); mean Running 12.0, Waiting 12.6; Avg generation throughput 341.6 tok/s (GG7 about 236). Freed expert memory went to KV, batch rose, total tokens rose.",
+  "why_it_differs_from_R20CFG": "R20CFG turned MTP off without freeing memory: KV only grew 1.66x and decode fell a third. Here pruning freed about 12.6 GiB, so KV grew 3.7x and batch 4x, which more than pays for losing MTP.",
+  "verdict": "PROMOTE. Highest bench this project has recorded, mechanism confirmed. Authorized for the UTC 2026-09-30 slot (generated/gg7-k448-authorization-2026-09-30.json) unless the k448p384 arm beats it."
+}

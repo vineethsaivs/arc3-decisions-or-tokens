@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "declared_at": "2026-10-12T13:35Z, before any push or run of either arm and before the s4 replica's readout",
+  "arm": "replica A: l1a1y8sv2r3hm32 if the pin stays l1a1y8sv2r3p, or l1a1y8sv2r3s4hm32 if l1a1y8sv2r3s4p is pinned first. Each is its stack's replica + hotmap(32768) (the ARC traffic draft vocabulary, embedded as a bitmap, franzen_overlays/hotmap_serve.py) + specstats (transcript only, franzen_overlays/specstats.py). Submittable builds l1a1y8sv2r3hm32p / l1a1y8sv2r3s4hm32p carry hotmap only",
+  "why": "docs/research/2026-10-12-next/PLAN.md item 3. Pennyroyal's served 64K map was built from SGLang source and misses 1.416% of the tokens our model generated in 7 y8-family runs (41.6M tokens); the 32K traffic map misses 0.106% held out by game (25 of 25 games better; worst tr87 0.332% vs 1.995%) and 0.03 to 0.07% on two older-harness runs (generated/arc-hot-map-2026-10-12.json). It also halves the draft head's rows, so each draft step reads half the head. Lossless: the target verifies every token. Predicted +1.4 to 1.7% decode throughput (about +0.6% accept plus a 0.3 to 0.4 ms shorter step at SPEC_STEPS 3)",
+  "instrument": "25-game Kaggle replica, one run; Decode batch lines of serve.log by running count (gen throughput, accept), servelog.py (clean step by running), accept_by_context.py, the gate_r3.sh health and install items; specstats_counters.py for the report-only per-game accept",
+  "control": {
+    "rule": "C = the replica of the stack the arm is built on: l1a1y8sv2r3 v1 (r2 v1 as a second reference) if the pin stays, else l1a1y8sv2r3s4 v1 with its readings from gate-results-2026-10-12-franzen-l1a1y8sv2r3s4.json",
+    "r3": "gen throughput at 14 running 975.3 tok/s (r2 973.3); clean step at 14 running 36.6 ms (r2 36.5); accept at 8+ running 2.830 (r2 2.827); accept 60-80K 2.838, 80-100K 2.840; 129 levels"
+  },
+  "mechanism_required": {
+    "install": "kernel.log has 'hotmap: ARC traffic map 32768 ids (bitmap sha256 ad21d436929f)'; the server argv has '--speculative-token-map /tmp/sgl-intel/hotmap/arc-traffic-32768.pt'; 'arm overlay specstats' printed and a 'spec:' line in every transcript's MODEL RESPONSE META blocks (at most 1% '(none)'); every install line of C's stack",
+    "throughput": "gen throughput at 14 running at least C x 1.008 (r3: 983.1 tok/s)",
+    "step": "clean step at 14 running at most C - 0.15 ms (r3: 36.45 ms; identical stacks agree within 0.1 ms)",
+    "accept": "accept at 8+ running at least C - 0.003 (identical stacks differ by 0.003); the 60-80K and 80-100K buckets each at least C - 0.005; 40-60K report only (r2 and r3 differ there by 0.013)",
+    "health": "0 OutOfMemoryError, 0 'expandable_segments' failures, at most 2 'KV cache pool is full', no 'free device mem' reading under 0.30 GiB, 0 watchdog relaunches, 0 tracebacks in kernel.log, 0 give-ups, failclosed summary printed; cache hit at least 93.5%",
+    "levels": "at least 105 (the reject floor for clear losers)"
+  },
+  "report_only": "per-game accept from the spec lines (the baseline for any drafter refit), harness tok/s, accept at 14 running, prefill ms per 1K new tokens",
+  "pass": "probe the arm's submittable build (install line, READY within 640 s, 0 tracebacks, accept at 8+ running at least 2.65 at SPEC_STEPS 3, or at least the s4p probe reading minus 0.05 at SPEC_STEPS 4), then promote it with promote_franzen_arm.py",
+  "fail": "if health is green but an accept item fails, run the 64K map (l1a1y8sv2r3hm64, same items except accept at 8+ running at least C + 0.012 and no step item) next week; any other failure: the pin stands and the map is dropped"
+}

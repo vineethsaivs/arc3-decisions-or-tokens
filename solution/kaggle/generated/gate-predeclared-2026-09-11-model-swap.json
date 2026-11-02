@@ -1,0 +1,40 @@
+{
+  "record": "gate-predeclared-2026-09-11-model-swap",
+  "date": "2026-09-11",
+  "predeclared_before_any_result": true,
+  "arms": ["QWEN3CODER: arc3-qwen3coder-serving-probe-a", "NEMOTRON: arc3-nemotron3-serving-probe-d"],
+  "cost": "~0.35 GPU-h each",
+
+  "why_a_gate_is_written_first": "a serving probe produces a wall of vLLM log and it is trivially easy to read a PASS into it after the fact. This project has been burned by exactly that: probe C of the Nemotron series read a P100 scheduling failure as a model verdict and two more probes were spent on it.",
+
+  "STEP_0_HARDWARE": {
+    "rule": "if the probe prints GPU_GATE: FAIL, the run says NOTHING about the model. Re-push. Do not record it as evidence, do not count it against the model, and do not 'fix' the probe.",
+    "why": "all three earlier Nemotron probes were scheduled on a Tesla P100 despite correct metadata."
+  },
+
+  "STEP_1_DOES_IT_SERVE": {
+    "pass": "the server answers /v1/models and returns a real completion",
+    "fail": "vLLM exits. Record the exact error. An architecture error is now UNEXPECTED, because arc3-vllm-arch-probe-a confirmed both NemotronHForCausalLM and Qwen3NextForCausalLM are in our vLLM 0.19.0 registry."
+  },
+
+  "STEP_2_THE_NUMBER_THAT_DECIDES_IT_IS_KV_NOT_TOKENS_PER_SECOND": {
+    "reference": "Flash-Next serves with 81.8 GiB of weights via a host-offload patch and 5.0 GiB of KV.",
+    "measured_prediction": "both candidates are 74.8 GiB of weights on a 96 GiB card, which should leave about 13 GiB.",
+    "PASS": "KV cache >= 10 GiB, i.e. at least double Flash-Next. That is the entire reason to switch and it is what would let context and concurrency stop competing.",
+    "MARGINAL": "KV between 6 and 10 GiB. Serving works but the headroom argument is weak. Do NOT start a day of integration on this; bench it only if the wave's Flash-Next arms all tie again.",
+    "REJECT": "KV <= 5 GiB. The model fits but buys nothing, and a swap that buys nothing costs a day and re-opens every calibration this project has."
+  },
+
+  "STEP_3_TOOL_CALLING_IS_A_HARD_REQUIREMENT_NOT_A_NICE_TO_HAVE": {
+    "why": "the architecture is ONE generic python tool. A model that serves and cannot emit the tool-call format our parsers expect is worth ZERO here, whatever its benchmarks say.",
+    "Qwen3CODER": "expected to work with --tool-call-parser qwen3_coder unchanged, because it IS a Qwen3 coder model.",
+    "NEMOTRON": "must have a compatible parser in vLLM 0.19.0. arc3-vllm-parser-probe-a lists what the wheelhouse carries. If no Nemotron-compatible tool parser exists, NEMOTRON IS REJECTED ON INTEGRATION regardless of how well it serves or reasons.",
+    "do_not": "do not write a custom tool parser to rescue a model. That is a new load-bearing component in the winning path, on a deadline, with no evidence the model is better."
+  },
+
+  "STEP_4_WHAT_A_PASS_BUYS_AND_WHAT_IT_DOES_NOT": {
+    "a_pass_is_not_a_capability_result": "it says the model can be served with more KV. It says NOTHING about levels. The capability question needs a 2.4 GPU-h 25-game bench against the Flash-Next family band of 40, 44, 47, 42.",
+    "the_falsifier_for_the_whole_model_thesis": "if a candidate serves, benches, and lands inside 40-47, then the model is NOT the ceiling. In that case this stack is finished near a 3.5 mean and the honest remaining plays are the free rotation hedge and the Paper Track. Write that down now so it is not explained away later."
+  },
+  "order": "QWEN3CODER first on integration risk, NEMOTRON second. Both run; the order is not a prediction about quality."
+}

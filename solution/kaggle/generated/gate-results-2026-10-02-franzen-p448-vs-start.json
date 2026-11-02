@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-02",
+  "plan": "docs/PLAN_2026-10-01.md",
+  "instrument": "25-game scored-run replica: all 25 public games, 7,200 s shared window, Franzen's priority gate",
+  "control": {"kernel": "vineethsaivs/arc3-franzen-start-a", "version": 1, "change": "replica plus startup trims", "readout": "kernel-outputs/franzen-start-v1/readout.json"},
+  "arm": {"kernel": "vineethsaivs/arc3-franzen-p448-a", "version": 1,
+          "change": "startup trims, Franzen's W4A16 model served with REAP keep-448 routed experts (7.3 GiB freed for KV), 12 admitted streams",
+          "readout": "kernel-outputs/franzen-p448-v1/readout.json"},
+  "result": {"levels": [92, 122], "zero_level_games": [2, 1], "harness_tok_s": [544.5, 618.9], "decode_tok_s": [676.9, 759.3],
+             "running_mean": [8.87, 10.58], "kv_p90": [0.84, 0.65], "cache_hit_pct": [93.18, 93.08], "accept_len": [2.68, 2.71],
+             "levels_at_75k_100k_150k_tokens": [[58, 69, 79], [67, 81, 104]], "earlier_control_rep_v1_levels": 97},
+  "verdict": "PASS on both gates. SERVING: harness tokens per second +13.7% with prefix-cache hits unchanged (93.1%) and KV p90 down from 0.84 to 0.65, so 12 streams now fit with their prefixes resident. AGENT: more levels at matched tokens per game (+9 at 75K, +12 at 100K), so pruning 64 experts per layer did not cost decision quality on these games. Total 122 levels against 92 (and 97 for the earlier control).",
+  "promote": true,
+  "what_this_does_not_claim": "One run per arm; the two controls differ by 5 levels, so the size of the gain is uncertain, but the mechanism (throughput up, cache intact, KV headroom) is measured directly. The hidden games are harder than the public 25."
+}

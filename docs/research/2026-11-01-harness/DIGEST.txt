@@ -1,0 +1,411 @@
+MODEL: Levels per game = window / clock per level, and the clock binds: 76% of each game's window goes to levels it clears (12 to 13 min each), and the rest goes to the level still in play at the close. Throughput is at its floor, so tokens are not the scarce input. Correct theories per second are. Execution is cheap: multi-action plans fail about 8% of the time, and actions sit at 0.64x human, below the 1.15 cap on 78% of cleared levels. So clock per level is set by discovery: how fast wrong rules and wrong goals die. A hypothesis dies only on a counterexample, and counterexamples come from three sources at very different prices:
+- the recorded history: zero actions, one tool call, seconds;
+- a probe: 1 or 2 actions, about 33 s turns;
+- prose deliberation: 162 s idle turns and 12K-token cut replies, with no ground truth.
+
+Our model mostly buys the most expensive one. It defines a simulator in 20 to 35% of level plays but replays it against history in 6%. It checks goal guesses against history 0.3 times per run. It hand-simulates in 31 cut replies per run. Long levels (27% of clears, 66% of their clock) first show the winning code with only 13% of the level's clock left. The stuck modes agree: in 10 of 30 stuck levels a false rule came from one try, and the log already contradicts such rules. The lever is to make falsification cheaper than deliberation:
+- compute it for the model (one-call replay of the model's own simulator and goal test against the log);
+- intervene at the exact moment it deliberates without testing (a cut reply).
+
+Computed outputs (seg8, step-verify) moved this model; advice lines did not. Actions are slack, so a few probe actions are cheap. A broad push to act more endangers the 22% of levels near the cap.
+
+#1 verify kit: check_model + check_goal sandbox helpers (replay the level's log through the model's own simulator and goal test), plus the host-time clause (2 h) angles=['public-arc3', 'agent-literature', 'transcripts', 'competitive-meta']
+SPEC: Overlay solution/kaggle/franzen_overlays/verify.py, mark '# overlay verify'. Apply after agentfix, unstick2 and seg8 (and tool2 if ust is pinned). Every edit is asserted to match once, and both files must compile before anything is written.
+
+(a) python_tool_sandbox.py child: insert two closures before the unique anchor '        def _refresh_state(state_payload):\n' (line 384 in the vendored tree).
+
+check_model(step, observe=None, start=None, border=4, show=3):
+- hist = runtime_globals['history']; i0 = start if given, else (runtime_globals.get('level_starts') or [0])[-1].
+- Walk i over i0+1 .. len(hist)-1, capped to the last 400: before = hist[i-1].frame, after = hist[i].frame, a = hist[i].action, res = hist[i].result.
+- Skip and count by reason: a RESET or res.get('automatic'); before.level != after.level; res.get('game_over') (a death auto-resets the board).
+- With observe: compare step(observe(before), a) == observe(after).
+- Without observe: step(before, a) may return
+  - ascii text: compared on interior cells [border, H-border) against after.ascii rows;
+  - a list-of-lists grid: compared on the interior against after._grid;
+  - a dict {(r,c): v}: only claimed cells, str v against the ascii char, int v against the grid;
+  - None: counted as not claimed.
+- An exception in step or observe is a mismatch carrying 'ExcName: msg[:100]'. It is never raised.
+- Stop at 8 s of time.monotonic() and say so.
+- Print one report, at most about 300 tokens. Example: "check_model: 37 of 41 transitions on this level match (skipped: 2 deaths, 1 RESET). First mismatches: history[212] 'UP': 3 cells differ, (12,30) predicted 'b' got '.'; ...". With show=3, each mismatch lists up to 6 cells, or the predicted and actual repr cut to 160 chars.
+- Return {checked, matched, skipped, mismatches}.
+
+check_goal(is_goal, start=None):
+- Evaluate is_goal on hist[j].frame for j from i0 to the end where frame.level equals the current level, plus current_frame. Each call goes in try/except, with the same 8 s cap.
+- Print either "check_goal: true on 3 of 58 recorded boards of this level (history 214, 220, 231). The level did not end on any of them, so this goal test is wrong or incomplete, or those boards still needed one more action (such as a confirm press)." or "check_goal: false on all 58 recorded boards of this level, consistent so far."
+- Return the indices.
+
+(b) Same file: after '            runtime_globals["frame_diff"] = frame_diff\n' add runtime_globals['check_model'] = check_model and runtime_globals['check_goal'] = check_goal. Both read runtime_globals at call time, so they see live history after action() refreshes it.
+
+(c) prompts.py: append after the '- Examples: `frame_diff()` ...' line of FRAME_DIFF_HINT_ADDENDUM (on via ARC3_FRAME_DIFF_HINT=1):
+"- `check_model(step, observe=None)` replays every recorded transition of the current level (RESETs, deaths and level changes skipped) through your simulator and reports how many match and the first mismatches. With `observe`, it checks `step(observe(t.before_frame), t.action) == observe(t.after_frame)`, so your state can be any comparable value (a dict of positions, a tuple). Without it, `step(frame, action)` returns the predicted board as ascii text, or a dict {(row, col): char} of only the cells you predict. `action` is the recorded string, such as 'UP' or 'MOUSE(row=3, col=4)'. A mismatch names the transition your rule gets wrong: fix that rule before planning with it.\n- `check_goal(is_goal)` runs your goal test on every recorded board of this level. The level never ended on any of them, so a test that is true on one is wrong or incomplete, or that board still needed one more action.\n"
+
+(d) prompts.py, unstick2's bullet: replace 'replay this level's "\n    "recorded `transitions` through it in code and fix any mismatch first.' with 'run `check_model` on it "\n    "(it replays this level's recorded transitions) and fix any mismatch first.'
+
+(e) tool_agent.py, unstick2 stall text: after 'RESET) wastes actions and teaches nothing.' append ' If you have a simulator, run check_model on it before a long search; once it fits, test your goal guess with check_goal.'
+
+(f) prompts.py, the 30-second bullet. Anchor on tool2's 'so print progress while you search.' if ust is pinned, else on the base '30 seconds.'. Append: ' Time the game spends executing your action() calls does not count toward this limit (up to 2 extra minutes per call), so a verified plan of many actions can run in one call.' This is true per wastefix line 79: hard_stop = deadline + 120.
+
+(g) Arm l1a1y8sv2r3lf15usv on us8 (or ...ustv on ust if tool2 W3 passes) with b and c copies and probe kp12...usv in build_franzen_arms.py.
+
+Token cost: about 220 tokens in the prefix-cached system prompt, about 30 on stall openers, and nothing on turns that do not call the helpers.
+WHY: It attacks the binding quantity directly: counterexamples per second. In 10 of 30 stuck levels a false rule came from one try, and the log already holds the transition that refutes it. Today a replay check is a 1.2K to 2K character hand loop that the model writes for only about 6% of levels, while it has a simulator in 20 to 35% of level plays. One call turns that into 'fits all N' or 'history[212] UP, these cells', at zero env actions. check_goal adds Twin's certified-negative filter: no settled board on the current level is the goal, because agentfix (c) shows the completing action's entry carries the next level's first board. The model defines about 15.5 goal-like functions per run and checks 0.3 of them. This is a mechanism that computes something for the model, the kind that moved levels for us (seg8, step-verify), not an advice line.
+EVID: Four of five angles proposed it independently.
+
+External [verified]:
+- Twin (arXiv 2608.14490): harness-enforced replay validation and the goal-consistency check score 93.3 against 61.1 for the same model and agent without the harness.
+- Rodionov (2607.15439): the fixed-interface exact-replay verification variant ranks first in every setting; a flexible interface lost to plain text.
+- Kepler (2610.00834) uses partial-cell predictions backtested over full history.
+- WorldCoder and Memento 3 use the same pattern.
+
+Ours [verified]:
+- 8,437 unique code blocks across 3 seg8 runs: 269 simulator definitions, 53 replay-validation blocks in 5 of 25 games, 445 hand-written checked loops.
+- Validation appears in 6% of cleared level-2+ levels (61 of 1,016) against 4% before unstick2's replay line. A prompt line moved it about 2 points, so asking does not work and computing might.
+- Documented new API gets used: seg8's group field was read in 33 to 64 blocks per run.
+- No transcript defines check_model or check_goal (no name collision).
+
+Dead-end note: September world-model arms. New evidence that this differs:
+- GG6 asked the pre-Franzen model to write predict (5 of 25 games, validate in 1.5% of calls). Here the helper checks simulators the model already writes in a third of level plays, kept by retained functions.
+- FF mandated a prediction per press, a tax that lost 10 of 35 levels. This is optional and costs zero actions.
+
+[inference] Validated levels clear 86% against 78%; this is confounded.
+TEST: solution/sim/test_franzen_verify.py runs the real child through test_franzen_sandbox.apply plus test_franzen_tool2.run(sb, code, action_handler), in the pin's overlay order plus verify.
+1. A synthetic 2-level history of a 1-cell mover: level 2 has 5 moves, 1 RESET and 1 game_over. A correct observe/step reports matched == checked == 5 with skipped counts {RESET: 1, death: 1}, and no level-1 transition is checked.
+2. A wrong step (moves 2 cells) flags the first transition's history index and cell list.
+3. Dict mode checks only claimed cells; ascii mode ignores the 4-cell border.
+4. A raising step is reported, and a print after the call still runs.
+5. check_goal: a predicate true on 3 boards returns exactly those indices; a raising predicate is reported.
+6. 400 transitions with a trivial step take under 1 s. A sleeping step stops at the 8 s cap with partial counts, and no SnippetTimeout fires.
+7. A step defined in one call and checked in the next works (retained functions).
+8. Every anchor matches once with and without tool2, files compile, and the rendered system prompt contains each new bullet once.
+METRIC: m1: calls containing 'check_model(' or 'check_goal(' in code blocks: at least 10 per run, in at least 5 games (baseline 0). m2: after a check_model report with mismatches, the step function is redefined within 2 turns in at least 0.5 of cases. m3: replay-validated share of level plays (m6_validate.py) at least 15% (baseline 6%). Harm: actions at most A x 1.10; levels at least A - 2.5 and score at least A - 1.5, read on the aligned 5,800 s window from each game's first non-RESET action; probe has 0 tracebacks.
+RISK: Low. Nothing is enforced, no action path is touched, and output is capped. A bug in the child breaks every snippet, so the child test and compile check are mandatory. The model may chase HUD or animation mismatches (the border default and partial dicts limit this) or ignore the helper (m1 kills it). A wrong but self-consistent simulator still passes, which is no worse than today.
+
+#2 codefirst: say a reply was cut at the output cap and redirect the next turn to code or a probe (1 h) angles=['code-read']
+SPEC: Overlay franzen_overlays/codefirst.py, applied after unstick2 (and verify if bundled), mark '# overlay codefirst'.
+
+(1) tool_agent.py analyze(), in the no-tool-call branch. Anchor on the unique 4-line block:
+'                    yielded_control_reason = control_yield_reason()\n                    if yielded_control_reason is not None:\n                        break\n                    followup_prefix = "You have not acted yet. Investigate first. "\n'
+(the yield line alone occurs 3 times; the followup_prefix line is unique, line 7237 of the rebuilt pin tree). Insert before it:
+'                    if str(result.finish_reason or "").strip() == "length" and not truncated_tool_call:\n                        self._codefirst_cut = True  # overlay codefirst\n'
+The 12K output cap is above the 8,192-token yield, so a cut reply always yields and the next request is a fresh opener built by _build_user_prompt.
+
+(2) _build_user_prompt: after unstick2's line '                                    previous_step_summary))  # overlay unstick\n' append:
+'        if getattr(self, "_codefirst_cut", False):  # overlay codefirst\n            self._codefirst_cut = False\n            lines.append(_CODEFIRST_LINE)\n'
+with _CODEFIRST_LINE defined beside unstick2's helpers:
+"Your previous reply hit the output length limit while still reasoning in prose, so nothing ran. Do not resume that analysis in prose. Put the rule you were working out into a Python step function and run check_model on it, so the recorded transitions decide; or, if one or two actions would settle the question, take them now and compare the result with your prediction."
+Without rank 1, use 'replay this level's recorded transitions through it' instead of 'run check_model on it'.
+
+Cost: about 70 tokens, about 1.2 times per game.
+WHY: Cut replies are hand simulation in prose: 31 per run, a median of 35K chars, and 203 s from the cut to the next executing turn, about 4.5% of the clock and over-represented on stuck levels (31% of cuts against 24% of the clock). The harness knows the exact moment 12K tokens were spent without testing anything, yet the next opener never says the reply was cut, and the model resumes the same chain ('reconsider once more before spending'). The line changes when and how the model acts at that moment and routes it to the cheapest counterexample source (rank 1's helper), the same mechanism class as unstick2's stall check, which passed its mechanism item (m2 0.87).
+EVID: [verified, code-read over 75 transcripts of kaggle-lf15us8-1031-1..3]
+- 93 cap cuts, 0 with malformed calls, median 35,244 chars, concentrated in sp80, sk48, bp35, s5i5.
+- The 'You have not acted yet' nudge fired 0 times under y8, because the cut turn yields first.
+- 'before spending' and 'reconsider' phrases appear in 6.8% of idle turns against 3.0% of executing turns.
+- FINDINGS 10-30: clearing runs code a simulator, while stuck runs plan in prose (sk48 L2: 9 prose replies on a wrong drag rule, 32 min).
+
+Bound: the strict thinking budget (tbfc) removed every cut mechanically and tied, so removing cuts alone does not help. The case rests on the redirect to code.
+
+[verified in code] The finish_reason == 'length' check exists at line 7082, and ARC3_STUB_DEAD_REASONING is off, so the cut reasoning stays in context.
+TEST: Extend the harness in test_franzen_unstick2.py (import_tool_agent with FORK_ENV, real _build_user_prompt):
+(a) Static: each anchor matches once, files compile, and an AST check confirms the flag-set statement sits inside the no-tool-call branch, before the yield check.
+(b) Set agent._codefirst_cut = True and build two consecutive openers: the line appears in the first only.
+(c) Drive analyze() one round with a stubbed _chat_completion returning finish_reason='length', reasoning only and no tool_calls; the next opener carries the line once. With truncated_tool_call (a malformed call) it does not.
+METRIC: m1: transcripts containing 'hit the output length limit while still reasoning' about 25 to 35 per run (it must fire). m2: the reply right after the line has a tool call containing 'def ', 'check_model(' or 'action(' in at least 0.7 of cases (baseline measured on us8 with the same script before reading). m3: cap cuts per run at most 25 (us8 31) and back-to-back cuts down. Harm items as rank 1, on the aligned window.
+RISK: Low. It fires about 1.2 times per game, the reasoning stays in history, and it never forces an action. It could cut short a long but productive analysis; the stall check already pushes the same way on the 3rd idle turn without measured harm.
+
+#3 coverage v3: state-conditioned write-off list plus an UNDO line on stall and failure openers (1.5 h) angles=['public-arc3', 'agent-literature', 'code-read', 'competitive-meta']
+SPEC: Overlay franzen_overlays/coverage3.py, applied after unstick2 (it edits unstick2's helper text inside tool_agent.py), mark '# overlay coverage3'.
+
+Add a function _unstick_once(current_frame, history_entries, valid) beside _unstick_coverage. Call it from _unstick_coverage by anchoring on unstick2's unique line:
+'    unused = [a for a in valid if a not in used and a not in ("RESET", "MOUSE", "UNDO", "ACTION7")]\n'
+and appending: lines.extend(_unstick_once(current_frame, history_entries, valid)).
+
+Logic:
+- Walk this level's non-automatic, non-RESET entries.
+- key = ('MOUSE', color, box) for clicks (unstick2's _unstick_component and _unstick_box), or the action name for non-directional keyboard actions (exclude UP, DOWN, LEFT, RIGHT, ACTION1 to 4, RESET, UNDO, ACTION7).
+- interior(g) = tuple(tuple(row[4:-4]) for row in g[4:-4]); effect = interior(previous.grid) != interior(frame.grid); state = hash(interior(previous.grid)).
+- Emit keys with no effect on any try and exactly 1 distinct state. Skip click types absent from the current board. At most 4 entries, most recent first, in one line:
+"Tried from one board state only, with no effect: SPACE (step 14); MOUSE on R 2x2 at (20, 31) (step 20). Something that did nothing in one state may work after a move, a pickup or a toggle: retry it once from a different state before ruling it out."
+- UNDO line: if 'UNDO' or 'ACTION7' is in valid and neither was used on this level, add:
+"UNDO is valid in this game and unused on this level: to test an action in the current state, take it, read the result, and UNDO it if it hurt. That costs two actions and keeps this attempt; RESET throws the attempt away."
+- Fires only where unstick2's coverage fires: stall checks, and the first opener after a game over or model RESET.
+
+Prerequisite back-test (CPU, before any GPU): replay the 6 local uns2 and us8 runs' histories through the new function at each stall or failure opener. Measure firings per opener and the share of listed items later used with effect on the same level in a run that cleared it. Ship only if that share is at least 0.2.
+WHY: 8 of 30 stuck levels died on a weak single try: tested in the wrong state (4) or written off untested (4). Examples: dc22 L5 GRAB latches at one cell; ls20 L5 rotator; sp80 L2 one MOUSE probe. unstick2 counts a type as tested after any touch, so it misses exactly these. EMPA and Just Explore track untested (state, action) pairs, not actions. UNDO is valid in 6 of 25 games but was used 8 times in 3 runs while those games logged about 10 RESETs per run: the cheap in-state experiment exists and is unused. It is a computed list naming specific items, not a generic retry sentence.
+EVID: External [verified]:
+- EMPA (arXiv 2107.12544): exploration goals reset when the agent's state changes.
+- Rudakov et al. (2512.24156), preview 3rd place: frontier over untested state-action pairs.
+- AutumnBench (2510.19788): humans spend 12.5% of actions each on resets and no-ops used as experiments; models spend under 7% on both.
+
+Ours [verified]:
+- UNDO-valid games: ar25, bp35, lf52, sb26, sk48, su15. su15 L4 had '5 RESETs where UNDO would do'. Franzen said UNDO mattered on the hidden set.
+
+Counter [verified]:
+- Code-read back-test: write-off signals are as common in cleared levels as in stuck ones (keyboard no-op 5.6% vs 5.6%; one-try clicks 16.5% vs 13.9%).
+- unstick2's lists drove a click in only 27 of 86 cases.
+
+Hence the back-test gate and the rank.
+TEST: Extend solution/sim/test_franzen_unstick2.py with synthetic histories:
+- one no-op click and one no-op SPACE from one state are both listed;
+- a second try from a different interior state removes the item;
+- an effective try removes it;
+- directional moves are never listed;
+- the UNDO line appears only when UNDO or ACTION7 is valid and unused, and engine names are normalized;
+- the line respects the 4-item cap;
+- each anchor matches once.
+Then run the CPU back-test on recorded engine histories described in the spec.
+METRIC: m1: 'Tried from one board state only' present on at least 50% of stall openers in games where qualifying items exist. m2: a listed item retried from a different state within 3 turns in at least 0.3 of firings. m3: UNDO uses per run up from about 3 and RESETs per run in UNDO-valid games down from about 10. Harm: actions at most A x 1.10; levels and score no-harm on the aligned window.
+RISK: Low. It fires only on stall and failure openers, about 40 tokens each. It may nag about real decoys and cost a few actions on cleared levels, and UNDO semantics vary by game. The main risk is zero effect, which the back-test screens for.
+
+#4 costmodel: replace the false objective line with the true scoring and clock model (0.75 h) angles=['code-read']
+SPEC: Overlay franzen_overlays/costmodel.py, applied after wastefix, mark '# overlay costmodel'.
+
+(1) prompts.py GAME_OVERVIEW_ADDENDUM: replace the unique line '    "- Optimize for as few in-game actions as possible while still being reliable.\n"\n' with:
+"- Scoring: a level counts only once you complete it, and later levels are worth more, so completing levels matters far more than saving actions. A completed level loses points only when it takes clearly more actions than a skilled human would. Each game has limited wall-clock time, and a level still unsolved when it runs out scores nothing: an action takes about a second, a long stretch of reasoning takes minutes. Avoid wasted or repeated actions, but when one or two actions would settle a question, take them instead of deliberating.\n"
+
+(2) Optional: in tool_agent.py's GAME OVER text, replace 'Record the diagnosed cause in your world model.' with 'State the diagnosed cause in your reply so later turns keep it.' Memory sections are off in Franzen's settings.
+
+Do not delete any other line (shortening the prompt lost points). About 60 extra cached tokens. Ship as its own arm, not bundled with ranks 1 to 2: its risk profile differs, and a bundle would hide a regression.
+WHY: The model cannot optimize an objective it is never told. It is told to minimize actions in at least 5 places and never that completion dominates or that the clock binds. Yet 78% of cleared levels already sit at the 1.15 cap (median 0.66x human), and every stuck level was still being played at the close. Idle turns are 26 to 30% of the clock at 162 s each, against 33 s for a one-action turn. unstick2's stall check is a narrow, passed version of this correction. Turducken reports that small wording changes swing the score.
+EVID: [verified, benchmark.json of kaggle-lf15us8-1031-1..3]
+- 387 cleared levels, median actions/baseline 0.659, 78.0% at or under 0.933.
+- A uniform x1.25 actions would cut mean per-level efficiency from 1.056 to 0.962, so the wording must target probes, not more actions.
+- s5i5 L2: '52 actions left! think REALLY carefully', 51 minutes, 2 actions.
+
+Counter [verified]:
+- ThinkingCap killed on 10-28: actions +70%, score 49.19 vs 57.79, levels 122 vs 129.
+- Son Pham: lower thinking effort -5 points, shorter prompt -12.
+- EAnge1o's quadratic-scoring prompt plus temperature 0.55: one offline run, LB 30.26.
+TEST: Apply the pin's overlays plus costmodel, import tool_agent with FORK_ENV (yield 8192) and render the system prompt: the new bullet appears once, the old line is gone, and files compile. The same check applies to the optional GAME OVER edit.
+METRIC: m1: idle-clock share at most 0.23 (A about 0.26). m2: cap cuts per run at most 25 (A 31) and the 'before spending/reconsider' phrase rate in idle turns down. Guard: median actions/baseline at most A + 0.10 (A 0.674); RESETs and game overs per run at most A x 1.3. Levels and score no-harm on the aligned window.
+RISK: Highest on the list. It is always on and could push the 22% of levels near the cap over it, raise budget-bar deaths, or read as 'think less', the family that lost about 5 points. The sign is uncertain and one wave cannot resolve it. Run it only as a second arm when quota allows.
+
+#5 groupdiff: make frame_diff report seg8's 8-connected groups as single moves (2.25 h) angles=['code-read']
+SPEC: Overlay franzen_overlays/groupdiff.py, applied after seg8, mark '# overlay groupdiff'.
+
+(1) python_tool_sandbox.py child: wrap the return of frame_diff. Replace the unique 'return compute_frame_diff(' block inside '        def frame_diff(before=None, after=None):' with diff = compute_frame_diff(...), then post-process:
+- map each 'moved' entry to its before-node by bbox or 'at';
+- read the node's seg8 'group';
+- for each before-group whose member nodes all moved by the same (dr, dc), add an entry to a new key 'group_moves': {group, colors, bbox_before, delta, pixels}.
+- Leave every existing field unchanged (additive only), and return diff.
+
+(2) prompts.py FRAME_DIFF_HINT_ADDENDUM: after the sentence ending 'touching same-color objects may form one component.' append ' `group_moves` lists 8-connected object groups (the segmentation `group` field) whose parts all moved by the same offset, one entry each.'
+WHY: frame_diff is the model's main after-action perception tool (called 220 to 313 times per run) and still matches 4-connected components. A moving X or diagonal stroke is reported as several 1-pixel 'moved' entries with arbitrary pairings, exactly where 4-connectivity misled (bp35 X marks read as decoration). seg8, the best measured arm (129.0 raw, 124.0 on the aligned window), shows the model uses 8-connected objects once offered. This changes what the model is shown.
+EVID: [verified]
+- seg8's group field was read in 39, 64 and 33 code blocks per run.
+- 76 of 184 human-replay level starts in 13 of 22 games have multi-node 8-connected objects.
+- prompts.py line 235 still says frame_diff matches 4-connected components.
+
+Counter [verified]: scroll, the last frame_diff change, fired in its target games yet bp35 stayed at 1 level in all 3 runs, and its mean was 8 levels under us8 (not promoted).
+TEST: The seg8 test board (X, diagonal, corner squares) shifted by (1, 2) yields exactly one group_moves entry per glyph, and every pre-existing field is byte-identical to the unpatched output. Run over all human-replay consecutive frame pairs: no exception, group_moves empty when nothing moved, and runtime under 5 ms per pair. Each anchor matches once, and files compile in both orders with tool2.
+METRIC: m1: 'group_moves' read in code blocks at least 10 per run, in at least 3 games. Harm: actions at most A x 1.10; levels and score no-harm on the aligned window.
+RISK: Medium. Bbox matching can mis-assign within groups of identical pieces, and a wrong group move is a confident false signal. It sits on the most-called perception path, and the direct analogue (scroll) showed no gain in its target games.
+
+REJECTED:
+- Aligned-window gate reading (transcripts): not a harness change, so not ranked, but adopt it as the PREDECLARED reader for the wave. 6 of 19 lf15-family runs started play 12 to 22 min before the server was READY, costing about 10 levels each (delayed 120.2 vs on-time 127.5 raw; 116.5 vs 116.2 on a common 5,800 s window). That is more than the effects being gated, so without it one slow load can decide the single wave.
+- run_checked halt-on-mismatch executor (public-arc3, agent-literature): the model already hand-writes checked loops (445 blocks in 3 runs), so the marginal gain is low. It sits on the action path inside the child, where a bug can swallow guards (KnownNoOp, StaleState, Terminal) or double-execute. FF's host-enforced prediction gate lost 10 of 35 levels. Only its truthful host-time sentence survives, folded into rank 1.
+- Typed transitions / level_transitions() as a separate change (public-arc3): merged into check_model, which skips RESET, death and level-boundary transitions internally. A separate kind attribute adds surface without new behavior.
+- search() BFS/A* helper (transcripts): search snippets fail 15.5% vs 7.8%, but the saving is tool rounds and tokens. More tokens did not move levels (fp8 KV +28.7% tokens, +0 levels). The model writes its own search on 170 of 272 long levels, and the helper would dilute attribution in the only wave.
+- SWE-agent informative traceback hints (agent-literature): about 0 levels; tool errors are 8.2% of calls and mostly the model's own bugs, and saved rounds do not convert.
+- Trim ledger and drain-time opener compaction (transcripts, code-read): history depth does not bind (71K retained history tied; a natural experiment on inherited context fill shows no harm; no re-derivation burst after drains). The ledger build is 2.5 to 3 h and adds about 300 tokens per trim.
+- Level-start object table and carry-over line (code-read, transcripts): adds 0.5 to 1.5K tokens per level start to save about 1% of the clock. 81% of openings already reuse earlier-level functions, and ARC3_LEVEL_INVENTORY was dead as built.
+- levelclock, minutes-on-this-level in the state line (code-read): sign uncertain. Time pressure feeds the top stuck mode (a premature rule from one try) and RESET spam, and the stall check already carries the clock message without a ticking number.
+- Salient-event summary from Twin's goal-discovery signals (public-arc3): no measurement on our stack, untuned thresholds (local_burst fires on most moves), likely noise lines.
+- Turducken mechanic-family checklist at deep stalls (competitive-meta): dead-end family (strategy audit 110, advice blocks hurt at capped context). Their own mode coach beat the stock prompt on no game, and the checklist has no published result.
+- Cross-level insight or workflow memory, ExpeL/AWM/Reflexion (agent-literature): measured dead end (solved-level memory 111, strategy audit 110); retained functions already act as a code skill library.
+- notonce as a standalone line (code-read): its own back-test is null (write-off signals equally frequent in stuck and cleared levels). The idea survives only inside rank 3, behind a back-test gate.
+- Structured notes, death ledger and guards, stall cutoff, more streams, summary on trim, graph-explorer fallback (public evidence): Franzen says disabling notes was the biggest gain in that area; the ledger was inert on 10-11; the stall cutoff cost 9.1 points and more streams 29.90 vs 47.30 (forum 750885); persistgym shows truncation is nearly free when facts can be looked up again; the explorer has near-zero action efficiency.
+- Quadratic-scoring prompt plus temperature 0.55 (EAnge1o): one offline run, LB 30.26, and temperature is a measured dead end. Our action efficiency already sits under the cap; the useful part is carried by rank 4 without the sampling change.
+- Shorter system prompt, lower thinking effort, fine-tuning on our wins: measured losses (Son Pham -12 and -5 points; r16 RFT 109 to 117 against about 124).
+
+VERIFY verify kit: check_model + check_goal sandbox helpers (replay the level's log through the model's own simulator and goal test), plus the host-time clause refuted= True
+ strongest_objection: The helper mostly targets failures the log cannot refute, and it fires where the clock is not being lost. (1) Of the 10 false-rule stuck levels, 8 are consistent with every recorded transition by construction: 4 were tested in the wrong state and 4 were written off untested. A simulator that encodes "X is inert" therefore passes check_model ("fits all N"). That can certify the false rule and push the model toward "change the goal", the opposite of what unstick2's no-solution rule asks. Only the 2 "new rule invented" cases could be refuted, and only with a full-board simulator. (2) In the three us8 runs, only 17 of 75 stuck levels have any simulator definition. The biggest stuck-level clock sinks have no simulator at all: bp35 L2 at 57 to 92 min, tn36 L2 at 70 to 79 min, dc22 L4/L5 at 22 to 66 min, plus cn04, tr87, vc33, ka59 and sc25. Among the 17, 2 to 7 already ran hand replay checks and still did not clear (sk48 r1 L6 found 4 of 10 mismatches; ls20 r2 L5 ran 10 checks). Only 4 have 10 or more minutes left after the simulator appears with no check: re86 r1 L7, sp80 r2 L5, m0r0 r3 L6, sk48 r3 L3. That is about 1.3 per run. (3) The closest precedent is GG6 on Flash-Next itself, a validate(predict) helper plus a persistent prelude adopted in 25 of 25 games: it was called in 1.5% of calls. Arm V on the 27B called it in 1 of 50 game runs. Retained functions are not new in kind: GG6 already had persistence. (4) Model simulators do not fit the interface. Most of the 237 simulator-like defs are step(st, a) over an abstract state, often with extra arguments (static, M, LEGAL), a reversed order (a, st), or whole-plan simulate(seq). About 2 take a frame. So no-observe mode matches almost nothing, and observe mode needs an observe(frame) plus an action adapter, which is most of the hand loop it claims to replace. (5) Expected gain is well under 1 level per run, below the roughly 16-level resolution of a 3-run gate. Only 2 W runs plus a probe of GPU remain after tool2 (PROGRESS 11-01).
+ checks_done: Read the patched harness tree at scratchpad/hfix/b2 (python_tool_sandbox.py in full, including the bootstrap child and the host timeout loop; prompts.py lines 225 to 356; tool_agent.py history payload and sandbox state; solver.py history result keys). Confirmed every anchor matches exactly once: 'def _refresh_state', the 'runtime_globals["frame_diff"] = frame_diff' line, unstick2's 'replay this level's' bullet, 'RESET) wastes actions and teaches nothing.', and '30 seconds.'. ARC3_FRAME_DIFF_HINT=1 is in ENV_CELL and the addendum appears in transcript system prompts. Neither check_model nor check_goal appears in any us8 transcript. Read the overlays unstick2.py and tool2.py and confirmed test helpers exist (test_franzen_sandbox.apply, test_franzen_tool2.run). Read PROGRESS.md for arms V, W and GG6 and section 10 (validate defects: no abstention, cross-level pairs; 13 of 25 games have within-episode contradictions on the ascii board). Read SESSION_LOG 10-30 to 11-02 for the stuck-mode breakdown and the PROGRESS tail (GPU about 6.7 h, HOLD_UNTIL 04:30Z). Measured on kaggle-lf15us8-1031-1..3 (turns.pkl plus my scripts in scratchpad/skv): the replay census finds 57 hand replay blocks in 8,486 code blocks. 76 of 361 cleared plays (21%) have a simulator and 15 have a check; 17 of 75 stuck plays (23%) have a simulator and 3 have a check. Per stuck level, I measured minutes remaining after the first simulator def. Goal-like function defs on stuck levels: 3 defs, in 1 of 75 plays, so check_goal has almost nothing to check where it matters. Of 70 hand validation blocks, 15 errored, 32 showed a mismatch or False, and 23 showed none, so validation is informative when it runs. I tallied 237 simulator signatures. 18 of 166 simulator-named defs call action() in their body, for example dc22 'def step(a, exp=None): res=action([a])'. Segmentation took 25 to 90 ms per 64x64 frame with 10 to 65 nodes and 217 ms at 174 nodes on this Mac.
+ would_change_if: An offline replay showed that on the stuck levels that have a simulator, the model's own retained step functions run through a check_model prototype flag the specific wrong rule in at least 3 of the about 12 eligible us8 plays. Or a transcript read found most of the 10 false-rule stuck levels actually have a refuting recorded transition. Or a cheap probe showed Flash-Next calling the helper on most simulator-bearing level plays, unlike GG6's 1.5%.
+ adjusted_expected_effect: Probably 0 to +1 level per 25-game run (0 to +0.5 game-score points), not resolvable by 3 runs (SE about 4.5 levels). Generous assumptions: about 1.3 eligible stuck levels per run, a 50% call rate (precedent 1.5%), and 30% of those flipped to cleared give about +0.2 levels per run, plus a negligible clock saving on cleared levels. There is a small downside risk from false certification and from chasing hidden-state mismatches.
+ build_pitfalls: 1) The closures land inside _SANDBOX_BOOTSTRAP = textwrap.dedent(r"""..."""). The overlay's 'both files compile' guard only compiles the outer module, so a syntax error inside the child source passes it and then breaks every snippet. Also compile the dedented bootstrap string, and run the real child. Use 8-space indentation, no triple double quotes, and if the overlay block is a non-raw ''' string (as in tool2), write split('\\n') or it becomes a literal newline and an unterminated string. 2) The bootstrap does not import time. Import it inside the closure, which gives the real module. The model's own 'import time' gets the no-op sleep shim, so test 6's 'sleeping step' must busy-wait. 3) Stub runtime_globals['action'] (and the animation fetch) with a raising function while step, observe and is_goal run, and restore it in finally. 18 of 166 simulator-named defs in us8 are real executors that are retained across calls, and the prompt's parameter name 'step' invites check_model(step) on them. 4) Catch Exception only, never BaseException or a bare except, so tool2's SnippetTimeout and the refusal BaseExceptions propagate. Under tool2 the 8 s cap eats into the 27 s compute timer, so use min(8, remaining). 5) Check the newest transitions first, or print the range covered. An observe() built on .segmentation costs 25 to 90 ms per frame, so 8 s covers about 100 to 300 transitions, and oldest-first would drop the relevant recent ones. 6) History actions are action_display strings ('UP', 'MOUSE(row=r, col=c)'), while model simulators take 'U', (dr, dc), indices, the (a, st) order, or extra arguments. Without a lambda adapter example in the prompt, every transition becomes a TypeError 'mismatch'. 7) For 13 of 25 games, the same board plus action yields different afters within one episode. Report 'the board alone cannot determine this transition' when such contradictions exist (Arm W's contradictions() idea); otherwise the model chases unfixable mismatches. HUDs inside the 4-cell interior also mismatch. 8) Clause (f) is wrong as worded: hard_stop = deadline + 120 is fixed at snippet start, so the allowance is 2 minutes total per python call, not per action() call. It is also a second independent variable (longer in-call plans) that confounds the gate. Drop it or gate it separately. 9) Skip rules: model RESET as well as automatic RESET, the game_over entry, and level-crossing entries. The transition after a RESET is valid. 10) Gate m1 (at least 10 calls per run) is below today's hand validation rate (about 19 to 23 blocks per run), so it passes by substitution alone. m6_validate.py must count check_model calls or the m3 baseline is not comparable. Count only inside <parameter=code> blocks, because the system prompt echoes 'check_model(' every turn (the arm V grep error). 11) The (f) anchor depends on whether tool2 is applied. Build both variants and assert the order verify-after-tool2. 12) Keep the registration inside _refresh_state, before _available_names is computed (line 741), so model functions that call check_model can be retained.
+
+VERIFY codefirst: say a reply was cut at the output cap and redirect the next turn to code or a probe refuted= True
+ strongest_objection: The failure codefirst targets barely happens. Across the 86 cap cuts with no tool call in kaggle-lf15us8-1031-1..3, the turn right after the cut usually does the code-or-probe step already. Its first reply calls python in 79 of 84. Its first call contains 'def ' in 40 of 79 (51%, against 27% for first calls over all 4,410 invocations). It contains 'def ' or 'action(' in 66 of 79 (0.84), and 68 of 84 next invocations execute an action. Back-to-back cuts happen 5 of 84 times. Sampled post-cut thinking already opens with lines like "I need to act now. Let me do a decisive experiment" or "Let me write the simulator + BFS". The proposal says the model "resumes the same chain", but the data show the opposite.
+
+The 203 s cost mostly cannot be recovered. A cut always yields (86 of 86 were the last reply of their invocation), so the 12K-token cut turn has already been spent before the flag is set. The line can only act on the next turn. Measured from the start of that turn to the end of the first executing invocation, the time is a median of 57 s and a mean of 100 s, about 2,800 s per run, or 1.6% of the clock. Most of that is a normal turn that acts. A realistic saving is a fraction of 1% of the clock, far below run-to-run SD of 6 to 8 levels.
+
+The closest arms already ran and were null. l1a1tbfc forced a tool call at this exact moment: 0 cuts, 66 of 67 forced calls ran, levels tied. o16 halved no-call replies and was rejected at 120. The existing unstick2 stall check already gives nearly the same instruction ("call action() before any long search so ... the turn's length limit cannot stop it"), and in the sp80 case where it sat in the post-cut opener, the model still cut again.
+
+The gate cannot show an effect. m2's 0.7 bar is below the measured baseline of 0.84, so it passes with zero effect. m3 (at most 25 cuts per run) sits inside us8's own spread of 20, 26 and 40 pure cuts.
+ checks_done: Read the rebuilt pin tree's tool_agent.py at lines 6840 to 7350 and 7470 to 7513, plus the resume-mode helpers (lines 912 to 1040, 975 to 990):
+- The 4-line anchor matches once, the yield line 3 times, and the unstick anchor once.
+- _build_user_prompt has a single caller (line 6842).
+- Resume mode defaults to 'full', and the pinned submission.ipynb does not set ARC3_YIELD_RESUME_PROMPT, ARC3_STUB_DEAD_REASONING or the effort ladder. So the line would reach the model.
+- check_model does not exist in the tree.
+
+Read unstick2.py and tool2.py. They do not collide: seg8 edits only utils/segmentation.py, and tool2 edits only the sandbox and prompts.
+
+Parsed all 75 transcripts in kaggle-lf15us8-1031-1..3 with a script (<scratch>/fb519d0b-5ca4-49bf-b4d4-4ffb21661429/scratchpad/cuts.py):
+- 93 length cuts, of which 86 had no call (26, 40 and 20 per run); 7 had a call parsed.
+- Median 35,339 reasoning chars.
+- 69 of 86 cuts came on the first turn after an executed action.
+- 29 of 86 were on never-cleared levels.
+- Every next opener already starts with either "produced no tool call and executed no actions" (47) or "Your last python snippet executed NO actions" (39).
+- Post-cut call, execute, def and back-to-back rates and recovery times are as above; 0 degenerate stubs; 39 stall checks fired.
+
+PROGRESS.md: the l1a1tbfc (10-10) and o16 (10-12) results, plus the 10-29 waste census (50 cuts, 9.5% of tokens).
+
+Found that test_franzen_replycache.py already drives analyze() with a fake _chat_completion, so offline test (c) is feasible.
+ would_change_if: A transcript read showed that post-cut turns, although they call python and act, mostly repeat the same refuted rule or a filler probe and then stall, with clearing runs doing something different at that point. Or a back-test on the 39 cases where the cut followed failed tool work showed that the next turn's code skipped replaying recorded transitions at a much higher rate than clearing runs do. Neither is in the evidence: the candidate's evidence lines measure cut frequency, not what happens after a cut.
+ adjusted_expected_effect: About 0 levels. The best case is under 1 level per run: the addressable time is about 1.6% of the clock, of which only a fraction could be saved, and post-cut behavior already sits above the gate's own mechanism bar. Not detectable in a 3-run wave.
+ build_pitfalls: 1. The line's wording is false about half the time. In 39 of 86 cuts the same invocation already ran python snippets (the next opener says "Your last python snippet executed NO actions"). In those cases "while still reasoning in prose, so nothing ran" contradicts the tool results in history. Say "no action executed" instead.
+2. It duplicates the opener's first line ("Your previous exchange this turn produced no tool call..."), which is already present in 47 of 84 cases. Replace or merge that line rather than adding a second.
+3. The flag is consumed when _build_user_prompt runs at analyze() start (line 6842). If that turn is rolled back on a RequestException (preserve_history False), the retry's opener has lost the line. Set the flag false only after the opener has been appended, or re-arm it on rollback.
+4. The flag should not be set on a degenerate serving-fault reply (_is_degenerate_text(reasoning)), which is replaced by a stub. 0 occurred in these runs, but the guard is cheap.
+5. The insert must sit inside `if not tool_calls:` at 20-space indentation, before `yielded_control_reason = control_yield_reason()`. Anchoring on the yield line alone fails (3 matches). truncated_tool_call is always bound at line 7081, so the condition is safe.
+6. check_model is absent, so without rank 1 the fallback wording is required. Do not ship a line that names a nonexistent helper; the model will call it and raise a NameError.
+7. It overlaps the stall check: 3 of 84 post-cut openers already carry it. In the sp80 case the model cut again with both kinds of pressure present.
+8. In the gate, m2's bar must exceed the measured baseline of 0.84 ('def ' or 'action(' in the first post-cut call) or 0.81 (next invocation executes). Otherwise it is not a mechanism test. m3 needs a bar outside us8's own 20 to 40 range.
+9. Test (c) should copy test_franzen_replycache.py's fake-server analyze() harness rather than build a new one.
+
+VERIFY coverage v3: state-conditioned write-off list plus an UNDO line on stall and failure openers refuted= True
+ strongest_objection: I ran the spec's own back-test and it fails. On 6 runs replayed on the local engine, 9% of listed items (14 of 154) were later used with effect in a run that cleared the level. The spec ships at 20%. On stuck levels, the levels the list is meant to rescue, it was 2% (1 of 49). The key matching is sound (see checks), so the low number means the listed items really are decoys. Of the 15 relevant items, 13 sit on levels the run cleared anyway and were retried later without any prompt. Only 1 stuck-level item in 6 runs (vc33 L4, uns2 run 2) was relevant and never retried. Even if that one turned into a cleared level every time, the gain is about 0.17 levels per run, against a run-to-run SD of 6 to 8. The generic advice ("retry it from a different state before ruling it out") is already in unstick2's system prompt edit. The UNDO line adds almost nothing. UNDO already appears in every opener's "Valid actions right now" line and has its own system prompt line (EXPOSE_UNDO='on' in the notebook). It was measured dead in September (arm AA, 2 presses in 3,347 actions; D-undo tied 35 vs 35). Swapping a RESET for an UNDO saves actions, which is an efficiency gain, while completion is what dominates the score. Two of the cited examples cannot be helped: ls20 has only directional actions, which coverage3 excludes, and dc22 L5 was never cleared in any of the 6 runs, so it cannot be verified.
+ checks_done: - Read franzen_overlays/unstick2.py in full. Read the harness's agent/action_names.py (EXPOSE_UNDO modes), prompts.py (UNDO_INFO_ADDENDUM) and tool_agent.py (_normalize_valid_actions; the `unused = [...]` anchor matches once, line 516 of the hfix/b2 tree). Grepped seg8, tool2 and scroll for collisions: none touch the _unstick helpers. Checked the pinned notebook: EXPOSE_UNDO='on'. Checked the transcript openers and system prompt: UNDO is already listed and explained.
+- Replayed every benchmark.json history of kaggle-lf15us8-1031-1..3 and kaggle-lf15uns2-1030-1..3 on the local arcengine. All 150 game runs reproduce the benchmark's level count exactly.
+- Parsed 9,137 openers from the transcripts (84 stall, 325 failure openers). At each one I computed the spec's list: no effect on any try, exactly 1 distinct state, non-directional keys only, click types present on the board, cap 4. Effect means the interior (4-cell margin removed) changed; state is a hash of that interior.
+- How often it fires: the list is non-empty at 113 of 409 firing points (28%), about 19 per run, mostly in dc22, tn36 and vc33. Items: 145 MOUSE, 9 SPACE.
+- Relevance (later used with effect in a run that cleared the level): 0.09 overall, 0.12 on cleared levels, 0.02 on stuck levels (1 of 49; 36 of those 49 levels were cleared in some run). Without unstick2's region filter: 0.10 overall, 0.03 on stuck levels.
+- Calibration: a click type that had an effect in one clearing run also had one in another clearing run 92% of the time (1,424 of 1,541). So type matching across runs works, and the low relevance is real.
+- UNDO counts per run: 0 to 6 presses (mean 1.8). Model RESETs in UNDO-valid games: 5 to 11 (mean 7.8). Automatic RESETs after game over, which UNDO cannot replace: 1 to 4. The UNDO line would fire about 12 times per run.
+- Read the PROGRESS entries for arm AA/UNDO, D-undo, unstick, unstick2 and seg8, and the 10-30 stuck-level read ("Untested" acted on 27 of 86; write-off phrases do not separate stuck from cleared).
+- Scripts in <scratch>/fb519d0b-5ca4-49bf-b4d4-4ffb21661429/scratchpad/cov3/ (replay.py, openers.py, backtest.py with FILTER=1, calib.py).
+ would_change_if: A larger back-test (more replica runs, or the RE-ARC-3 human replays as the "clearing run" reference) showed listed stuck-level items with an effect in clearing runs at 20% or more. Or a read of stuck levels in UNDO-valid games showed RESET-instead-of-UNDO costing completions, not just actions.
+ adjusted_expected_effect: About 0 levels. The list's measured upper bound is about +0.2 levels per run. The UNDO line can at best save a few actions in the 6 UNDO-valid games, which is efficiency, not completion. Neither is detectable in a 3-run wave.
+ build_pitfalls: 1. _unstick_lines wraps _unstick_coverage in a single try/except. An exception in _unstick_once would silently delete unstick2's Untested and unused-action lines too, so it needs its own try.
+2. Name normalization: history stores the model's names (UNDO, SPACE, MOUSE(row=.., col=..)), and valid_actions must go through _normalize_valid_actions. ACTION7 only becomes UNDO when EXPOSE_UNDO=on, so an offline test run without FORK_ENV is in tufa mode and sees "ACTION7". Check both names on both sides.
+3. The UNDO line also fires on failure openers right after a game over. That contradicts the system prompt ("It cannot recover a failed attempt after game over") and suggests UNDO exactly when it cannot help.
+4. "Skip click types absent from the current board" needs unstick2's large-region, border-strip and dot-texture filter. Without it, background clicks (64x64, 63x64, 53x64 regions) get listed: 27 extra items in the back-test.
+5. A key built from (color, box) drops position, but the display needs the step and the coordinates, so store the latest try per key.
+6. The interior-diff effect test is wrong both ways. A HUD counter inside the 4-cell margin makes every action count as effective. An object near the edge loses real effects. The scroll games (bp35, lf52) shift the whole interior on every move. A click that animates and settles back reads as no effect.
+7. Gate m1 is tautological: the list fires whenever items exist. The m3 baseline in the spec ("about 3") is really a mean of 1.8 with a range of 0 to 6.
+8. Order: the overlay must come after unstick2 (and after tool2 if tool2 is pinned). Its mark must not contain "overlay unstick", or unstick2's already-applied check fires. The combo tests that glob every overlay are already broken by mutually exclusive pairs.
+9. With 3 runs at SD 6 to 8, the gate cannot see the at most 0.2 levels per run the back-test allows.
+
+VERIFY costmodel: replace the false objective line with the true scoring and clock model refuted= True
+ strongest_objection: The failure this change targets barely happens. Across the 3 lf15us8 runs (4,409 turns, 377,550 s after the first turn), only 16 idle turns have thinking that reasons from the scoring objective (fewer actions are better, minimize actions, efficiency score). That is 2,815 s, 0.7% of the clock, and 7 of those turns are on stuck levels. The thrift the candidate quotes ("52 actions left! think REALLY carefully", s5i5 L2) is about the game's own budget bar. Bar reasoning fills 13.5% of the clock in idle turns (260 turns). The bar is a real death constraint that the new wording does not change, and unstick2's stall check, already in the pin, was built on that exact s5i5 example. A sample of idle turns on stuck levels shows real work: checking a simulator's predictions against what happened (sk48), writing search code (r11l, cn04), inferring rules (tr87), physics reasoning (bp35). None of them is a cheap probe being avoided to save actions. So lowering the idle-clock share (m1) would mostly cut the simulator and search work that clears levels. History points the same way. Arm EE (09-01) deleted this same line: actions went down, not up, and it scored 30 levels against 35, so the line was inert. The push toward acting more and thinking less is the family that measured badly. ThinkingCap took 70% more actions and lost 7 levels and 15% of score. Son Pham's team lost about 5 points with lower thinking effort. AVO's 'stop refining and play' deadline, early handover and the strategy audit are dead ends. The turn messages show no clock, so a clock-binds line is a constant bias toward acting, not something the model can act on. On the downside, 22% of cleared levels (85 of 387) sit below the 1.15 cap. A uniform 1.15x rise in actions moves the median actions-to-baseline ratio from 0.659 to 0.757, which still passes the proposed guard (A + 0.10 = 0.774), and cuts the replica score estimate from 65.8 to 62.9 (-4.5%). Breaking even would take about 5 to 6 more levels, which is inside run-to-run noise (SD 6 to 8). With 2 or 3 gate runs left, the gate cannot resolve the effect in either direction.
+ checks_done: Read the patched harness tree (b2). agent/prompts.py:69 holds the line once, inside GAME_OVERVIEW_ADDENDUM; tool_agent.py:2861 always adds it to the system prompt. Other thrift wording that the change leaves in place: WORLD_MODEL_FREE_ADDENDUM ('shortest reliable sequence', rendered line 83, memory sections are off), the RESET addendum ('actions already spent still count toward your score'), the turn message ('reliable short sequence') and the BFS 'shortest' guidance. PREFER_TOOL_CALLS_LINE is off in this config, so the prompt never says computing costs clock. The GAME OVER text sits at tool_agent.py:5210 as one literal. Grepped all 40 files in solution/kaggle/franzen_overlays/: none touches 'Optimize for', 'Game overview' or 'Record the diagnosed', so there is no anchor collision. In the vendored bundle the line is at franzen-bundle prompts.py:17 (line 69 in b2). Pulled the rendered system prompt from a transcript (21.7 KB). The turn messages have no elapsed or remaining time. Wrote scratchpad scripts (costmodel_scan.py, idle2.py, phr.py) over kaggle-lf15us8-1031-1..3: idle-clock share 0.264 (0.288 without first turns), mean idle turn 202 s, stuck-level share 0.338 of the clock. Thinking that cites the scoring objective: 0.7% of the clock in idle turns and 2.4% in acting turns. Budget-bar thinking: 13.5% and 26.0%. Sampled 6 random idle turns on stuck levels; all were real work. From benchmark.json: 387 cleared levels, median ratio 0.659, 78.0% at or under 0.933, 11.9% in (0.933, 1.2], 10.1% above 1.2. Uniform 1.15x and 1.25x action rises cost about 4.5% and 8.1% of the replica score estimate. s5i5 cleared L2 in all 3 runs; L2 actions 32, 45 and 46 against a baseline of 89. docs/PROGRESS.md: arm EE (lines 3580 and 3718 to 3745: 30 vs 35 levels, actions 3,144 vs 3,347, rated inert); ThinkingCap (line 6842: 122 vs 129 levels, score 49.19 vs 57.79, actions +70%); AVO exploit deadline (line 3625, no gain); the latest entries (seg8 pin, tool2 gate, at most 2 W runs plus a probe left).
+ would_change_if: A transcript read showed that, on stuck levels, the model explicitly passes up a cheap discriminating probe because of score or action thrift (not the game's budget bar) in more than about 5% of stuck-level clock. Or a back-test on recorded transcripts showed that the levels it got stuck on would have been settled by a 1 to 2 action probe it reasoned against. Or a same-harness Flash-Next ablation (another team, or our own replica pair) showed objective wording raising levels without raising the median actions-to-baseline ratio. The gate would also have to be cheap enough to run at least 4 paired runs, or to use a behavior counter tied directly to the mechanism (probe-declined phrases per stuck turn) rather than the idle share.
+ adjusted_expected_effect: About 0 levels (plausible range -6 to +3 on the replica), with a slightly negative expected score: the only lever it can pull at scale is more actions, which costs score on the 22% of cleared levels below the cap, while the deliberation it aims at (thrift from the scoring objective) is 0.7% of the clock. A 2 to 3 run gate cannot tell it apart from zero. Not worth the last GPU wave over tool2 or another mechanism-gated arm.
+ build_pitfalls: 1) The anchor is Python source, not rendered text. Match `    "- Optimize for as few in-game actions as possible while still being reliable.\n"` with a literal backslash-n inside the string literal. Writing the replacement with a real newline inside the quotes breaks compile, so assert count == 1 and compile prompts.py before writing, the way unstick2 does. 2) Anchor on text, never on a line number. The bundle has the line at :17, the patched tree at :69, and overlays run after 'harness patch applied successfully'. 3) The rendered prompt then goes through the .replace chain in apply_level_transfer_system_guidance. The new bullet must not contain any of those replaced substrings (it does not now), and a later reword could collide. 4) The new bullet contradicts lines left in place: 'Optimize for the shortest reliable sequence' (WORLD_MODEL_FREE_ADDENDUM), RESET's 'still count toward your score', the turn message's 'reliable short sequence' and the BFS 'shortest' text. The model gets mixed signals unless those are reworded, and rewording them widens the arm. 5) Optional GAME OVER edit: memory sections are off, so 'world model' is already a dead reference and the edit is cosmetic. Assert a single match of 'Record the diagnosed cause in your world model.' and keep the rest of that literal untouched (it contains a — em dash in source, so do not normalize the file's text). 6) Use a unique mark ('# overlay costmodel') with an idempotence check. The test_franzen_* combo tests that glob every overlay are already broken by mutually exclusive pairs (unstick/unstick2, keepvars/keepvars2), so write a standalone render test on the pin's overlay order (wastefix ... unstick2, seg8, then costmodel), not a glob combo. 7) Gate metrics are confounded. m1 (idle share) moves with throughput and with unstick2's stall check, and cutting it removes simulator work. m2's 'cap cuts' (replies hitting the 12K output cap) are not the same as the 8,192-token yields. The median-ratio guard (A + 0.10) admits a 1.15x action rise, worth about -4.5% score, so tighten it to about A + 0.03 and add a score-per-cleared-level check. 8) The new text adds about 60 tokens to the system-prompt prefix. Static per game, so prefix caching survives, but every replica cache entry is new on the first turn.
+
+
+RESEARCH SUMMARIES
+
+[public-arc3] Public ARC-AGI-3 harnesses have converged on five mechanisms: (1) log every frame and let the agent query it, (2) check every hypothesis against all of the recorded history, (3) plan inside a simulator, (4) run plans step by step and stop at the first prediction miss, (5) treat every recorded board as a non-goal. The systems are Twin, Tycho, Kepler, arc-skill, Retrodict and the 4x4 ablation. Duck/Franzen plus our overlays already cover (1) and soft versions of (2) to (4). Our harness has nothing for (5): the system prompt never tells the model that every recorded board on a level is a certified negative for the goal.
+
+In 6 recent runs (crude regex), the model defines about 15.5 goal-like functions per run and checks about 0.3 per run against history. It checks simulators more often: about 11 of 102 simulator snippets per run loop over history. Clearing runs write their own verify-and-stop runners (sk48 `runplan`) and sometimes split plans into chunks because the prompt says 30 s. The harness actually excuses action time up to 120 s.
+
+Nothing public explains the gap to rank 5:
+- No top-30 team has published.
+- xz's posts are all about infrastructure.
+- Turducken (rank 3), in its own note, says it prunes experts, then runs a "short round of extra training" (a heal fine-tune). It also does heavy prompt coaching and uses human-play recordings. So at least one team near the top does fine-tune.
+
+Ruled out from public evidence:
+- Structured notes: Franzen says disabling them was the biggest gain in that area.
+- Death ledger and guards: inert on this stack (10-11 replay).
+- Stall cutoff (-9.1) and more streams (29.90 vs 47.30): Francise Liang, forum 750885.
+- Summary on trim: persistgym (arXiv 2610.26632) shows truncation costs almost nothing when facts can be looked up again, and our python history allows that.
+- Quadratic-scoring prompt plus temp 0.55 (EAnge1o, one offline run): we already sit at 0.62 to 0.67x human actions, below the cap.
+- Graph-explorer fallback: its action efficiency is near zero (Twin's assessment).
+
+Recommendation for the single wave: one overlay, "verify", built from candidates 1, 2 and 3. Gate it on helper use plus no harm. None of these effects can be resolved with 3 runs.
+  * Goal-consistency check (Twin's certified negatives) 
+  * Checked plan executor run_checked(plan, predict), plus the host-time sentence 
+  * Typed transitions (Tycho's evidence contract) 
+  * Tried-once no-op ledger at stall checks (Just Explore and Turducken 'notebook of what it has tried') 
+  * Salient-event summary at stall checks (Twin goal-discovery signals) 
+
+[agent-literature] Across this literature one mechanism keeps showing up with large measured effects: the agent writes its theory of the game as code, the harness replays that code against every logged transition, and each mismatch comes back as a concrete counterexample. Twin (ARC-AGI-3 public 25) scores 93.3 with this loop. The same model and agent with the harness removed score 61.1. The authors credit most of the gain to validation being enforced by the harness rather than requested in the prompt. Kepler, Rodionov's ablation (exact replay verification ranks first in every setting), WorldCoder and PoE-World all use the same pattern. EMPA adds a second idea: an object interaction counts as known only once it has been seen in the relevant state, and exploration goals reopen when the agent's state changes. AutumnBench finds humans spend 12.5% of their actions each on resets and no-ops as experiments, while reasoning models spend under 7% on both together.
+
+Our own transcripts show a gap here [verified, 3 seg8 runs, 8,437 unique code blocks]. The model defined a simulator in 269 blocks but checked one against the recorded transitions in only 53, in 5 of 25 games (sk48 26, lp85 17). It already runs checked execution by hand (445 blocks).
+
+Our harness also marks an object type as tested after a single no-effect click, in any state. That is exactly the 'tested in the wrong state' and 'written off' modes (8 of 30 stuck levels).
+
+Top pick, buildable in under 3 hours and testable offline:
+- **check_model and check_goal:** two sandbox helpers, stdlib only, plus about 170 tokens in the cached prompt and one clause in the stall check.
+- **EMPA-style edit to unstick2:** a type or action counts as tested only once it had an effect or was tried in 2 or more board states.
+
+Both are observable-only, call no API and add almost no tokens per turn. The magnitudes from frontier-model papers do not carry over to Flash-Next at about 1.8K tokens per action. The level gain is very likely below what a 3-run wave can resolve, so gate on whether the mechanism fires and does no harm.
+  * verify kit: check_model + check_goal (Twin/Kepler/WorldCoder replay validation as a one-call sandbox helper) 
+  * EMPA-style state-conditioned untested list (edit to unstick2) 
+  * halt-on-mismatch executor run_checked(plan, step, observe=None) 
+  * SWE-agent-style informative errors for the most frequent snippet tracebacks 
+  * cross-level insight or workflow memory (ExpeL / Agent Workflow Memory / Reflexion) | dead-end
+
+[code-read] I rebuilt the pin's patched tree and rendered the real system prompt (21,663 chars). The hfix/b2 copy was gone, so the rebuild uses arm l1a1y8sv2r3kp12lf15us8 with 11 overlays. I then measured the three us8 replica runs: 75 game transcripts, 4,484 turns.
+
+Where the clock goes [verified]:
+- Idle turns are 13% of turns but 26% of the clock: a median of 162 s each, against 33 s for a one-action turn.
+- The first turn of each level from level 2 on takes a median of 91 s with 2.3x the thinking of later turns, about 5% of the clock.
+- 93 replies hit the 12K output cap (31 per run). They hold a median of 35K chars of hand-worked prose, each costs about 200 s before the next action, and they cluster in sp80, sk48, bp35 and s5i5.
+- After a cut, the next message (the turn opener) never says the reply was cut. The model usually picks the same deliberation back up ("Let me run the decisive experiment... reconsider once more").
+
+The biggest misstatement is the objective. The prompt's only goal is "Optimize for as few in-game actions as possible", backed by four more lines about saving actions. It never says that completing levels matters most or that time is the binding limit. Yet 78% of cleared levels already sit at the 1.15 score cap (median 0.66 of human actions).
+
+Measured non-levers [verified]:
+- Context drains (4 per game) show no burst of re-derivation afterwards.
+- Wrong stale-state refusals cost about 0.27 turns per game.
+- NameErrors, tool timeouts, truncations and retention rejections are all small.
+- Only 3.7% of post-action turns open with a pure inspect-the-last-change call.
+- "Written off" signals appear equally often in stuck and cleared levels, so a harness list of them would not tell the two apart.
+
+UNDO is valid in 6 of 25 games but was used 8 times in 3 runs, while those games log about 10 RESETs per run.
+
+Ranking: (1) a scoring and clock objective bullet, (2) a code-first line after a cut reply, (3) an UNDO probe line. Each is a small string-anchored overlay. No single 3-run wave can resolve them, so gate on mechanism counters plus no harm.
+  * costmodel: state the real objective (completion first, clock binding, actions mostly slack) 
+  * codefirst: say when a reply was cut at the output cap, and redirect it to code or a probe 
+  * undoprobe: tell the model UNDO is a cheap in-state experiment when it is valid 
+  * groupdiff: make frame_diff consistent with seg8 (8-connected objects) 
+  * levelup context: precomputed object table plus how the level was won, in the level-start opener 
+  * notonce: list actions and click types that were no-ops only once or in only one state 
+  * levelclock: show minutes spent on this level in the state line 
+  * drain-time opener compaction | dead-end
+
+[transcripts] I parsed every analyzer turn in the 11 newest runs with scripts: 16,750 turns, 275 game plays, 1,387 cleared levels. Discovery is what limits us, not execution. Levels that took over 15 minutes are 27% of level-2-and-later clears but 66% of their clock. On those levels the winning code first appears with a median of only 13% of the level's clock left (code-similarity proxy, matched on 94 of 272 levels).
+
+These are not bottlenecks:
+- Plan failure: of 7,494 responses that ran 3 or more actions, 7% were stopped by the no-op guard and 1% hit game over.
+- Action efficiency: the agent uses a median 0.64x human actions; the score sits 1.2 to 5.6 points under its cap.
+- Re-deriving mechanics: 81% of level openings call functions written on earlier levels.
+- Tool errors: 8.2% of calls, mostly the model's own bugs.
+
+What I measured:
+- Level openings: 17.3% of the clock on cleared level-2-plus levels passes before the level's first action (median 83 s, 5.2K tokens).
+- Turns with no action: 13% of turns but 30% of the clock; 22% of them are cut off mid-thought.
+- Context trims: 4.2 per game play, each keeps a median of 6 turns, and 54% drop the current level's opening. Long levels run 44% of their clock without it, but a natural experiment shows no harm.
+- Thinking: 11% of thinking characters are paths traced by hand, 20% are coordinate-heavy lines.
+- Checking a simulator against recorded history: only 6% of cleared levels do it, against 4% before unstick2's "replay through a simulator" prompt line.
+
+The biggest finding is a flaw in how gates are read. 6 of 19 lf15-family runs started play 12 to 22 minutes before the server was ready. Raw, they average 120.2 levels against 127.5; on a common 5,800 s play window it is 116.5 against 116.2. On that window seg8 is the best arm (124.0).
+
+Recommendation: read the last 3-run wave on the common window. Build check_model (a one-line replay of the level's transitions through the model's own simulator) as the harness change the numbers support. The trim ledger is second tier.
+  * Aligned-window gate reading (a fix to how the last gate wave is read, not a harness change) 
+  * check_model(read, step): one-line replay of the current level's recorded transitions through the model's own simulator 
+  * Trim ledger: harness-computed level facts re-attached when a context trim drops the current level's opening 
+  * search() helper for move planning 
+  * Level carry-over line at each level start 
+
+[competitive-meta] No team in the top 12 has published what it changed after Franzen's M2 notebook [verified: ARC-3 forum read 11-01, ARC Daily repo, GitHub, Kaggle model lists]. On the board at 11-01 18:31Z we are 18th at 40.98. Ranks 13 to 17 (41.0 to 42.3) sit inside our own draw spread, so the real gap is ranks 3 to 12 (45 to 58.6).
+
+What rivals have said, verified:
+- **Turducken** credits prompt wording ("small changes in wording swing the score"). A short prompt cost them about 12 points. They run temperature 0.6 and noborder. They also prune experts by play traffic and run a heal fine-tune, so they are not harness-only.
+- **xz** (rank 3, 58.59 from 15 submissions) runs the same public Intel W4A16 weights. They ported their own harness on 10-25 and validate on public-25 plus Turducken's copycat-30. They specialise in throughput, and the team is named "faster machine is all you need". This is the strongest sign that the same weights can score far higher. My reading is that it comes from serving speed plus their own harness [inference].
+- **Tufa** says scored notebooks start about 40 minutes late and that time counts against the run [claim]. Our config means fell from 38.4 (r3p) to 33.6 (us8).
+
+From first principles, the biggest remaining stuck mode is a false rule (10 of 30 stuck levels). Every frontier harness that gains a lot with fixed weights checks its world model by replaying all recorded transitions (Twin: 61.1 to 93.3 on the same model). Our prompt already asks for this, yet only 101 of 16,963 code blocks (0.6%) compare a prediction with the record. Each hand-written check costs 1.2K to 2K characters of code.
+
+Candidates, in order:
+1. A `check_model()` replay helper.
+2. A line flagging objects written off after one try.
+3. Turducken's mechanic checklist (close to dead ends we already measured).
+
+Limits: a 3-run wave cannot resolve the effect of any of these. For the final, a new config matters only if its single 11-02 draw beats 40.09.
+  * check_model: one-call replay verifier for the model's own simulator | dead-end
+  * One-try write-off line in unstick2's coverage list 
+  * Turducken's mechanic-family checklist at deep stalls (public-wisdom) | dead-end

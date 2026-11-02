@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-26T00:00:00+00:00",
+  "subject": "Predeclared gate for arm V, the validate-then-plan world-model loop, run as a byte-identical PAIR.",
+  "written_before_any_result": true,
+  "why_a_pair_and_not_a_single_run": "Three times running (arms K, S, T) a strong first run regressed to a pooled 36-39 band. Both GPU sessions are free, so this arm is screened at n=2 from the start rather than promoted on a misleading first draw and re-measured two days later.",
+  "arm": {
+    "name": "V world-model",
+    "dataset_id": "vineethsaivs/arc3-q38-worldmodel-v1",
+    "kernels": [
+      "vineethsaivs/arc3-q38-worldmodel-ordinary-commit",
+      "vineethsaivs/arc3-q38-worldmodel-rep-ordinary-commit"
+    ],
+    "base_config": "ctxwin history budget 48128 + context hysteresis + fp8 KV + temperature 0.9 + top_k 100 (the shipped best)",
+    "independent_variable": "the world-model loop only: apply_sandbox_persistence + apply_world_model_tools + apply_world_model_prompt",
+    "overlays": [
+      "persistent sandbox `memory` dict plus a re-executed `memory['prelude']`, each with its own SIGALRM budget and size cap",
+      "transition_log / validate(predict) / plan(predict, goal, start, valid_actions) primitives, each wrapped in a SIGALRM watchdog raising a BaseException so the callers' `except Exception` cannot swallow it",
+      "system-prompt addendum naming the loop, plus a code-enforced escape hatch: WORLD_MODEL_MAX_IDLE_TURNS=3 consecutive zero-action turns then an explicit order to act on the unvalidated model"
+    ]
+  },
+  "control": {
+    "name": "ctxwin + temp 0.9 + top_k 100 (the shipped best)",
+    "runs": [44, 28],
+    "pooled_levels": 36.0,
+    "family_control_runs": [33, 29, 35, 44, 28],
+    "family_control_mean": 33.8
+  },
+  "noise_model": {
+    "sigma_of_one_run_levels": "3.6 to 4.3, measured from byte-identical replicates (33/29 and 44/28)",
+    "se_of_a_pooled_two_run_mean": 2.83,
+    "se_of_arm_minus_control_at_n2_vs_n2": 4.0
+  },
+  "MECHANISM_GATE_CHECKED_FIRST": {
+    "note": "These separate 'the world-model loop does not help' from 'we did not actually run the world-model loop'. A mechanism failure is an INSTRUMENT FAILURE: fix and re-run, do NOT record it as a verdict on world models.",
+    "instrument_failure_if_any_of": [
+      "any Python traceback originating in world_model_tools.py, python_tool_sandbox.py or prompts.py appears in either run's log",
+      "`validate(` is called in fewer than 20 percent of sandbox tool calls, pooled across both runs",
+      "memory['prelude'] is never populated in a majority of the 25 games"
+    ],
+    "hard_reject_if": "total environment actions across the 25 games falls below 50 percent of the control's, i.e. the agent paralysed itself validating despite the escape hatch"
+  },
+  "PRIMARY_VERDICT_on_pooled_levels_of_the_two_runs": {
+    "PROMOTE_TO_DEFAULT": "pooled >= 45 AND the paired per-game sign test versus the pooled control gives p < 0.10",
+    "ROTATION_ELIGIBLE_ONLY": "38 <= pooled < 45, or pooled >= 45 without the sign test. Enters the daily rotation, does not replace the default.",
+    "INCONCLUSIVE": "34 <= pooled <= 37. Not promoted, not rejected, no further GPU without a new hypothesis.",
+    "REJECT": "pooled <= 33"
+  },
+  "binding_commitments": [
+    "No threshold in this file may be changed after either run reads out.",
+    "Ties go to the incumbent.",
+    "Variance is NOT a promotion argument here. On a null arm a variance ratchet promotes about 65 percent of the time; see gate-amendment-2026-08-24-remove-variance-ratchet.json.",
+    "If the mechanism gate reports instrument failure, the primary verdict is not evaluated at all."
+  ],
+  "telemetry_to_record_either_way": [
+    "sandbox calls per game, and the fraction that call validate(), plan(), or read memory['prelude']",
+    "escape-hatch fire count (consecutive idle turns hitting the limit)",
+    "environment actions per game, versus the control's",
+    "levels per game, for the paired sign test",
+    "any SIGALRM watchdog trips inside validate/plan"
+  ]
+}

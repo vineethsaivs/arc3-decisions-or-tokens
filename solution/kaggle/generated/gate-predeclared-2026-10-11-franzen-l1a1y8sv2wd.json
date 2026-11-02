@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "declared_at": "2026-10-11T22:39Z, before any run of either build (test build pushed 22:40Z)",
+  "change": "server watchdog (franzen_overlays/watchdog.py) on l1a1y8sv2: after the READY wait a daemon thread relaunches the SGLang server if it exits, and requests to a dead endpoint retry in place for 30 min (ARC3_HTTP_RETRIES 360 at 5 s) so turns keep their tool work; at most 3 relaunches; stopped once bm.run returns",
+  "why": "two CUDA OOMs after READY on 2026-10-11 (l1a1y8sv3 at once, l1a1y0sv2 after 1 h 54 min); free device memory dips to 0.15 to 0.5 GiB in every run of this family; with no restart every game gives up within about 5 minutes, and in a 9 h scored run the fail-closed check catches only runs under 20 levels",
+  "instrument": "TEST build l1a1y8sv2wdt (vineethsaivs/arc3-franzen-l1a1y8sv2wdt-a): 1,800 s per game, server SIGKILLed 300 s after READY; offline solution/sim/test_watchdog.py (4 checks); then the probe build l1a1y8sv2wdp for promotion",
+  "mechanism_required": [
+    "kernel.log shows the TEST kill, 'server exited', 'relaunch 1 of 3' and 'READY again' within 1,800 s",
+    "serve.log shows a second server start and Decode batch lines after it",
+    "games keep playing after READY again: benchmark actions and levels keep rising after the relaunch time; no game gives up ('giving up' 0); the end print shows 1 relaunch",
+    "0 tracebacks in kernel.log; failclosed summary printed",
+    "the probe build l1a1y8sv2wdp: 'watchdog: watching pid' line, 0 relaunches, 0 tracebacks, plays like l1a1y8sv2p"
+  ],
+  "promote": "both builds pass: the watchdog then goes into the pin (it does nothing unless the server dies; the longer in-place retry acts only on failures, of which healthy runs have none)",
+  "reject": "the relaunch does not come up, games give up, or anything in the healthy path changes",
+  "rehearsal_1_result": "l1a1y8sv2wdt v1 (22:40Z): READY 511 s; TEST kill 300 s after READY; 'server exited (-9)'; relaunch 1 of 3; READY again after 1,596 s (weights 1,467 s vs 259.5 s at first boot: no precache on relaunch); no game gave up (in-place retries held); games had used up their 1,800 s budgets before the relaunch was READY, so resumption was not shown. Fix: the watchdog now runs the notebook's precache() before each relaunch, as cell 15 does before the first boot",
+  "rehearsal_2": "l1a1y8sv2wdt2 (pushed 23:24Z): same with the relaunch precache, kill 60 s after READY, 2,700 s per game. Required: READY again, then benchmark actions and levels keep rising after the relaunch time, 'giving up' 0, 0 tracebacks; report the relaunch time",
+  "rehearsal_2_result": "l1a1y8sv2wdt2 v1 (23:24Z to 00:21Z): READY 466 s; TEST kill 60 s after READY; 'server exited (-9)'; relaunch 1 of 3 with the precache (185.4 GB read in 289 s); weights 256.9 s (vs 1,467 s without the precache); READY again after 346 s; 1,810 of 1,862 actions and all 47 levels came after the relaunch, in 20 games; 'giving up' 0; 0 tracebacks; end print 1 relaunch. PASS: the watchdog may ride in the next promoted build (its probe build then also checks the healthy path: 'watching pid', 0 relaunches)"
+}

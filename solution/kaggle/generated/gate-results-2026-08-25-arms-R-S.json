@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-25T00:14:59.049398+00:00",
+  "subject": "Gate results for arms R (stale-image strip) and S (GAME_OVER world-model persistence). Both are SOURCE changes, both gated under the 2026-08-24 amendment.",
+  "predeclared_gate": "solution/kaggle/generated/gate-predeclared-2026-08-24-arms-R-S.json",
+  "predeclared_gate_sha256": "00d6b69dba6e3b90bbcd4a06fd944cba5ec68af97791219235bc680f6bf8e01a",
+  "control_family": {
+    "runs": [
+      33,
+      29,
+      35,
+      44,
+      28
+    ],
+    "mean": 33.8,
+    "sd": 6.4,
+    "note": "All five runs of the temperature-0.9 family, including both byte-identical pairs. This is the correct control: single runs of it span 28 to 44."
+  },
+  "arm_R_stale_image_strip": {
+    "kernel": "vineethsaivs/arc3-q38-noimg-ordinary-commit",
+    "benchmark_sha256": "952c7a7364d877e6f038333f69de298b6ee0d651c704bca6f34223d975d620f8",
+    "total_levels": 34,
+    "zero_level_games": 5,
+    "mean": 6.45,
+    "delta_vs_family_mean": 0.2,
+    "paired_vs_arm_K": {
+      "gained": 2,
+      "unchanged": 13,
+      "lost": 10,
+      "one_sided_p": 0.9968
+    },
+    "prefix_cache_hit_rate": 0.301,
+    "tracebacks": 0,
+    "status": "REJECT",
+    "why": "Rejected on MECHANISM, not on levels. The predeclared gate said verbatim: 'Prefix-cache hit rate should RISE, not fall. With every persisted image stripped, no retained message ever changes between turns, so history becomes strictly append-only. If the hit rate FALLS, the mechanism is not doing what this gate claims and the result should be distrusted even if levels rise.' It fell from about 58 to 60 percent to **30.1 percent**, roughly halving. Levels landed at 34 against a family mean of 33.8, a dead tie. So the overlay freed budget and the freed budget bought nothing, while the caching argument that justified it is measurably false.",
+    "probable_cause": "Freeing about 9,600 estimated tokens per request lets the trimmer RETAIN MORE turns, so the retained set changes more often and the divergence point moves earlier, which is the opposite of the append-only stability the gate predicted. Recorded so nobody re-derives it.",
+    "value_of_the_negative": "It closes the image-quantity lever, which was sized at +6 to +14 bench levels and was the top-ranked item on the lever board."
+  },
+  "arm_S_death_memory": {
+    "kernel": "vineethsaivs/arc3-q38-deathmem-ordinary-commit",
+    "source_dataset": "vineethsaivs/arc3-q38-deathmem-v1",
+    "change": "tool_agent.py line 1317 only: remove the game_over clause from the summarised-knowledge wipe. Three-line diff, one file.",
+    "benchmark_sha256": "752a46d123622806577b021b03380718f0537d887f9424cc2ad0db630a4fb353",
+    "total_levels": 42,
+    "zero_level_games": 4,
+    "mean": 8.638,
+    "delta_vs_family_mean": 8.2,
+    "paired_vs_arm_K": {
+      "gained": 7,
+      "unchanged": 11,
+      "lost": 7,
+      "one_sided_p": 0.6047
+    },
+    "prefix_cache_hit_rate": 0.585,
+    "tracebacks": 0,
+    "status": "EARNS DRAWS",
+    "why_not_PROMOTE_and_why_not_REJECT": "42 levels is +8.2 against the family mean of 33.8, which is 1.28 family sd. That is suggestive and it is NOT significant, and after arm K reversed on replication we do not call 1.28 sigma a promotion. But under the 2026-08-24 decision rule it does not need to be: on a board that keeps our maximum a wrong promote costs 0.095 board points and a right one pays 0.205, so a candidate needs only a **20.7% prior of being better** to deserve half the remaining draws. Arm S clears that bar comfortably, so it enters the daily rotation and the free board draws estimate its mean. No significance test is required or claimed.",
+    "what_is_genuinely_strong": [
+      "Its shipped-scorer mean of 8.638 is the HIGHEST of any run in this project's history, above arm K's 8.246 and well above the family's 5.0 to 8.2 spread.",
+      "It attacks the one diagnosis that survived adversarial verification: we die about 5.8 times per level transition and the world model is erased on every death, so the agent re-explores from scratch each time.",
+      "Prefix-cache hit rate held at 58.5%, unchanged, so unlike arm R nothing about the serving path was disturbed.",
+      "Zero tracebacks. It is a source change, so a crash was the main risk and it did not happen."
+    ],
+    "honest_weaknesses": [
+      "n = 1, on an instrument whose single runs of the SAME config span 28 to 44 levels.",
+      "The paired sign test against arm K is 7 gained / 7 lost, but arm K's 44 was itself a lucky draw (its replicate returned 28), so that comparison is against an inflated control and is not informative either way.",
+      "The predeclared side-effect check (fraction of turns carrying a non-empty knowledge block should rise above 21%) was NOT measured here; it needs the transcripts, not the benchmark summary. Do it before any stronger claim."
+    ],
+    "rollback": "vineethsaivs/arc3-q38-ctxwin-temp09-ordinary-commit v1."
+  },
+  "decision": {
+    "rotation": [
+      "A: temperature 0.9 incumbent (1 board draw, 2.63)",
+      "B: arm S, death memory (0 board draws)"
+    ],
+    "rule": "Alternate the daily slot between A and B. After about four draws each, take the argmax of the observed means and commit the remainder. Arm R is dropped: it failed its mechanism check.",
+    "expires": "2026-10-01, when the private board makes the MEAN the objective and max-of-N stops transferring."
+  }
+}

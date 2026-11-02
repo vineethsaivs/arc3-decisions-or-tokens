@@ -1,0 +1,8 @@
+{
+  "arm": "arc3-r20-swift-a v1: rank-20 port (their runtime, fp8 KV, 7 lanes, 1,900 s) with the model swapped to Swift 1.5 (lordhansolo/swift-1-5-qwen3-8-flash-next-nvfp4)",
+  "control": "arc3-r20-w7-a v4, same bundle and runtime with the preconverted Flash-Next: 45 levels, 3 zeros, 97.6 actions/game",
+  "result": {"levels": 38, "zero_level_games": 6, "mean_final_score": 7.92, "actions_per_game": 135.8, "model_verified": "100 files, 186,458,024,643 bytes; setup ready KV=fp8"},
+  "paired": "3 games up, 10 down against the same-runtime control; ex-sb26 34 vs 41",
+  "mechanism": "Served correctly. More actions per game (+39%) with fewer levels: Swift thinks less per decision and the decisions are worse on these games.",
+  "verdict": "REJECT on this harness. The GG7-stack Swift arm (arc3-gg7-swift-a) is read separately."
+}

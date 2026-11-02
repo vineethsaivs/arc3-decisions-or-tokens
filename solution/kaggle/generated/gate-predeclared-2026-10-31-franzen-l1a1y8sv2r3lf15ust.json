@@ -1,0 +1,21 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-31",
+ "declared_before_results": true,
+ "declared_at": "2026-10-31T18:09Z, before any tool2 run was pushed",
+ "candidate": "l1a1y8sv2r3lf15ust (W; copies ustb, ustc) = the us8 replica (unstick2 + seg8) plus tool2, against the lf15 agent (A); l1a1y8sv2r3kp12lf15ust (probe, would become the pin)",
+ "change": "franzen_overlays/tool2.py: (1) a snippet that uses its compute limit minus 3 s (its own compute; the time it waits for the host to answer an action or animation request is not counted) is stopped by a SnippetTimeout (BaseException) and returns the output it printed, the traceback line and the retained functions, where it used to return 'Tool timed out' with empty stdout; (2) inspect.getsource returns the stored source of a retained function and of a function defined in the same snippet (it raised OSError 'could not get source code'); (3) the system prompt says both. Offline solution/sim/test_franzen_tool2.py PASS through the real sandbox child (loop stops at 3.1 s of a 6 s timeout with its output; swallowed stop stopped again; slow host reply never cut; getsource on retained and local functions).",
+ "evidence": "kaggle-lf15uns2-1030-1..3 and kaggle-lf15us8-1031-1..3 (six runs without tool2): 'Tool timed out' results 3, 8, 9, 7, 3, 6 (mean 6.0 per run) and 'could not get source code' results 4, 3, 14, 15, 2, 9 (mean 7.8 per run); a timeout dropped the snippet's printed progress and, on s5i5 L7 and dc22 L5, hit a final level.",
+ "wave": "Kaggle only, from 2026-10-31 18:20Z: W1 (ust) now beside the scroll arm's W3, W2 (ustb) when that ends, W3 (ustc) when W1 ends, the probe when W2 ends; all finish before 2026-11-01 00:00Z. Read with scratchpad unst/ust_gate.py. A pooled = the kv2 gate's 7 runs.",
+ "gate": {
+  "m1_getsource": "'could not get source code' results per W run: mean at most 2.0 (baseline 7.8 per run)",
+  "m1_timeout": "SnippetTimeout results: W mean at least 2 per run (baseline: 6.0 timeouts per run before)",
+  "m2_response": "unstick2's m2 pooled over W (of the turns that are the 3rd, 5th or 7th idle turn in a row, at least 0.70 act)",
+  "m3_actions": "W actions per run <= pooled A x 1.10 and W median actions/baseline <= pooled A + 0.05",
+  "no_harm": "W mean levels >= pooled A - 2.5 and W mean game score >= pooled A - 1.5",
+  "probe": "Kaggle probe installs and plays (at least 25 actions), 0 tracebacks in kernel.log and serve.log"
+ },
+ "reported_not_gated": "W levels and score against us8's W runs; 'Tool timed out' results per run",
+ "decision": "ust ships (pin for the remaining draws, replacing us8) only if it passes every item on its own 3 W runs and the probe; kill on any miss; no further runs are added after reading. A pass after the 11-02 fire ships nothing.",
+ "rollback": "re-pin l1a1y8sv2r3kp12lf15us8 v1 if the first live draw is 0.00 or a day errors twice"
+}

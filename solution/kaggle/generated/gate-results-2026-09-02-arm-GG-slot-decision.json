@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-09-02T08:40:00+00:00",
+  "reads": "gate-predeclared-2026-09-02-arm-GG-slot.json",
+  "question": "Does arm GG take the 2026-09-03 00:00Z daily slot instead of D-undo?",
+
+  "DECISION": "NO. D-undo ships. GG is fully built, published and queued for the 2026-09-05 Kaggle bench.",
+  "IMPORTANT_this_is_an_override_of_a_PASSED_gate": true,
+
+  "PATH_A_normal_gate": "NOT AVAILABLE. Kaggle weekly GPU quota refused a trivial probe kernel with 'Maximum weekly GPU quota of 30.00 hours reached'; GCP has GPUS_ALL_REGIONS=1, no RTX PRO 6000 metric and PREEMPTIBLE_CPUS=0 in four regions. No GPU anywhere.",
+
+  "PATH_B_offline_override_results": {
+    "verdict": "ALL SEVEN CONDITIONS PASS, every one on command output rather than inference.",
+    "O1_every_reference_resolves": {
+      "status": "PASS",
+      "evidence": "datasets/view vineethsaivs/arc3-q38-flashnext-v1 -> v1, 1,793,991 bytes, private (published this session); datasets/view keithtyser/qwen38-flash-next-vllm-nvfp4-runtime-v1 -> v1, 7,906,699,712 bytes, public; models/get keithtyser/qwen3-8-flash-next-nvfp4 -> instance radixark-modelopt-fp4 present, public; competitions/list -> arc-prize-2026-arc-agi-3."
+    },
+    "O2_notebook_is_byte_derived": {
+      "status": "PASS",
+      "evidence": "GG's submission.ipynb is keithtyser's version-14 notebook (sha256 72d6f35147b5d1c422a2959cc378727df6b688c4f478c2aa9ad3580b4a247122, kernels/pull) with ONE raw substring replaced. Measured: 18 cells before and after, exactly 1 code cell differs, exactly 1 changed source line, 0 added/removed/reordered statements, byte delta -12. The change is DATASET_SOURCES[0]: keithtyser/duck-qwen38-nvfp4-mtp-vllm-smoke-v1 -> vineethsaivs/arc3-q38-flashnext-v1. GG notebook sha256 33ff0eb24fb6cbf8025c67d6c0332966e2d4caf2e4ca827dfd7e9ecffe39bfa1."
+    },
+    "O3_serving_setup_accepts_a_foreign_bundle": {
+      "status": "PASS, and more cleanly than expected",
+      "evidence": "serving_setup.py, serving_teardown.py, vllm_server_watchdog.py, SOURCE_IDENTITY.json, setup_commands.json, teardown_commands.json and vllm-patches/ are carried BYTE-IDENTICAL; nothing was edited, so nothing had to be re-derived. source_identity() (line 598) verifies exactly four things: its own sha256 against SOURCE_IDENTITY.json, the model manifest hash, the runtime manifest hash, and the model hf_repo/hf_revision plus the runtime image and RUNTIME_DATASET name. All four are unchanged. grep shows serving_setup.py has ZERO references to src/, ARC3-Inference, tufa-arc-agi or sglang, and touches only SOURCE_IDENTITY.json and vllm-patches/ inside BUNDLE_DIR. SOURCE_DATASET is referenced once, at line 3030, purely to record provenance in the setup env. So the serving half never inspects the agent tree."
+    },
+    "O4_worst_case_KV_fits": {
+      "status": "PASS",
+      "admitted_concurrency": 8,
+      "max_model_len": 32768,
+      "worst_case_admitted_tokens": 262144,
+      "measured_kv_pool_tokens": 105202,
+      "oversubscription": 2.492,
+      "pre_registered_bound": 2.5,
+      "note_on_bound": "The 2.5x bound was set from keithtyser's own measured working point, so GG is not more oversubscribed than a configuration that produced 36 levels, 659 decisions and 3,695 actions.",
+      "game_lane_demand": "28 lanes x 32,768 = 917,504 tokens = 8.72x the pool, but vLLM ADMITS only max_num_seqs and queues the rest ('Running: 5 reqs, Waiting: 19 reqs' at 249.3 tok/s, about 50 tok/s per admitted stream). That is what separates this from the polyphony failure, where 25 lanes were all admitted and each got 1.6 tok/s.",
+      "generation_headroom": "budget = 32,768 - 512 reply reserve - 512 safety margin = 31,744 (tool_agent.py:1104-1106), so 1,024 tokens of headroom at the trim ceiling. No max_tokens is sent (LOCAL_ANALYZER_MAX_OUTPUT=0 -> None), so vLLM allows max_model_len minus the actual prompt; his measured run averaged 2,853 generated tokens per decision, so typical prompts sit well below the ceiling. Tight, but it is the configuration that is measured to work."
+    },
+    "O5_our_tree_and_his_parser_agree": {
+      "status": "PASS, settled empirically rather than by inference",
+      "evidence": "inference/utils/openai_compat.py is BYTE-IDENTICAL between his tree and ours (diff returns nothing), so the exact request our tree sends -- model, messages, stream, temperature, top_p, max_tokens, tools, tool_choice, top_k, chat_template_kwargs={'enable_thinking': bool} -- is the exact request his tree sent to this Flash-Next server. _tools() in both trees returns one function named 'python' with one required string property 'code'; only the description text differs. Both launchers pass --enable-auto-tool-choice --tool-call-parser qwen3_coder --reasoning-parser qwen3. No new tool name, no new schema, no chat-template kwarg his launcher does not already handle."
+    },
+    "O6_the_tree_still_builds": {
+      "status": "PASS",
+      "evidence": "apply_overlay.py --self-check prints 'overlay self-check OK' under the uv environment (bare python3 lacks 'requests', which is environmental and pre-existing). compileall over the GG bundle returns rc=0 with empty output across 52 .py files. deploy_candidates.preflight_bundle recomputes the whole-tree hash and passes. __pycache__ created by the test runs was removed and the tree hash re-verified afterwards."
+    },
+    "O7_offline_suite_passes": {
+      "status": "PASS",
+      "evidence": "test_submit_pick_tonight.sh 5/5; test_undo_action.py 8/8 run against the GG bundle's OWN tree via PYTHONPATH; test_deploy_candidates, test_submit_candidate, test_context_window, test_overlay_composition, test_offline_envs all pass; preflight_bundle + preflight_candidate pass on the GG pair."
+    }
+  },
+
+  "WHY_WE_ARE_NOT_SHIPPING_IT_ANYWAY": {
+    "headline": "The gate measured INSTRUMENT RISK, which is what the owner framed as the question, and GG passes it. The build then produced a number that destroys the UPSIDE premise the early ship was supposed to buy.",
+    "the_number": {
+      "finding": "serving_setup.py:129 sets ANALYZER_CONTEXT = 32768 and uses it for BOTH --max-model-len and LOCAL_ANALYZER_CONTEXT_WINDOW. tool_agent.py:1104-1106 then computes the agent's history budget as 32768 - 512 - 512 = 31,744.",
+      "why_it_matters": "31,744 is EXACTLY the low point of our own measured 27B context dose-response: history budget 31,744 -> 23 levels, 48,128 -> 33 levels, 64,512 -> 30. The 48,128 promotion was this project's largest matched-commit move (paired sign test 11 gained / 3 lost, p = 0.029). GG hands all of it back.",
+      "arithmetic": "expected GG bench ~= 35 (our control) - 10 (context) + 11 (model, keithtyser's own paired 36 vs 25, p = 0.029) = about 36 levels against a 35-level control. A TIE, and far inside the 6.8-level single-run sd.",
+      "consequence": "A config whose expected bench is a tie with our control has an expected per-draw board mean near our current 2.11, not the 3 to 4.5 that would justify spending a slot five days early. There is no large early prize to buy, so the residual instrument risk buys nothing.",
+      "why_it_cannot_be_engineered_around_in_GG": "A larger history budget needs a larger --max-model-len (which cuts max concurrency below the measured working point and breaks O4) or a larger KV pool (fp8 KV, dropping the 4B MTP head, --limit-mm-per-prompt image=0). The latter is arm GG2, which docs/PLAN_TOP3.md schedules only after GG passes its mechanism gate. Editing serving_setup.py to change the constant would also break its self-hash and forfeit the O3 pass."
+    },
+    "what_D_undo_offers_instead": "D-undo has ONE prior draw and it is our best-ever 3.15, so its mean is the least-known quantity in the rotation and tonight's draw carries the most information of any available. docs/PLAN_TOP3.md section 6 schedules exactly this.",
+    "residual_risks_the_gate_did_NOT_cover_and_could_not": [
+      "Host RAM inside a SCORED run. The PLE offload needs about 51 GB plus headroom; commits show 125 to 145 GiB available but the scored environment also runs the gateway sidecar. Unmeasured by anyone, and NOT testable by the 09-05 bench either, because an ordinary commit takes the offline branch and never starts the gateway.",
+      "110 games in waves rather than 25 in one pass.",
+      "Falsifier F1 read live 2026-09-02: keithtyser is rank 93 of 2,708 at 2.36 on 71 submissions, unchanged since his Flash-Next run finished on 09-01. The one hidden-set datum for this model is non-positive and sits below our banked 3.15."
+    ],
+    "honest_note_on_the_override": "This project's known failure mode is choosing a metric after seeing the numbers, and it has twice pointed toward promoting something. This override points the other way, and the finding behind it (that 32,768 - 1,024 lands on the 23-level dose point) was read out of tool_agent.py DURING the build, not known beforehand. It is recorded here rather than folded silently into the gate."
+  },
+
+  "WHAT_SHIPS_TONIGHT": {
+    "config": "D-undo",
+    "kernel": "vineethsaivs/arc3-q38-undo-ordinary-commit v1",
+    "bundle": "vineethsaivs/arc3-q38-undo-v1",
+    "mechanism": "launchd com.vineethsai.arc3-daily-submit at 17:06 PDT -> daily_loop.sh -> daily_submit.sh; rotation restored to [D-undo, A-temp09] in declared order; day-of-year 246 % 2 = 0 selects index 0.",
+    "verified_by": "a dry run of the installed kit script with the date faked to 2026-09-03 and submit_candidate.py stubbed: 'rotation: 2 configs, day 246 -> D-undo' and the exact argv the real run will use.",
+    "seed": "unpinned, per the standing rule until 2026-09-30"
+  },
+
+  "GG_STAGED_FOR_09_05": {
+    "dataset": "vineethsaivs/arc3-q38-flashnext-v1 v1 (published this session, private)",
+    "candidate": "solution/kaggle/generated/candidates-q38-flashnext",
+    "kernel_id": "vineethsaivs/arc3-q38-flashnext-ordinary-commit",
+    "queued": "solution/kaggle/generated/pending-arm-pushes.txt, so daily_loop.sh retries the push once a day and it fires the moment the weekly GPU quota rolls. A refused push is free and changes nothing.",
+    "gate_it_will_be_read_against": "gate-predeclared-2026-09-02-arm-GG-flashnext.json, unchanged",
+    "expectation_recorded_before_the_run": "about 36 levels against the 35-level control, i.e. the TIE band, decided on the paired per-game sign test. If it clears 46 the stacking hypothesis was right and the context loss did not bite."
+  }
+}

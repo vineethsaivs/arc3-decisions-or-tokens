@@ -1,0 +1,39 @@
+{
+ "matched_3_yield_2048_P_random_picks_1000_seeds": {
+  "mean": 52.85822684665352,
+  "se": 0.11566106799809442
+ },
+ "matched_3_yield_2048_P_random_picks_60_seeds": {
+  "mean": 53.58985271756491,
+  "se": 0.44439561534743327
+ },
+ "matched_3_yield_8192_P_random_picks_1000_seeds": {
+  "mean": 58.59686755815394,
+  "se": 0.10938648458748873
+ },
+ "matched_3_yield_8192_P_random_picks_60_seeds": {
+  "mean": 58.746666644950686,
+  "se": 0.4506031190725691
+ },
+ "pin8_P_random_picks_1000_seeds": {
+  "mean": 60.36842569167043,
+  "se": 0.10989474432101241
+ },
+ "pin8_P_random_picks_100_seeds": {
+  "mean": 60.96323003377522,
+  "se": 0.34409699219775236
+ },
+ "pin8_P_stratified_400_seeds": {
+  "mean": 60.214757998725986,
+  "se": 0.07114168344889031
+ },
+ "pin8_paired_300_seeds_random_picks": {
+  "P": 60.28153562408939,
+  "P_se": 0.2099216291531598,
+  "S1": 56.802311988759556,
+  "S1_se": 0.2309506536844015,
+  "share_mean_of_ratios": 0.9418869052077175,
+  "share_ratio_of_means": 0.9422837590431341,
+  "share_se": 0.0011925988391676213
+ }
+}

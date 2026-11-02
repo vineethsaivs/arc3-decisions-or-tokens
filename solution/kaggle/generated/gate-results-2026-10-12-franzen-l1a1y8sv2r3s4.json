@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-12",
+  "gate": "gate-predeclared-2026-10-12-franzen-l1a1y8sv2r3s4.json (declared 11:50Z, before the push)",
+  "instrument": "25-game Kaggle replica, one run (serve.log 11:26Z to 13:36Z); Decode batch lines by running count, servelog.py, accept_by_context.py, franzen_readout.py, the gate_r3.sh health and install items",
+  "control": "l1a1y8sv2r3 v1 and l1a1y8sv2r2 v1 (SPEC_STEPS 3)",
+  "arm": {
+    "kernel": "vineethsaivs/arc3-franzen-l1a1y8sv2r3s4-a",
+    "version": 1,
+    "change": "the pin's replica l1a1y8sv2r3 with SPEC_STEPS 4 (5 verify tokens)"
+  },
+  "evidence": {
+    "install": "PASS: server args speculative_num_steps 4, speculative_num_draft_tokens 5; watchdog, d3draft 29 tensors, memcap, toolfast, promptobs-lite, mem_fraction_static 0.955 (max_total_num_tokens 1,495,872), '#OURS_FORM ok version=d_prime'",
+    "accept": "PASS: 3.089 at 14 running (required 3.00; control 2.814 and 2.812); 3.114 at 8+ running (control 2.830); by context 60-80K 3.113, 80-100K 3.135",
+    "throughput": "FAIL: gen throughput at 14 running 933.5 tok/s (required 984; control 975.3 and 973.3), at 13 running 920.3 (required 942.7; control 944.7 and 940.7), at 12 running 944.8 (control 945.2 and 961.0)",
+    "health": "PASS: 0 OutOfMemoryError, 0 expandable_segments failures, 0 'KV cache pool is full', free device mem readings 0.66 GiB (8, all at init), watchdog '0 relaunches', 0 tracebacks in kernel.log, 0 give-ups, failclosed summary printed; cache hit 95.1%",
+    "levels": "PASS: 120 (floor 105; control 129 and 122)"
+  },
+  "report_only": "clean step at 14 running 41.5 ms (control 36.6), at 13 running 40.1 (35.5), at 12 running 37.8 (34.3); harness 861.0 tok/s (control 885.5); decode share 84.8%; prefill 110.1 ms per 1K new tokens; READY 634 s (control 493 s, server boot 541 s); sandbox MemoryError 2 (control 0), promptobs new_attr 1 (0)",
+  "mechanism": "The 4th draft position adds 0.275 accepted tokens per verify step at 14 running (+9.8%) and costs 4.9 ms per step (+13.4%; the research expected +0.35 to 0.40 and about +10%). Net decode throughput -4.3% at 14 running. Break-even needs accept at 14 running of about 3.19 at this step time, i.e. the 4th position adding about 0.38 accepted tokens per step",
+  "verdict": "FAIL on throughput. The pin l1a1y8sv2r3p stands; l1a1y8sv2r3s4p is not probed. Any later drafter refit (D4) is judged at SPEC_STEPS 3; SPEC_STEPS 4 is worth re-testing only with a drafter that lifts the 4th position's hit rate by about 40%",
+  "what_this_does_not_claim": "Levels 120 against 129 and 122 is inside the replica's spread; no level effect is claimed either way",
+  "promote": false
+}

@@ -1,0 +1,23 @@
+{
+ "schema_version": 1,
+ "date": "2026-11-01",
+ "declared_before_results": true,
+ "declared_at": "2026-11-01T19:33Z, before any verify run was pushed and before tool2's W3 or probe were read",
+ "candidate": "l1a1y8sv2r3lf15ustv (W; copies ustvb, ustvc) = the ust replica (unstick2 + seg8 + tool2) plus verify, against the lf15 agent (A); l1a1y8sv2r3kp12lf15ustv (probe, would become the pin). The usv builds (us8 + verify) are built but not run.",
+ "change": "franzen_overlays/verify.py, applied after every other overlay (overlay_last): sandbox helpers check_model(step, observe=None, start=None) and check_goal(is_goal, start=None) replay the current level's recorded transitions, newest first (RESET, death and level-change entries skipped), through the model's own rule (observe mode: step(observe(before), action) == observe(after); cell mode: a dict {(r, c): char}, ascii or None to abstain) and run a goal test on every recorded board of the level; report matches, the first mismatches, and (board, action) pairs with two results (hidden state); action() is disabled while the model's functions run; only Exception is caught; each call stops at 8 s or 2 s before tool2's limit. The system prompt documents both with an adapter example; unstick2's replay bullet and stall check point to them; the opener's tool line names them. Offline solution/sim/test_franzen_verify.py PASS on both bases through the real child (9 checks).",
+ "evidence": "2026-11-01 research workflow (5 angles, synthesizer, skeptics): every public harness with large fixed-weight gains makes theory falsification against the log cheap (Twin arXiv 2608.14490: 93.3 vs 61.1 same model; Kepler; Rodionov 2607.15439; WorldCoder). Ours: simulators in 20 to 35% of level plays, replay checks on about 6% of cleared levels (53 blocks in 8,437), goal checks 0.3 per run. Skeptic objections recorded and partly addressed (action stub, newest first, adapter example, hidden-state note, catch Exception only, tool2 timer); the skeptic's expected effect is 0 to +1 level per run, not resolvable here, and the closest precedent (GG6, a validate helper on Flash-Next in September) was called in 1.5% of calls.",
+ "wave": "Kaggle only, from 2026-11-01 19:40Z: W1 (ustv) now beside tool2's W3; W2 (ustvb) when tool2's W3 finishes; the probe when W1 finishes; W3 (ustvc) only if, when the probe finishes, kapi.sh quota shows at least 2.6 h free, decided by the chain without reading any verify run. The 11-02 draw is held to 04:30Z (fire 05:06Z). Reader: solution/analysis/harness_2026-10/gates/ustv_gate.py on the W runs present (2 or 3).",
+ "gate": {
+  "m1_verify": "model code blocks calling check_model( or check_goal( (inside <parameter=code>): W mean at least 10 per run, at least 5 in every W run, in at least 4 games per run on average (baseline 0)",
+  "m1_tool2": "'could not get source code' results per W run: mean at most 2.0; SnippetTimeout results: mean at least 2 per run",
+  "m1_seg8": "code blocks reading a node's group: W mean at least 15 per run",
+  "m2_response": "unstick2's m2 pooled over W at least 0.70",
+  "m3_actions": "W actions per run <= pooled A x 1.10 and W median actions/baseline <= pooled A + 0.05",
+  "no_harm": "W mean levels >= pooled A - 2.5 and W mean game score >= pooled A - 1.5",
+  "incumbent": "W mean levels >= the W mean of the build it would replace (ust if tool2 is promoted, else us8 129.0) minus 5",
+  "probe": "Kaggle probe installs and plays (at least 25 actions), 0 tracebacks in kernel.log and serve.log"
+ },
+ "reported_not_gated": "levels on the aligned 5,800 s window from each game's first non-RESET action; check_model calls that reported mismatches and whether the step function was redefined within 2 turns; replay-validated share of level plays",
+ "decision": "ustv ships (pin for the 11-02 draw) only if every item passes on the W runs read (2, or 3 if W3 ran) and the probe; kill on any miss; no further runs are added after reading. If tool2 is killed, ustv is not shipped (it contains tool2).",
+ "rollback": "re-pin the build it replaced if the scored run errors twice"
+}

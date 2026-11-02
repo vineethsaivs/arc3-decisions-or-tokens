@@ -1,0 +1,23 @@
+{
+  "record": "gate-results-2026-09-25-MARLIN-ANIMHUD",
+  "read_against": "the predeclared gates in each bundle manifest, written before either run",
+  "incumbent": {"arm": "GG7", "levels": 47},
+  "MARLIN": {
+    "kernel": "vineethsaivs/arc3-marlin-a",
+    "levels": 45, "zeros": 1, "actions_per_game": 114.4, "ex_ft09_mean": 1.708,
+    "mechanism": "PASS. The server log prints \"Using 'MARLIN' NvFp4 MoE backend\" and MARLIN_GATE PASS, so the experts ran W4A16 with activations kept in BF16. The startup peak-memory probe passed.",
+    "speed": "median generation throughput 238.0 tok/s over 793 logged intervals, against 239.8 for the FLASHINFER_CUTLASS control: no measurable speed cost.",
+    "actions_floor": "PASS, 114.4 against 91.1",
+    "levels_band": "45 is below the predeclared PASS line of 47, so it does not displace GG7. It is inside the Flash-Next family band, a tie, with the best breadth (1 zero-level game).",
+    "TRAINING_GATE_K0": "PASSED. The kill conditions were: no MARLIN backend line, 30 or fewer levels, or under 91.1 actions per game. None holds. The W4A16 base that --enable-lora forces plays within the family and at the control's speed, so an adapter can be trained and served on it without a speed penalty. The next training gate is the three CPU exactness tests (detached-prefix logits, the vectorized QSA indexer, NVFP4Experts forward and input gradient), due 2026-09-29."
+  },
+  "ANIMHUD": {
+    "kernel": "vineethsaivs/arc3-animhud-a",
+    "levels": 41, "zeros": 4, "actions_per_game": 96.2, "ex_ft09_mean": 1.542,
+    "mechanism": "PASS. animation() served in 14 of 25 games (443 calls) against a line of 5; anim_hudx_flip 43 across 8 games against a line of 40 across 3.",
+    "actions_floor": "PASS, 96.2 against 91.1",
+    "levels_band": "41 is below the predeclared PASS line of 48: a tie with the incumbent, which it does not displace."
+  },
+  "DECISION": "Neither arm clears its predeclared levels line, so GG7 stays alone in the rotation and ships at the 23:06 PDT fire (06:06 UTC), the first fire after HOLD_UNTIL 2026-09-26T05:50Z. No gate was reinterpreted after seeing the numbers.",
+  "WHAT_IT_MEANS": "ANIMHUD is the last host-side harness arm, as the 2026-09-25 research recommended: eight such arms and compositions now sit at 38 to 42 against a 46-47 control. MARLIN is not a harness arm; it is the base the training path needs, and it cleared its gate."
+}

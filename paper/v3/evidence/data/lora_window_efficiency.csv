@@ -1,0 +1,6 @@
+efficiency_bin_actions_over_baseline,share_of_supervised_train_turns,source
+<=1,0.170,eff.py on ~/lora_data/windows_15000.jsonl with a02/a03/a04 benchmark.json (VM run 2026-10-20)
+1-1.5,0.201,same
+1.5-2,0.120,same
+2-4,0.305,same
+>4,0.204,same

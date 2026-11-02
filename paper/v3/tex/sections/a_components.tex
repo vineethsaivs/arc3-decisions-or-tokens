@@ -1,0 +1,268 @@
+\section{Components: inherited, borrowed, ours}\label{app:components}
+
+Table~\ref{tab:components} groups our 19 changes with their origin, and Table~\ref{tab:fullcomponents} lists every part of the configuration behind the 40.98 and 40.09 draws, called \texttt{l1a1y8sv2r3p} in our records (kernel version 1). Rows U1 to U7 are inherited parts that we did not re-measure; rows O1 to O19 are our changes, in build order, and their Origin cells say what each borrows. The notebook differs from the base fork in 5 of its 26 cells, through 29 asserted exact-string edits; 25 of them are active in the scored run. % A4 N-E6s0
+
+For most changes the effect is a mechanism and not a level count: at two runs per arm a development comparison resolves shifts of about 23 levels (Sec.~\ref{sec:measure}). % A4 B4
+
+\paragraph{Changes since 2026-10-13.} The pin moved to a draft-vocabulary variant (\texttt{l1a1y8sv2r3hm32p}, row O21) on 2026-10-14 after its gate passed, back to the configuration above for the 2026-10-20 draw, and on 2026-10-20 to that configuration plus the warmup keepalive (\texttt{l1a1y8sv2r3kp}, row O20). Neither change touches play. A fallback build that mounts our copies of the rival inputs (\texttt{l1a1y8sv2r3fbp}) passed its probe and stays unpinned. Later pins add 15 games in flight (2026-10-28) and the harness changes of Sec.~\ref{sec:harness}: the stall check and corner-joined regions (2026-10-31), the tool fixes (2026-11-01) and the replay check (2026-11-02, the final draw). % V3-H2 V3-K1 V3-K3 V3-B9 V3-W20 V3-W22 V3-W26 V3-W28 V3-W29
+
+\begin{table}[!htb]
+\caption{The 19 changes of ours in six groups, with origin, evidence tier and the effect we can defend. Tiers: R replica levels, S server-log counters, B behaviour counters, M scheduler simulator, P short probe run, T offline test, X incident or code reading. Effects without level numbers are mechanisms only. Replica numbers are single runs unless a count is given.}\label{tab:components}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.27\linewidth}>{\raggedright\arraybackslash}p{0.25\linewidth}>{\raggedright\arraybackslash}p{0.08\linewidth}>{\raggedright\arraybackslash}p{0.32\linewidth}@{}}
+\toprule
+Members & Origin & Tier & Effect we can defend \\
+\midrule
+\textbf{Capacity (3).}
+Expert pruning to 448 of 512 per layer; 14 admitted streams with 70 Mamba slots; memory fraction 0.955.
+&
+REAP \citep{lasby2025reap}; kept-expert list from lee-chang-93's pruned checkpoint, recovered by us. Patch and stream cap ours. The value 14 also appears in Lord Han Solo's vLLM setup and 0.955 in an earlier Franzen demo. % C23
+&
+R, S, T
+&
+Tokens per second +13.7\% (pruning) and +11.8\% (14 streams). Pruning is lossy: levels 122 and 106 against controls 92 and 97, two runs per arm, which is +19.5 on the arm means at +11.2\% generated tokens (Table~\ref{tab:steps}). The level gain is uncertain. % F2 N1-S02
+\\[3pt]
+\textbf{Host and serving path (5).}
+Startup trims; image hashes off the scheduler thread; asynchronous M-RoPE upload; incremental host-state write with a frame memo; drafter refit.
+&
+Hash flag and upload idea: Son Pham's team. Refit weights: ursuciprian \citep{ursuciprian2026d3}; drafter: albucino. Splice code and the rest ours.
+&
+S, T, P
+&
+Lossless by design. Scheduler stall 13.4 to 1.7 ms per 10K cached tokens; host gaps 3,410 s to between 344 and 563 s; accept length 2.70 to 2.83. Harness tokens per second 800 to 885 (+10.6\%) from the hash flag, toolfast and the refit together; the upload is already in the 800. Single runs. % F1 E7 audit_numbers-m1
+\\[3pt]
+\textbf{Context economy (2).}
+Verbatim reasoning round trip; yield threshold of 8,192 generated tokens instead of 2,048.
+&
+Duck: reasoning kept in history, time-based yield (60 s). Franzen: token-triggered yield (2,048). face-of-agi: verbatim re-send. Lord Han Solo: rarer yield (150 s). Ours: blank lines kept in the re-send; the 8,192 value. % C1 C2
+&
+R, B, S, T
+&
+Previous-reply cache reuse 38\% to 93\%. About 70\% fewer resume openers. Runs at 8,192 cleared 12.5 more levels than runs at 2,048 (nine against 21 runs); the cause is open (Sec.~\ref{sec:yield}). % N5 D5 D1
+\\[3pt]
+\textbf{Agent interface (3).}
+Waste fixes (host time off the snippet deadline, retained functions kept); RESET exposed but skipped on an untouched level; typed animation fields and U/D/L/R names.
+&
+Franzen's harness; edits ours.
+&
+B, T
+&
+Waste and error classes removed (counters). With the reply round trip, levels tie: 111.0 against 112.0, two runs each. % N6
+\\[3pt]
+\textbf{Scheduling (1).}
+Priority formula D-prime replaces Franzen's priority value; his admission flow is kept.
+&
+shiiin9 (the whole formula, embedded verbatim) \citep{shiiin92026dprime}; Franzen (admission flow); choice and simulation ours.
+&
+M, P
+&
++2.6 to +3.3 points over Franzen's rule in the simulator, which the replica cannot resolve. Insurance, not a measured gain. % C8
+\\[3pt]
+\textbf{Robustness (5).}
+Sparse-attention (QSA) index-key fix; server watchdog; sandbox memory cap; fail-closed checks at boot and at the end of the run.
+&
+lovedheart (the fix, commit 427e938 \citep{lovedheart2026qsa}; their guard is 2 times the ratio, ours is tighter); memory-cap idea shared with Son Pham's team; the rest ours. % C6
+&
+R, S, T, P, X
+&
+No score claim. Watchdog rehearsal on the GPU: server loaded again after 346 s, games resumed. The effect of the QSA fix on levels is unmeasured. % B12 E10
+\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begingroup\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.035\linewidth}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{0.16\linewidth}>{\raggedright\arraybackslash}p{0.14\linewidth}>{\raggedright\arraybackslash}p{0.05\linewidth}>{\raggedright\arraybackslash}p{0.28\linewidth}@{}}
+\caption{Upstream parts (U) and our changes (O) in the configuration behind the best draws (O20 and O21 came later). Third-party part: what inside the row is not ours. Tier: evidence class, as in Table~\ref{tab:components}. Levels are replica levels from single runs unless a count is given. r1, r2 and r3 are the last three serving runs: r1 lacks the drafter refit, r2 carries one unshipped overlay, r3 is the shipped set.}\label{tab:fullcomponents}\\
+\toprule
+ID & Component & Origin and credit & Third-party part inside & Tier & Measured effect \\
+\midrule
+\endfirsthead
+\toprule
+ID & Component & Origin and credit & Third-party part inside & Tier & Measured effect \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{6}{@{}l}{\textbf{Upstream parts, taken as given}} \\
+\addlinespace
+U1 & Qwen3.8-Flash-Next. 48 layers, 3 Gated DeltaNet to 1 Qwen Sparse Attention; 512 experts, 10 routed and 1 shared active; 180B parameters, 6B active (125B core, 51B n-gram embedding, 4B multi-token prediction). % N-E6s3-U1
+& Qwen \citep{qwen38flashnext,qiu2026qwen38next,yang2024gateddeltanet}
+& Whole part
+& none
+& Franzen reports that each model switch ``brought a substantial improvement''; not measured here. \\
+\addlinespace
+U2 & Intel W4A16 AutoRound weights. 4-bit weights, 16-bit activations; the BF16 n-gram table sits in host RAM.
+& Intel \citep{intel2026w4a16}; Kaggle copy by Franzen
+& Derivative of the Qwen weights
+& none
+& Franzen: ``similar quality and throughput'' to the NVFP4 build, with more memory for the KV cache (his claim). \\
+\addlinespace
+U3 & Multi-token-prediction drafter. Quantized draft checkpoint, 3 draft steps, 64K draft vocabulary. % N-E6s3-U3
+& albucino \citep{albucino2026drafter}; vocabulary map from the Pennyroyal build
+& Derivative of the Qwen weights
+& none
+& Accept length 2.70 when our work began. \\ % E7
+\addlinespace
+U4 & Pennyroyal SGLang 2.5.3 (commit \texttt{d00d88e}). Offline serving with a prefix cache that holds Mamba checkpoints, chunked prefill of 8,192 tokens and an FP8 KV cache. % N-E6s3-U4
+& J.~Pezzulli \citep{pezzulli2026pennyroyal,zheng2023sglang}; patches by Franzen
+& Franzen's patches come from the Olympie fork (low-M BF16 GEMM; no licence file) and Ratsimbazafy's fork (memory-budget fix)
+& none
+& Franzen's earlier demo reused 93.4\% of prompt tokens at 609 tokens/s on the harness (his report). \\ % N-E6s3-U4
+\addlinespace
+U5 & Duck harness. One \texttt{python} tool plus \texttt{action()} in a sandboxed REPL; thinking kept in history; a yield on a time threshold (60 s by default).
+& Tufa Labs (Cottaar), commit \texttt{7652836} \citep{bessis2026duck}
+& Whole part; no LICENSE file (Table~\ref{tab:licences})
+& none
+& Milestone 1 winner. \\ % C1
+\addlinespace
+U6 & Franzen's harness patch. 16 files, +8,405 and $-$197 lines: 10x board images with diffs, animation frames, UNDO, no-op and stale-state guards, block trimming, admission limit, priority scheduler, token-triggered yield (2,048 in his configuration). % N-E6s3-U6
+& D.~Franzen \citep{franzen2026milestone2,franzen2026writeup}
+& Built on U5
+& none
+& His public score 27.89; copies of his notebook, assumed unchanged, average 25.77 (SD 3.93; $n$ not stated) \citep{pham2026forum745062}. \\ % N-E6s3-U6 G2 C15
+\addlinespace
+U7 & Scored schedule. 110 games, concurrency 120, a 532 min ceiling per game. % N-E6s3-U7
+& Franzen
+& none
+& none
+& Not measured. \\
+\midrule
+\multicolumn{6}{@{}l}{\textbf{Our changes}} \\
+\addlinespace
+O1 & Startup trims. Model precache starts at server launch (delay 0, not 60 s); a 30 s import is dropped.
+& Ours
+& Short anchor strings quote Franzen's cells
+& S, P
+& Boot until the server is ready 553 to 488 s (one pair, run with a 12-stream arm that failed). Lossless. \\ % N-E6s3-O1
+\addlinespace
+O2 & REAP keep-448 experts (\texttt{p448\_serve}). The loader drops 64 routed experts per layer, renumbers the rest and slices the router. % N-E6s3-O2
+& Method: REAP \citep{lasby2025reap}. Kept list: lee-chang-93's pruned checkpoint. Recovering the list from its router rows, the renumbering and the patch: ours.
+& The 48 by 64 table of dropped expert ids; the saliency was calibrated on another agentic deployment's traffic, not ARC. % N-E6s3-O2
+& R, S, T
+& Frees 7.31 GiB for the KV pool. Tokens/s +13.7\%; levels 122 and 106 against controls 92 and 97, two runs per arm (SD 8.25), so the level gain is uncertain. Lossy. \\ % F2 B1 N-E6s3-O2
+\addlinespace
+O3 & 14 streams, 70 Mamba slots. Harness admission limit, server request cap, CUDA graphs for 11 to 14 requests, 5 Mamba slots per stream. % N-E6s3-O3
+& Ours. The value 14 also appears in Lord Han Solo's vLLM configuration. % C23
+& none
+& R, S
+& Tokens/s +11.8\%; levels tie (two runs per arm). Shipped on a tie with a verified mechanism. \\ % F2
+\addlinespace
+O4 & D-prime priority. Replaces Franzen's priority function and keeps his admission flow.
+& Formula: shiiin9 \citep{shiiin92026dprime}. Choosing, embedding and simulating it: ours.
+& The whole formula, verbatim (252 lines, Japanese comments) % N-E6s6
+& M, P
+& Simulator only (1,862 recorded attempts; 110 games, 14 slots): +2.81 points over Franzen's rule, paired SE 0.45, +2.6 to +3.3 across variants; +2.6 on the 1,114 attempts of eight replica runs; equal share beats it by 1.1 on the replica-like world. The replica cannot resolve it. Insurance, not a measured gain. \\ % C8 N-E6s3-O4
+\addlinespace
+O5 & wastefix. Host action time no longer counts against the 30 s snippet deadline; a killed snippet no longer clears retained functions (24 timeouts had cleared 629); allowed standard-library modules are pre-bound (19 tracebacks). % N-E6s3-O5
+& Ours
+& Anchor strings quote Franzen's and Tufa's source
+& B, T
+& With O6 and O7: 111.0 levels against 112.0 for the control, two replica runs each, a tie. Its offline test has a file-name length defect in the composition step; the overlay's own checks pass. \\ % N-E6s3-O7
+\addlinespace
+O6 & replycache. Re-sends the model's reasoning exactly as the server returned it, blank lines kept, so the prefix cache can serve the previous reply (a hybrid model needs an exact prefix match \citep{pan2024marconi}).
+& Idea: face-of-agi's public verbatim re-send, which removes blank lines. Exact bytes, blank lines kept: ours. % C2
+& none
+& S, T
+& Previous-reply cache reuse 38\% to 93\%. \\ % N-E6s3-O6
+\addlinespace
+O7 & agentfix (with RESET exposed). RESET is skipped when its level is untouched; a caught stale-state refusal waives the next 6 no-ops; \texttt{level\_starts} and \texttt{attempt\_starts} globals. % N-E6s3-O7
+& Ours
+& none
+& B, T
+& With O5 and O6: burn-to-reset episodes 0 and 0 against 11 and 7 in an earlier arm; 39 to 45 manual RESETs, none lost a level. \\ % N-E6s3-O7
+\addlinespace
+O8 & Yield threshold of 8,192 generated tokens. A yield ends one invocation after N generated tokens; the harness resumes the same turn with a re-sent opener and board image. Franzen's N is 2,048. % D14 N-E6s3-O8
+& Duck: yield on a time threshold (60 s). Franzen: token-triggered, 2,048. Lord Han Solo: rarer yield (150 s, no token yield; public notebook). The value 8,192 and the measurement: ours. % C1
+& none (one configuration line)
+& R, B
+& Runs at 8,192 cleared 12.5 more levels than runs at 2,048 (nine against 21 runs, Table~\ref{tab:yield}). The runs were not interleaved and the nine generate about 15\% more tokens, and an interleaved test removed the gain (Sec.~\ref{sec:yield}). Resume openers 565, 634 and 572 against 151 to 215, about 70\% fewer. The freed prefill is at most 2.3\% of GPU time by arithmetic and 0.6 to 0.8\% by the server's prefill timers, worth 0.4 to 0.5 levels by the timers and at most 1.4 by arithmetic. \\ % D1 D2 D5 D7 D8 F10 audit_numbers-B1 V3-W8
+\addlinespace
+O9 & QSA ring fix (\texttt{qsaring\_serve}). Sets the pending-ring stride to twice the ratio so a 4-token verify window cannot overwrite a boundary group's index keys.
+& Fix: lovedheart's commit \texttt{427e938}, authored 2026-09-02 and committed 2026-10-06 \citep{lovedheart2026qsa}; their draft-width guard is 2 times the ratio. Port to our wheel and the tighter guard (ratio plus 1): ours. % C6
+& Derived from Apache-2.0 code; stays Apache-2.0
+& T, P, R
+& Replay on our wheel: 192 of 256 groups corrupted with the unpatched stride, 0 patched (a share of mid-group window alignments, not a traffic rate). The commit reports the same kind of sweep (90 of 118 groups, 0 after). The GPU probe was invalid by its own rule (1 and 2 of 16 prompts reused keys, 12 required). Effect unmeasured on the GPU. \\ % E10 C6
+\addlinespace
+O10 & Asynchronous M-RoPE upload (\texttt{asyncmrope\_serve}). A pinned, non-blocking copy of the speculative M-RoPE deltas.
+& Idea: Son Pham's team (repository public until 2026-10-11; no licence). Code: ours. % C16
+& none
+& T, S
+& Lossless by design. No separate measurement; promoted together with O9. \\
+\addlinespace
+O11 & Image hashes off the scheduler thread (\texttt{SGLANG\_\allowbreak MM\_\allowbreak PRECOMPUTE\_\allowbreak HASH}).
+& Flag and idea: Son Pham's team. Finding, promotion test, setting it: ours. % C13
+& An existing SGLang flag
+& S
+& Scheduler stall 13.4 to 1.7 ms per 10K cached tokens; small prefill at 60 to 120K context 194 to 90 ms; decode share 81.2\% to 84.6\% (one run each, before and after, server-log estimator). Same hash values. \\ % F1
+\addlinespace
+O12 & Memory fraction 0.955 (Franzen: 0.96). +0.47 GiB of runtime headroom for 2.3\% of the KV pool. % N-E6s3-O12
+& Ours. Franzen's write-up lists 0.955 for an earlier demo configuration. % C23
+& none
+& S
+& Near-miss warning in 23 of 29 runs before and 0 of 4 after. One unplanned CUDA OOM after the server was ready in 34 full-length runs (exact 97.5\% upper bound 15.3\% per run); none in r1 to r3. Not a level claim. \\ % B12
+\addlinespace
+O13 & Server watchdog. Relaunches a dead server (at most 3), reuses the precache, retries requests in place for 30 min. % N-E6s3-O13
+& Ours
+& none
+& P, T
+& Rehearsal on the GPU: server killed 60 s after it was ready, ready again after 346 s, and 1,810 of 1,862 actions and all 47 levels came after the relaunch. Never fired in a replica; unknown in scored runs. \\ % B12 N-E6s3-O13
+\addlinespace
+O14 & toolfast. Incremental runtime-state write and a per-frame memo.
+& Ours
+& none
+& S, T
+& In-batch host gaps 3,410 s to 563 s (r1), 485 (r2), 344 (r3); sandbox payload byte-identical at all 162 test steps; per action 99 to 18 ms at 100 history entries. \\ % F1 N-E6s3-O14
+\addlinespace
+O15 & Sandbox memory cap. An 8 GiB address-space limit and a raised kill priority in the python child, so a host OOM kills the snippet and not the server. % N-E6s3-O15
+& Idea shared with Son Pham's team. Code: ours.
+& none
+& S
+& 0 MemoryError in 17,508 recorded calls before the cap and 0 in r1 to r3, so the guard has not been seen to act. A crash guard, no level claim. \\ % N-E6s3-O15
+\addlinespace
+O16 & D3 drafter refit (\texttt{d3draft\_serve}). At boot, overwrites the drafter's dense tensors (29 in albucino's file; the refit card says 24); shapes, dtypes, byte sizes and sha256 asserted. % N-E6s3-O16 audit_cites-C14
+& Weights: ursuciprian's KL refit \citep{ursuciprian2026d3}, trained against a 4-bit NVFP4 build, not our W4A16 build; nearest prior art for the recipe is FastMTP \citep{cai2025fastmtp}. Splice code and the measurement: ours.
+& The dense tensors (Qwen Community License; training mix of code, tool calls, chat and math, no ARC data)
+& S, T
+& Accept length 2.70 to 2.83: +0.130 $[+0.108,+0.151]$ (+4.8\%); decode +50.5 tokens/s $[+39.7,+61.2]$ (+5.5\%); step time +0.18 ms $[-0.04,+0.36]$. A probe pair isolating D3 gives +0.133 $[+0.076,+0.181]$; the r1 to r3 contrast also carries O17. Boot +40 s. Lossless by design: the target verifies every token. \\ % E7 N-E6s3-O16
+\addlinespace
+O17 & promptobs lite. Types the animation fields in the prompt, accepts U, D, L, R as action names, forwards history-view attributes.
+& Ours
+& none
+& B, T
+& Counters in r2: \texttt{int\_len} 7 to 0, \texttt{unknown\_udlr} 7 to 0, \texttt{view\_attr} 2 to 0; r3 shows 3 \texttt{int\_len} matches, one of them a raised error. We expect about 0 levels. \\ % N-E6s3-O17
+\addlinespace
+O18 & Fail-closed at boot. In a scored run, a server that exits before it is ready raises at once.
+& Ours
+& none
+& T, X
+& Built after two 0.00 draws, both later shown to be field-wide Kaggle events (63 of 64 and 48 of 61 early endings in the 00:00 to 00:20Z wave). Never fired on a scored run. No score claim. \\ % B10 B11
+\addlinespace
+O19 & Fail-closed at the end. A scored run that ends under 20 levels raises, so Kaggle records an error, which does not spend the daily slot (shown 2026-09-30). % B10 N-E6s3-O19
+& Ours
+& none
+& T, X
+& Never fired on a scored run; a run Kaggle kills from outside is not caught. No score claim. \\ % B10
+\addlinespace
+O20 & Warmup keepalive (\texttt{keepalive}). After the warmup RESET, a daemon thread re-sends RESET on the warmup game every 9 minutes while the server is not ready, at most 5 times, and stops at READY, the first reply or the game's first action. % V3-K1
+& Recipe: Jeroen Cottaar's forum post (a thread that resets one game every 10 minutes until startup) \citep{cottaar2026forum750173}. Code and offline test: ours. % V3-R4
+& none
+& T, P
+& Offline: without it the scorecard closed 15.05 minutes after the warmup RESET; with it the card stayed open to 60.12 minutes. Kaggle probe: the thread stopped after 0 RESETs because the server was ready within 9 minutes. Pinned 2026-10-20, after the 40.98 draw. No score claim. \\ % V3-K2 V3-K3
+\addlinespace
+O21 & Own-traffic draft vocabulary (\texttt{hm32}). A 32,768-id draft map built from our own transcripts replaces the served 64K map. % V3-H1
+& Idea: FR-Spec and FastMTP \citep{zhao2025frspec,cai2025fastmtp}. Map and gate: ours.
+& none
+& S, P
+& Predeclared gate passed: decode $+1.2\%$ at 14 running requests (predicted $+1.4\%$ to $+1.7\%$), step 36.6 to 36.0 ms, accept length $+0.3\%$; one run against one control. Lossless by construction. Pinned 2026-10-14 to 2026-10-19; not in the 40.98 configuration. \\ % V3-H2 V3-H4
+\end{longtable}
+\endgroup
+
+Three more things sit in the notebook outside the table: a GPU check in the first cell that aborts unless the GPU has compute capability 8.9 and 80 GB, the wheelhouse mount path, and an attribution cell that we added. The inputs are read-only: the Pennyroyal build (6.70 GB), the harness source bundle, our D3 dataset (181 MB), Intel's weights (181.24 GB) and albucino's drafter (4.16 GB). Four of the five are Franzen's copies on Kaggle. % N-E6s0
+
+\paragraph{Where the plain credits point.} Franzen's write-up \citep{franzen2026writeup} links the two patches in U4: Olympie's low-M GEMM patch (\url{github.com/gabrielolympie/sglang-flashnext-sm120}, patch 0004) and Ratsimbazafy's memory-budget change (\url{github.com/mratsim/sglang-qwen38fn-sm120-turbo}, patch 0002). The pruned checkpoint behind O2 is \url{huggingface.co/lee-chang-93/Qwen3.8-Flash-Next-NVFP4-REAP-k448}. face-of-agi and Lord Han Solo are credited for ideas from their public Kaggle notebooks, as the Origin cells say. % C16
+

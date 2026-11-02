@@ -1,0 +1,17 @@
+{
+  "written_before": "any result of arc3-fork-scottc16-a v1, arc3-r20cfg-a v2, arc3-r20-w7-a v2",
+  "date": "2026-09-27",
+  "why": "Deep research (docs/research/evidence-2026-09-27-top-teams/) found no public code from the top 12. The best public Kaggle notebook scores 5.19 (Scott Le Grand). Rank 20 (Son Pham & Mark Barney, 7.36) publishes full code on GitHub (sonpham-org/arc-3) and reports 54 to 60 public-25 levels on the same model, against GG7's best of 47.",
+  "arms": {
+    "arc3-fork-scottc16-a": "byte-identical fork of scottlegrand/taaf-flashnext-sheetu12b-0922 v1 (clock capped at 7,200 s by its AGENTFIX validation cap, so a raw total reads about 4 levels low against 7,920 s runs)",
+    "arc3-r20cfg-a v2": "GG7 agent on rank 20's serving and schedule: context 102,985, MTP 0, bf16 KV 5 GiB, max_num_seqs 7, concurrency 7, 1,900 s per game. v1 (fp8 KV) died at init: QSA requires a BF16 main KV cache.",
+    "arc3-r20-w7-a v2": "rank 20's harnesses/minimal-w7 bundle byte for byte except shard discovery across three dataset mounts, 1,900 s per game (their 1,938 trimmed for the 32,400 s scored budget), full server log on failure and one retry with auto KV if fp8 fails."
+  },
+  "incumbent": "GG7, best bench 47 levels",
+  "rule": {
+    "PROMOTE": "the arm with the most levels, if it clears 48 or more on its own ordinary commit with the vLLM server healthy for the whole run. It replaces GG7 in tonight's slot (UTC 2026-09-28) through submit_candidate.py with --consume-daily-slot.",
+    "TIE_OR_WORSE": "47 or fewer: GG7 ships unchanged at the 21:06 or 23:06 PDT fire.",
+    "INSTRUMENT_FAILURE": "server never healthy, or fewer than 20 of 25 games played: no verdict, arm does not ship."
+  },
+  "what_this_does_not_claim": "One bench per arm. A 48 to 55 reading is inside what one config can produce run to run; it ships because the board keeps our maximum, not because it is proven better."
+}

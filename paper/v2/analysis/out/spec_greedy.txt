@@ -1,0 +1,14 @@
+greedy T=0, original drafter, K=3, R=1: 16 Decode lines, accept len 3.221 (sd 0.21, se 0.05); range 2.73..3.55
+  greedy per-position a (geometric) = 0.857
+  sampled T=0.7 franzen-l1a1y8sv2r1-v1                   accept len 2.612 (n=197) -> a 0.720; a ratio sampled/greedy 0.840; accepted drafts ratio 0.726
+  sampled T=0.7 franzen-l1a1y8sv2-v1                     accept len 2.588 (n=207) -> a 0.714; a ratio sampled/greedy 0.833; accepted drafts ratio 0.715
+  sampled T=0.7 franzen-l1a1y8-v1                        accept len 2.587 (n=202) -> a 0.714; a ratio sampled/greedy 0.833; accepted drafts ratio 0.715
+  sampled T=0.7 franzen-l1a1y8r-v1                       accept len 2.598 (n=195) -> a 0.717; a ratio sampled/greedy 0.836; accepted drafts ratio 0.720
+  sampled T=0.7 original-drafter probes (8+ running)     accept len 2.586 (n=554) -> a 0.713; a ratio sampled/greedy 0.833; accepted drafts ratio 0.714
+== indirect bracket on c (weak: one greedy probe of 16 lines, other text)
+  original drafter: m 0.857, sampled A 0.720 -> c in [0.720, 0.863], central 0.792
+  D3 drafter: m 0.900, sampled A 0.773 -> c in [0.773, 0.874], central 0.823
+  c 0.773: oracle L(3) 2.834, headroom over 2.830 = +0.004 (K0 stops below +0.40), D3 realizes 100% of the accepted-draft ceiling
+  c 0.823: oracle L(3) 3.060, headroom over 2.830 = +0.230 (K0 stops below +0.40), D3 realizes 89% of the accepted-draft ceiling
+  c 0.874: oracle L(3) 3.303, headroom over 2.830 = +0.473 (K0 stops below +0.40), D3 realizes 79% of the accepted-draft ceiling
+  c 0.890: oracle L(3) 3.387, headroom over 2.830 = +0.557 (K0 stops below +0.40), D3 realizes 77% of the accepted-draft ceiling

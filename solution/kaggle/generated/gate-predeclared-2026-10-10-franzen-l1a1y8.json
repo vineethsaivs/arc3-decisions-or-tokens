@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "declared_at": "2026-10-10T04:05Z, before any run of the arm",
+  "arm": "l1a1y8 (vineethsaivs/arc3-franzen-l1a1y8-a and its replicate): l1a1 plus both fail-closed checks, LOCAL_ANALYZER_YIELD_TOKENS 2048 -> 8192",
+  "instrument": "25-game replica, 14 streams, 7,200 s window, two runs; readout solution/analysis/franzen_readout.py (openers from transcripts, actions per opener, trims)",
+  "control": "l1a1 GCP runs 113 and 109 levels (pooled 111.0, mean game score 51.51); dpctl 123 and 101",
+  "mechanism_required": [
+    "openers per game down at least 20% against the control family (34% of turns ended by yield)",
+    "actions per opener up",
+    "no rise in replies without a tool call or in analyzer give-ups"
+  ],
+  "promote": "mechanism holds AND pooled levels >= 111.0",
+  "hold": "mechanism holds and pooled levels 105 to 110: the incumbent keeps the pin",
+  "reject": "pooled levels <= 104, or the mechanism does not appear"
+}

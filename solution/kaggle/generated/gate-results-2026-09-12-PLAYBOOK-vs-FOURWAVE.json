@@ -1,0 +1,16 @@
+{
+  "gate": "PLAYBOOK (cross-game lesson carrying) against its own null FOURWAVE, both on the 4-wave schedule",
+  "date": "2026-09-12",
+  "kernels": "vineethsaivs/arc3-fourwave-playbook-a against vineethsaivs/arc3-fourwave-bench-a",
+  "why_this_pair_and_not_the_level_total": "Both run concurrency 7 with a 1,950 s clock, which is a DIFFERENT schedule from the 25-game bench, so neither total is comparable to the 40/44/47/41 family. The predeclared instruction was to read the PAIRED GAP against FOURWAVE, which is the same schedule with no lesson carrying.",
+  "RESULT": {
+    "playbook_levels": 40, "fourwave_levels": 35, "gap": "+5",
+    "playbook_zeros": 3, "fourwave_zeros": 5,
+    "paired": "9 up / 6 down / 10 tied, up-dn = 3",
+    "in_sd": "1.12 sd of the measured null (difference sd 4.47 from the n=4 Flash-Next family)"
+  },
+  "VERDICT": "POSITIVE BUT UNDECIDED-BY-BENCH. +5 levels and -2 zeros, in the predicted direction, at 1.1 sd. That is not separation and must not be promoted on its own. It is also the FIRST time this project has been able to test the mechanism at all, because cross-game learning needs more than one wave and every previous gate ran a single wave of 25 concurrent games.",
+  "why_it_is_worth_a_replicate_rather_than_a_shrug": "Three independent published systems converge on this mechanism: Astra reusing reasoning state (62.7 -> 99.9, 49% fewer tokens), Symbolica's Arcgentica delegating to subagents that return compressed summaries (36.08%, 113 of 182 levels), and Continual Harness reporting 62% of executed actions coming from saved skills. A +1.1 sd reading in the predicted direction, on the one mechanism with that much external support, clears the 21% prior that rule 15(b) says justifies spending draws. The cheap next step is a replicate of the same pair, not a promotion.",
+  "what_it_does_NOT_show": "It does not show the 4-wave schedule is better: FOURWAVE's 35 against the one-wave family's 43 is a different schedule and a different per-game clock, so the comparison is meaningless in that direction. It also does not isolate WHY the playbook helped; the debrief text was not read for this record.",
+  "the_arm_in_one_line": "After each game ends, the harness asks for ONE game-agnostic sentence on probing an unknown game faster, filters anything naming a game id, an action meaning or a coordinate, caps it at 12 entries and 1,800 chars, and prepends it to the system prompt of every LATER game. Host-enforced both ways, and it spends ZERO environment actions because the debrief runs after the game clock ends."
+}

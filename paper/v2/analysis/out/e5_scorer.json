@@ -1,0 +1,125 @@
+{
+ "A1_A2": {
+  "cap_bound_violations": 0,
+  "family_dirs": 54,
+  "max_abs_diff_identity_vs_real_scorer": 1.4210854715202004e-14,
+  "max_abs_diff_identity_vs_recorded": 1.4210854715202004e-14,
+  "max_abs_diff_identity_vs_repo": 1.4210854715202004e-14,
+  "plays": 1425,
+  "real_scorer_checked": 1425,
+  "recorded_final_score_checked": 1425,
+  "repo_transcription_checked": 1425
+ },
+ "A3": {
+  "last_three_share_pct": {
+   "10": 49.1,
+   "6": 71.4,
+   "7": 64.3,
+   "8": 58.3,
+   "9": 53.3
+  },
+  "level_value_pct": {
+   "10": [
+    1.8,
+    3.6,
+    5.5,
+    7.3,
+    9.1,
+    10.9,
+    12.7,
+    14.5,
+    16.4,
+    18.2
+   ],
+   "6": [
+    4.8,
+    9.5,
+    14.3,
+    19.0,
+    23.8,
+    28.6
+   ],
+   "7": [
+    3.6,
+    7.1,
+    10.7,
+    14.3,
+    17.9,
+    21.4,
+    25.0
+   ],
+   "8": [
+    2.8,
+    5.6,
+    8.3,
+    11.1,
+    13.9,
+    16.7,
+    19.4,
+    22.2
+   ],
+   "9": [
+    2.2,
+    4.4,
+    6.7,
+    8.9,
+    11.1,
+    13.3,
+    15.6,
+    17.8,
+    20.0
+   ]
+  },
+  "max_abs_diff_marginal_vs_formula": 7.105427357601002e-15
+ },
+ "A4_decomposition_y8": {
+  "S": 57.46525764738932,
+  "completion_loss": 40.1017797017797,
+  "efficiency_loss": 2.4329626508309774,
+  "eta": 0.9593817205466576,
+  "levels_per_run": 123.66666666666667,
+  "prior_pass": "57.47 / 40.10 / 2.43"
+ },
+ "A4_level_slope": {
+  "S_per_level": 0.5631063373893196,
+  "levels_per_S": 1.775863515648238,
+  "r": 0.9684831974842577,
+  "runs": 34
+ },
+ "A4_price_of_actions_y8": {
+  "0.1": {
+   "S_lost_continuous": 1.1357338090186246,
+   "S_lost_integer_ceil": 1.3587924424204232,
+   "levels_to_break_even_ceil": 2.4130299238329886
+  },
+  "0.25": {
+   "S_lost_continuous": 3.548561359723415,
+   "S_lost_integer_ceil": 3.871131913621433,
+   "levels_to_break_even_ceil": 6.874601929661849
+  },
+  "0.5": {
+   "S_lost_continuous": 8.050573952676949,
+   "S_lost_integer_ceil": 8.244717919508076,
+   "levels_to_break_even_ceil": 14.64149375006564
+  },
+  "1.0": {
+   "S_lost_continuous": 17.19082715530434,
+   "S_lost_integer_ceil": 17.19082715530434,
+   "levels_to_break_even_ceil": 30.528562748919967
+  }
+ },
+ "A4_prior_pass_reference": {
+  "+10%": 1.36,
+  "+100%": 17.19,
+  "+25%": 3.87,
+  "+50%": 8.24
+ },
+ "A5": {
+  "games_with_ebar_below_1": 26,
+  "max_abs_dev_observed_vs_predicted_slope": 0.0002999600042128403,
+  "plays": 74,
+  "share_levels_at_cap": 0.7439353099730458
+ },
+ "calculator_source_sha256": "edc5decc46d2e56f32f5ef9404ab074513b3741b360f73390325118bd0b75bed",
+ "wheel_sha256": "aeca1663db342e91cb8fc96cf0c83e2fa39db1640bc1298e80a8d522e3af70f3"
+}

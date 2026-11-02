@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-29",
+  "gate": "gate-predeclared-2026-10-29-franzen-l1a1y8sv2r3lf15kv.json",
+  "instrument": "Vertex 3 W (kvw-1..3) + 1 A (kva), Kaggle pair (lf15kv, lf15 v1), 25 games, 7,200 s; A pooled with s15w-1..4 (Vertex 10-28). NameErrors and calls counted from transcripts (calls whose result has \"NameError: name ... is not defined\"), streamed from GCS for Vertex",
+  "runs": {
+    "W": {"kvw-1": {"levels": 128, "score": 58.54, "actions": 7621, "calls": 2813, "nameerrors": 19},
+          "kvw-2": {"levels": 125, "score": 55.79, "actions": 7224, "calls": 2847, "nameerrors": 36},
+          "kvw-3": {"levels": 134, "score": 61.97, "actions": 6779, "calls": 2909, "nameerrors": 29},
+          "kaggle-lf15kv": {"levels": 124, "score": 54.23, "actions": 8752, "calls": 2895, "nameerrors": 44}},
+    "A": {"kva": {"levels": 129, "score": 57.66, "actions": 7050, "calls": 2839, "nameerrors": 68},
+          "s15w-1": {"levels": 120, "score": 52.42, "actions": 7008, "calls": 2804, "nameerrors": 55},
+          "s15w-2": {"levels": 125, "score": 55.98, "actions": 6766, "calls": 2825, "nameerrors": 61},
+          "s15w-3": {"levels": 122, "score": 52.89, "actions": 7519, "calls": 2871, "nameerrors": 67},
+          "s15w-4": {"levels": 135, "score": 59.71, "actions": 8639, "calls": 2999, "nameerrors": 52},
+          "kaggle-lf15": {"levels": 123, "score": 54.63, "actions": 7147, "calls": 2895, "nameerrors": 76}}
+  },
+  "items": {
+    "m1": "FAIL: NameErrors per call 128/11,464 = 0.0112 vs 379/17,233 = 0.0220, ratio 0.51 against <= 0.50 (Vertex alone 0.46, Kaggle pair 0.58)",
+    "m2": "PASS: actions per run 7,594 vs 7,355 (bar 8,090); median actions/baseline 0.683 vs 0.671 (bar 0.721). Kaggle pair alone 8,752 vs 7,147",
+    "no_harm": "PASS: levels 127.8 vs 125.7 (bar 123.2); score 57.63 vs 55.55 (bar 54.05)",
+    "probe": "not needed (killed); the v1 probe pushed before the read ran anyway"
+  },
+  "diagnosis": "functions that read kept variables were refused by the retention check ('Your function moves was not retained: unavailable dependencies: CELLS, DIRS, S1, S2'): kept data was restored after the available names were fixed. Earlier-bound function NameErrors 17 vs 4 in the Kaggle pair (kd_census.py)",
+  "verdict": "KILL (m1 misses 0.51 vs 0.50 on the full wave). Successor keepvars2 fixes the retention defect: gate-predeclared-2026-10-29-franzen-l1a1y8sv2r3lf15kv2.json. Pin unchanged: l1a1y8sv2r3kp12lf15 v1"
+}

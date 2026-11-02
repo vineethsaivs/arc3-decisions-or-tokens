@@ -1,0 +1,81 @@
+\section{Keepalive and silent failures}\label{app:failures}
+
+A scored run returns a score and no log, so a run that dies can bank a completed 0.00 that looks like a result. This appendix lists the paths we found, the guards we built and the zeros we could not explain.
+
+\paragraph{Two paths that bank a dead run as 0.00.}
+The framework's \texttt{Benchmark.run} catches any solver exception, marks the games still playing as crashed and returns normally (\texttt{benchmark.py}, lines 90 and 178 to 190, in the vendored bundle under \texttt{solution/sim/fixtures/franzen-bundle}). % B10
+The notebook's wait for the server to finish loading (READY), on a dead server, prints the log tail, breaks out and plays the whole run against nothing (\texttt{build\_franzen\_arms.py}, line 518, docstring 521 to 529). % B10
+\texttt{failclosed\_server()} raises when the server exits before READY; \texttt{failclosed()} raises at the end of a run that cleared fewer than 20 levels. Both act only on the scored path. % B10
+An errored submission does not spend the daily slot: two errors on 2026-09-30 were followed by a completed run the same UTC day. The retry applies to errored submissions, which Kaggle does not count against the slot. % B10 G1
+We read the offline test (\texttt{test\_failclosed.py}) and did not rerun it. A run that dies after 20 levels, or that Kaggle kills from outside, is not caught, and neither check has fired on a scored run. % B10
+
+\paragraph{The midnight zeros.}
+Both were submitted in the 00:00 to 00:20Z window: the unchanged base notebook on 2026-10-03 and, on 2026-10-10, the configuration that scored 27.15 the day before. % G1 B11
+A dead draw shows as complete, 0.00 and a 3,411-byte submission file; live draws are 3,810 to 3,907 bytes. % B11 NEW:bytes
+Table~\ref{tab:wave} counts early endings (finished inside 60 minutes) among all teams in that window. % B11
+
+\begin{table}[!htb]
+\caption{Early endings among runs submitted 00:00 to 00:20Z, all teams. The base rate covers the 27 days other than 2026-10-03 and 2026-10-10. A row appears only when a run completes, so each denominator counts completed runs.}\label{tab:wave}
+\centering\footnotesize
+\begin{tabular}{@{}lrl@{}}
+\toprule
+Day & Early / completed & Note \\
+\midrule
+Saturday 2026-09-12 & 6 / 55 & \\ % B11
+Saturday 2026-09-19 & 3 / 57 & \\ % B11
+Saturday 2026-09-26 & 5 / 56 & \\ % B11
+Friday 2026-10-09 & 13 / 100 & $p=0.035$ against the base rate \\ % B11
+Saturday 2026-10-03 & 48 / 61 & our 0.00 \\ % B11
+Saturday 2026-10-10 & 63 / 64 & our 0.00 \\ % B11
+27 other days & 140 / 1,880 & 7.4\% (daily 3\% to 16\%) \\ % B11
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two of five Saturdays were events, so the weekday alone is not the trigger, and the cause is unknown. % B11
+Of our 11 fires in the window since 2026-09-24 two banked 0.00, and none of the 9 later fires did; we moved submissions to 02:06Z. % B11 NEW:window
+The waves continued: on Saturday 2026-10-17, 73 of 118 runs submitted 00:00 to 00:59Z ended early (68 of them 23 to 34 minutes in), against 8 to 18 of 140 to 148 on 2026-10-13 to 2026-10-16, the third Saturday in a row; our 02:06Z fire drew 33.05 that day. % V3-B8
+These field counts come from a research pass over a third-party monitor and were not recomputed here. % V3-B8
+
+\paragraph{CUDA out-of-memory after READY.}
+Of 34 full-length replica runs (68.6 play-hours), one lost its server to \texttt{torch.OutOfMemoryError} with 91.06 MiB free, 1 h 54 min into play and 5.7 minutes before the window ended; its 115 levels include a dead server for that tail. % B12
+A second error came seven seconds after play began, in a run that deliberately added memory (BF16 draft KV); it is outside the rate. % B12
+One event is 2.9\% per two-hour run, with an exact 97.5\% upper bound of 15.3\%. A constant hazard, which is an assumption, extrapolates to 12.3\% for the nine-hour run. % B12
+Failures cannot show that the memory fraction of 0.955 works: with none in 10.1 post-change hours, the chance of seeing none at the earlier hazard is 0.86. The warning can (Table~\ref{tab:oom}). % B12
+
+\begin{table}[!htb]
+\caption{Low-free-memory warnings after READY, before and after the memory fraction was set to 0.955. Lowest free memory is the smallest value logged in any run of the group.}\label{tab:oom}
+\centering\footnotesize
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Group & Runs & With warning & Lowest free (GiB) & OOM \\
+\midrule
+Before 0.955 & 29 & 23 & 0.15 & 1 \\ % B12
+0.955, no added memory & 4 & 0 & n/a & 0 \\ % B12
+0.955 with a fourth draft step & 1 & 1 (8 warnings) & 0.66 & 0 \\ % B12
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Watchdog.}
+A daemon thread relaunches a dead server (at most three times), reuses the model precache and retries requests in place for up to 30 minutes. % B12
+In the rehearsal we killed the server 60 s after READY and gave each game 2,700 s, so games outlived the relaunch. % B12
+The log shows ``relaunch 1 of 3'' and ``READY again after 346s''. No game gave up, and the run finished 47 levels, 1,810 of its 1,862 actions coming after the relaunch. % B12 NEW:watchdog
+The run of the shipped set logged 0 relaunches, so behaviour in a scored run is unknown. % B12
+
+
+
+\paragraph{The 2026-10-18 zero.}
+The third fork-era zero is also complete, 0.00 and 3,411 bytes. % V3-B7
+The machine that runs our scheduler missed the 02:06Z and 04:06Z fires (its log jumps from the 00:06Z run to 06:53Z), so the draw was submitted at 06:56Z, inside a field cluster of early endings (05:00 to 07:59Z: 18 of 101 runs short on 2026-10-18 and 15 of 93 on 2026-10-17, against 2 to 3 of 69 to 88 on 2026-10-13 to 2026-10-16). % V3-B7
+Its cause is unknown. The idle rule below is a candidate, and an early outside kill fits the bytes as well. % V3-B7
+
+\paragraph{The 15-minute idle rule.}
+On 2026-10-17 Jeroen Cottaar wrote in the competition forum that a run with no move for 15 minutes ends with its score so far, and that a thread that resets one game every 10 minutes until startup avoids it \citep{cottaar2026forum750173}. It is a competitor's statement; the hosts have not confirmed it. % V3-R4
+Our configuration waited up to 12 minutes for the server, then sent one warmup RESET, so a server not serving by about 27 minutes would bank 0.00. % V3-R5
+
+\paragraph{The keepalive.}
+After the warmup RESET a daemon thread re-sends RESET on the warmup game only, every 9 minutes while the server is not ready, at most 5 times; it stops at READY, the first reply or the game's first action, logs and never raises. % V3-K1
+An offline test on the organisers' localhost competition gateway, with a scaled clock and the real agent, reproduces the failure and its fix: without the thread the scorecard closed 15.05 minutes after the warmup RESET; with it the RESETs came at 9.05, 18.05, 27.05, 36.06 and 45.06 minutes and the card stayed open to 60.12 minutes; a late READY played every game; an injected RESET failure was logged and play continued. % V3-K2
+On a Kaggle probe the thread stopped after 0 RESETs because the server was ready within 9 minutes, so the live RESET path has not fired on Kaggle. % V3-K3
+We pinned it on 2026-10-20, after the 40.98 draw. It is a guard, not a lever: its expected value is about 0 to the final score, and it converts a slow-boot day from a banked 0.00 into lost play time. % V3-K4

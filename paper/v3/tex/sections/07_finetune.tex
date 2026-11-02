@@ -1,0 +1,67 @@
+\section{Fine-tuning: what the agent learns from its own play}\label{sec:finetune}
+
+\subsection{Imitating its own wins: all three adapter runs scored low}\label{sec:rft}
+
+\paragraph{What we trained.}
+The shipped agent played 127 games of RE-ARC-3, Tufa Labs' offline generator of ARC-AGI-3-style games \citep{tufalabs2026rearc3}, at the development budget per game. % V3-L1
+We kept as targets every reply from a level the run cleared and trained a rank-16 LoRA adapter \citep{hu2022lora} on the attention, recurrent and shared-expert projections, one pass, for about \$8 on one rented GPU. % V3-L2 V3-L4 V3-L5
+
+\paragraph{What happened.}
+Validation loss on held-out RE-ARC-3 windows fell 13.9\%, and levels fell too. % V3-L6
+Two runs at full strength cleared 109 and 115 levels and one at half strength cleared 117. % V3-L9 V3-L10
+Serving was intact: the adapter generated more tokens per second and no more tracebacks. % V3-L12 V3-L13
+
+\paragraph{Against what.}
+All three sit at or below the two lowest of 18 development runs of the yield-8,192 family on Kaggle and Vertex, which average 124.4 (rank $p$ 0.004). % V3-W9
+The adapter ran on a rented VM on other days, and no run without the adapter used the same VM and merge path, so platform, date and merge path are confounded with the adapter. The two platforms in the 18-run control set differ by under a level, but in the harness program's later control the Vertex AI runs averaged 9.7 levels above the Kaggle runs (two of those), so an offset is not excluded. % V3-L9 V3-X5 V3-W41
+One run at half strength cannot show a dose response in levels.
+
+\begin{figure}[t]
+\centering
+\figfile{fig_finetune}{3.55in}
+\caption{All three adapter runs scored low. LoRA scale 0: no adapter, nine of the 18 runs without it (the nine on Kaggle; the other nine ran on Vertex AI and are not drawn; the mean of all 18 is 124.4), one point per run; 0.5: one run; 1.0: two runs; 25 demonstration games. (a) Levels per run; higher is better. (b) Style counters; gray band: the agent's own play on the training games (the RE-ARC-3 generator), drawn only for the per-action and per-reply rates. Reasoning per action moves toward the band, actions per reply barely moves, and resets and deaths rise, as weaker play would. Not interleaved: adapter runs on a rented VM, runs without it on Kaggle.}\label{fig:finetune} % V3-L9 V3-L10 V3-L13 V3-L14 V3-L18 V3-W9
+\end{figure}
+
+\paragraph{A reading: from the data to the style to the levels.}
+The counters fit one reading, which we have not tested (Figure~\ref{fig:finetune}; Table~\ref{tab:rft} in Appendix~\ref{app:rft}).
+The filter kept almost everything: the agent clears 91\% of RE-ARC-3 levels against 68\% of demonstration levels, so ``a cleared level'' admitted 63\% of training windows. % V3-L1 V3-L2
+Counted by turn, half the targets came from levels that took more than twice the human baseline's actions, which slow levels supply by construction; we have not measured that share on the agent's own demonstration-set play. % V3-L3
+Play on these easier games has its own style, less reasoning per action and more actions per reply; the adapter's reasoning per action fell toward it, its actions per reply moved about a tenth of the way and its NO-OP share moved away. % V3-L13 V3-L18
+It also took more actions, reset about twice as often and died two to three times as often, which weaker play produces anyway. % V3-L13
+
+\paragraph{What the reading leaves open.}
+Deaths do not carry the loss, since at half strength they returned to the family's range while levels stayed at its bottom; one run at half strength cannot rule out over-strength. % V3-L14
+Two other causes are untested: the adapter saw only suffixes of the contexts the agent played with, and it was fit with a loss at a different temperature from the sampling. % V3-L2 V3-L18
+The lesson we draw, untested: lower loss on the agent's own cleared turns was not better decisions, and a self-training filter may need to select what the agent does not already do, such as efficiency on games it has not won.
+
+
+\subsection{Reinforcement learning, and a noisy training forward pass}\label{sec:rl}
+
+\paragraph{Round A.}
+We then tried a group-relative policy gradient in the style of GRPO \citep{shao2024deepseekmath}, with a trust-region mask and a small KL penalty (Appendix~\ref{app:grpo}). % V3-G3
+The reward counts levels cleared within a budget like the hidden run's, minus a penalty per death, with no teacher and no efficiency term. % V3-G3
+Three runs were trained: a reference, one with a doubled learning rate, and one on data from only the training half of the demonstration set. % V3-G1 V3-G2
+Training stops when a drift guard on held-out windows fires: the KL estimate $k_3$ \citep{schulman2020klapprox}, the usual low-variance estimator, above 0.02, or entropy moving more than 10\%, both declared before any training window existed. % V3-G3
+
+\paragraph{The training forward pass is not deterministic.}
+Before the first update the adapter is zero, so the guard compares the base model with itself; it read 12.9 against a stop at 0.02. % V3-G4
+Five base-only passes over the same held-out tokens agree exactly on about 12\% of tokens, with a root-mean-square gap of 0.37 nats per token, on our VM and on Vertex alike (Figure~\ref{fig:trainnoise} in Appendix~\ref{app:grpo}). % V3-G5
+The raw $k_3$ exponentiates these gaps, so one token can dominate it, and across pairs of identical passes it spans four orders of magnitude. % V3-G5
+Read raw, the predeclared guard would have stopped the reference run at step 8 with nothing kept. % V3-G4
+
+\paragraph{Read the guard net of the stack's own floor.}
+We clip each token's log ratio to $\pm2$ nats inside the guard and read both stops net of the run's own first reading, its noise floor. % V3-G7
+The clipped estimate is stable across passes and machines, at about 0.064 (SD 0.0008) against the 0.02 stop margin; its whole range is about seven times smaller than that margin, and the readings come from five passes compared in pairs, so they are not independent. % V3-G5 V3-G7 V3-W7
+Reading net of the floor assumes that noise and drift add, an approximation inside a clipped, nonlinear estimate.
+Both amendments came after the first base-against-base readings and before any reading of a trained adapter. % V3-G7
+On this stack, whose clipped floor is three times the stop margin, the guard needs this correction; any stack should measure its floor before trusting a raw KL guard.
+
+\paragraph{What the runs did.}
+The reference run and the doubled-rate run both stopped on their drift guards and kept an earlier checkpoint, at equal learning rate times steps and with nearly equal drift. % V3-G8 V3-G9 V3-G11
+On most steps the update pushed down the probability of tokens from failed plays more than it pushed up tokens from successful ones. % V3-G12
+The third run did not finish in time for round A. % V3-G10
+
+% PLACEHOLDER-ROUND-A: edit \roundaresult in sections/placeholders.tex, not this line.
+% count:off
+\notebox{\roundaresult} % V3-G13 V3-G14 V3-W17
+% count:on

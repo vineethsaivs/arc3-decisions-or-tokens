@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "declared_at": "2026-10-10T05:10Z, before any run of the arm",
+  "arm": "l1a1sv2 (vineethsaivs/arc3-franzen-l1a1sv2-a): l1a1 plus the QSA pending-ring stride fix and the async M-RoPE upload, plus both fail-closed checks; no memory cost (BF16 draft KV is split out because its 7% smaller KV pool would bite harder in the 110-game run than on the replica)",
+  "instrument": "25-game replica, one run (a second if the first is ambiguous); franzen_readout.py on serve.log and benchmark.json",
+  "control": "l1a1 GCP runs 113 and 109 levels (pooled 111.0), 775.5 tok/s, cache hit 94.0%, accept length 2.69 to 2.70, KV max 0.87 to 0.92",
+  "mechanism_required": [
+    "install lines 'qsaring: QSA pending-ring stride is 2 * ratio' and 'asyncmrope: speculative M-RoPE deltas upload pinned and non_blocking'",
+    "server READY, no scheduler exception, no CUDA error, no analyzer give-up",
+    "harness tok/s not below 97% of the control family; accept length within 0.05; cache hit within 2 points"
+  ],
+  "promote": "mechanism holds AND levels >= 105: a correctness fix plus a lossless copy ship on a tie",
+  "reject": "levels <= 104, a crash, or a serving metric outside the bounds above",
+  "supersedes": "gate-predeclared-2026-10-10-franzen-l1a1qr.json as the next run (l1a1qr stays the fallback if asyncmrope misbehaves)"
+}

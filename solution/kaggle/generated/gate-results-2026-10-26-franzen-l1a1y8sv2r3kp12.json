@@ -1,0 +1,21 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-26",
+ "gate": "docs/research/2026-10-23-push/field.md lever 1: the keepalive's RESET cap 5 to 12 (about 2 h), after Kaggle model loads of 35 to 63+ minutes were reported from 10-20. Gate: solution/sim/test_keepalive_cap.py, then one Kaggle probe that installs, plays and has 0 tracebacks. No level gate: play is identical once the server is READY.",
+ "instrument": "offline: solution/sim/test_keepalive_cap.py (the arm is r3kp plus one edit; the overlay installed from cell 7 carries KEEPALIVE_MAX_RESETS = 12); Kaggle: 300 s per game probe, kernel.log and serve.log",
+ "control": "the pin r3kp (l1a1y8sv2r3kp v1); the cap acts only while the server is not READY",
+ "arm": {
+  "kernel": "vineethsaivs/arc3-franzen-l1a1y8sv2r3kp12-a",
+  "version": 1,
+  "change": "the pin l1a1y8sv2r3kp with franzen_overlays/keepalive.py's KEEPALIVE_MAX_RESETS = 12 instead of 5 (arm keepalive_cap in build_franzen_arms.py)"
+ },
+ "evidence": {
+  "offline": "PASS: test_keepalive_cap.py (3 cap-12 arms equal their bases plus the one edit; the overlay run on the pristine bundle writes the cap of 12 into solver.py, which compiles); build_franzen_arms.py --self-check passes; the full keepalive scenarios of test_keepalive.py ran at cap 5 on 10-20 and the loop code is unchanged",
+  "install": "PASS: probe 10-26 10:30 EDT, GPU gate, serve.log without the keepalive line change, 0 relaunches",
+  "plays": "PASS: READY after 577 s, 300 s probe per game, games played",
+  "clean": "PASS: 0 tracebacks in kernel.log and serve.log (three game transcripts carry the model's own python errors)"
+ },
+ "promote": true,
+ "verdict": "PROMOTE. kp12 installs, plays and runs clean on Kaggle; it plays r3kp's agent once the server is READY and only changes how long a slow boot is kept alive. Rollback: if its first live draw scores 0.00, or a day errors twice, re-pin r3kp.",
+ "what_this_does_not_claim": "No level or score effect. The live RESET path past 5 RESETs did not fire on Kaggle (READY in 577 s); only the offline overlay check exercises the constant. Chosen over the WE pin because WE failed stage 1 (trained-half Delta -1.37) and an unpromoted adapter's draws are not marked as finals under rule v4; WE and kp12 draws are indistinguishable (37.2 against 36.2 mean)."
+}

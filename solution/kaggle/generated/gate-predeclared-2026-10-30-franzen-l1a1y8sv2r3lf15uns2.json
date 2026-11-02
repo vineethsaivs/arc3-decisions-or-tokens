@@ -1,0 +1,21 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-30",
+ "declared_before_results": true,
+ "declared_at": "2026-10-30T03:40Z, before any run of this build; supersedes the 00:42Z declaration (renamed -superseded), written before the action-name bug was found. No unstick2 kernel was ever pushed (403 on all four ids)",
+ "candidate": "l1a1y8sv2r3lf15uns2 (W; copies uns2b, uns2c) against the lf15 agent (A); l1a1y8sv2r3kp12lf15uns2 (probe, would become the pin)",
+ "change": "franzen_overlays/unstick2.py as rebuilt 03:38Z: (1) stall check at the 3rd, 5th, 7th idle analyzer turn on a level, now asking to call action() before any long search and saying a filler press or RESET wastes actions; (2) untested object types (8-connected, dot textures left out) and unused actions after a stall check, game over or model RESET, with valid_actions mapped from engine names (the unstick bug); (3) step verification on, mechanics first, replay transitions before a long plan, and a new line: a no-op may need a state not yet set up, retry it from another state before ruling it out; (4) new object types on each level's first opener after level 1, same color and box merged. Offline test_franzen_unstick2.py PASS (fails on the unstick code); on engine-replayed frames (21 human replays plus bp35 L3 of run kaggle-lf15unst-1030-2) coverage lists types on 126 of 166 calls in 6 ms mean, new types fire on 118 of 164 level starts in 175 ms mean, and bp35 L3 lists the X marks (O 3x3 x3) after each death",
+ "evidence": "gate-results-2026-10-30-franzen-l1a1y8sv2r3lf15unst.json (stall check acted on 27 of 37 stalled turns, no game over in a stall turn; untested list never printed because of the bug) and docs/research/2026-10-30-unstick/FINDINGS.md plus the 10-30 03:10Z agent reads (filler and search-first stall turns; X marks split by 4-connectivity; dc22 L5 and ls20 L5 written off after a test in the wrong state)",
+ "wave": "Kaggle only: W1 (uns2) and W2 (uns2b) pushed about 06:00Z 10-30 (3 h after the scored run started); W3 (uns2c) and the probe at the 10-31 00:00Z quota refresh. Read with scratchpad unst/uns2_gate.py. A pooled = the kv2 gate's 7 runs",
+ "gate": {
+  "m1_fires": "W mean per run: at least 5 stall-check openers, at least 5 untested-list openers and at least 20 new-types openers; and 0 unused-action lines naming an engine action (ACTION1 to ACTION7) in any W run",
+  "m2_response": "Pooled over W, of the turns that are the 3rd, 5th or 7th idle turn in a row on a level, at least 0.70 execute an action (unstick measured 0.73, reference 0.54)",
+  "m3_actions": "W actions per run <= pooled A x 1.10 and W median actions/baseline on cleared levels <= pooled A + 0.05",
+  "no_harm": "W mean levels >= pooled A - 2.5 and W mean game score >= pooled A - 1.5",
+  "probe": "Kaggle probe of l1a1y8sv2r3kp12lf15uns2 installs and plays, 0 tracebacks in kernel.log and serve.log"
+ },
+ "decision": "ship (pin for the remaining draws) on m1, m2, m3, no_harm and the probe; kill on any miss; no further runs are added after reading. If W3 or the probe lands after the 10-31 03:06Z fire, the 10-31 draw stays on the pin and a pass takes 11-01",
+ "rollback": "re-pin l1a1y8sv2r3kp12lf15 v1 if the first live draw is 0.00 or a day errors twice",
+ "wave_amended": "2026-10-30T07:52Z, after reading W1 and W2 (gate unchanged, no run added): the probe moves up to now, since it fits the 1.5 GPU-h left; W3 alone runs at the 10-31 00:01Z refresh",
+ "probe_v1_invalid": "2026-10-30T09:08Z: probe v1 (franzen-l1a1y8sv2r3kp12lf15uns2-v1) did not measure the arm: SGLang took 19.7 min to report ready (first log 08:46:09Z, ready 09:05:52Z; the last four boots took 8.5 to 11.3 min) while the 25 games' 300 s probe budgets ran 08:56:30Z to 09:05:52Z, so every game gave up (1 action, 0 tokens, 0 tracebacks). The change touches only agent files, and its W1 and W2 booted in 8.4 and 10.9 min. The probe is re-run once as v2 with nothing changed; a v2 that does not play kills the arm"
+}

@@ -1,0 +1,41 @@
+arm,run_dir,levels_25,score_pct
+control,vertex-kva,129,57.66
+control,vertex-s15w-1,120,52.42
+control,vertex-s15w-2,125,55.98
+control,vertex-s15w-3,122,52.89
+control,vertex-s15w-4,135,59.71
+control,kaggle-lf15-1029,123,54.63
+control,kaggle-lf15-1029-2,110,50.66
+"+ stall
+check",kaggle-lf15uns2-1030-1,141,65.48
+"+ stall
+check",kaggle-lf15uns2-1030-2,126,55.11
+"+ stall
+check",kaggle-lf15uns2-1030-3,118,54.83
+"+ corner-
+joined
+objects",kaggle-lf15us8-1031-1,132,63.16
+"+ corner-
+joined
+objects",kaggle-lf15us8-1031-2,128,59.97
+"+ corner-
+joined
+objects",kaggle-lf15us8-1031-3,127,58.86
+"+ scroll
+detector",kaggle-lf15usc-1031-1,111,48.67
+"+ scroll
+detector",kaggle-lf15usc-1031-2,122,53.31
+"+ scroll
+detector",kaggle-lf15usc-1031-3,130,60.31
+"+ tool
+fixes",kaggle-lf15ust-1031-1,123,55.69
+"+ tool
+fixes",kaggle-lf15ust-1031-2,129,57.96
+"+ tool
+fixes",kaggle-lf15ust-1031-3,115,50.25
+"+ replay
+check",kaggle-lf15ustv-1101-1,128,59.12
+"+ replay
+check",kaggle-lf15ustv-1101-2,124,55.67
+"+ replay
+check",kaggle-lf15ustv-1101-3,128,55.44

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-29",
+  "declared_before_results": true,
+  "candidate": "l1a1y8sv2r3lf15kv (W) against l1a1y8sv2r3lf15 (A, the pin's agent); l1a1y8sv2r3kp12lf15kv (probe, would become the pin)",
+  "change": "franzen_overlays/keepvars.py: plain-data variables survive between python calls on a level (cleared at every level change and new session; repr and ast.literal_eval, 100K chars each, 300K in all, never over a provided global); globals, locals and SystemExit available; the prompt line 'Python variables reset between tool calls' says instead that plain data is kept on the level and frame-derived values may be stale",
+  "history": "keepdata (10-12) kept plain data only until an action executed and did not tell the model; it cut its own NameErrors 18 -> 4 and blocked time imports 9 -> 0 but missed its counters because most earlier-name NameErrors were outside that window (56 -> 48). keepvars keeps data for the level and says so",
+  "baseline": "Kaggle lfk (10-28, the pin's agent at 14 streams): 2,866 tool calls, 226 tracebacks, 91 NameErrors (76 names, nearly all the model's own), 6,780 actions, cleared levels at a median 0.70 of the human actions",
+  "wave": "Vertex 3 W + 1 A now (about $22); Kaggle pairs (W + A) from 05:45Z (free quota); A pooled with s15w-1..4 (10-28, same agent and platform)",
+  "gate": {
+    "m1_nameerrors": "W NameErrors per tool call <= 50% of A's (transcripts)",
+    "m2_actions": "W actions per run <= A x 1.10 and W median actions/baseline on cleared levels <= A + 0.05 (the stale-plan risk; ThinkingCap lost 15% of score to extra actions)",
+    "no_harm": "W mean levels >= pooled A - 2.5 and W mean game score >= pooled A - 1.5",
+    "probe": "Kaggle probe of l1a1y8sv2r3kp12lf15kv installs and plays, 0 tracebacks in kernel.log and serve.log"
+  },
+  "decision": "ship (pin for the remaining draws) on m1, m2, no_harm and the probe; a tie with the mechanism verified ships; kill on any miss",
+  "rollback": "re-pin l1a1y8sv2r3kp12lf15 v1 if the first live draw is 0.00 or a day errors twice"
+}

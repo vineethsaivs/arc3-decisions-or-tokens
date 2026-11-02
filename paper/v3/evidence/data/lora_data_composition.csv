@@ -1,0 +1,19 @@
+item,value,source
+rearc3_games_played,127,lora_data/runs/a02..a04 benchmark.json (best per game)
+rearc3_levels_cleared,548,same
+rearc3_levels_total,601,same
+rearc3_clear_rate,0.912,548/601
+rearc3_games_won,106,same
+public25_pin_clear_rate,0.678,124.0/183 (nine-run family mean)
+windows_total,13652,wins.py (train 10810 / val 2206 / test 636)
+train_windows_with_target,6806,wins.py
+train_windows_with_target_share,0.630,6806/10810
+windows_cut_to_suffix_share,0.99,wins.py (trimmed)
+window_est_tokens_mean,12384,wins.py (1400 sample)
+sample_windows,1400,wins.py (random.seed 0)
+sample_games,100,wins.py
+sample_top10_game_share,0.34,wins.py
+sample_supervised_replies,1507,wins.py
+sample_supervised_from_won_games_share,0.69,wins.py
+supervised_turns_over_2x_baseline_share,0.509,eff.py (0.305 + 0.204)
+train_tokens,15996575,train_summary.json / log.jsonl sum

@@ -1,0 +1,127 @@
+% Build: sh build.sh   (public copy main.pdf, then the anonymised copy main_anon.pdf)
+%        main_anon.tex sets \buildanon and inputs this file.
+\documentclass{article}
+
+\newif\ifanon
+\ifdefined\buildanon\anontrue\fi
+
+\ifanon
+  \usepackage{neurips_2026}
+\else
+  \usepackage[preprint]{neurips_2026}
+\fi
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{url}
+\Urlmuskip=0mu plus 1mu
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{placeins}
+\usepackage[font=small]{caption}
+\usepackage{hyperref}
+\definecolor{linkblue}{RGB}{20,60,130}
+\definecolor{boxgray}{RGB}{245,245,245}
+\hypersetup{colorlinks=true,linkcolor=linkblue,citecolor=linkblue,urlcolor=linkblue}
+% Long URLs and hashes may break after a hyphen, a digit or a hex letter.
+\makeatletter
+\g@addto@macro\UrlBreaks{\do\-\do\0\do\1\do\2\do\3\do\4\do\5\do\6\do\7\do\8\do\9\do\a\do\b\do\c\do\d\do\e\do\f}
+\makeatother
+
+% A figure file from ../figs, or a framed placeholder of the expected height until the file lands.
+% #1 file name without extension, #2 placeholder height.
+\newcommand{\figfile}[2]{%
+  \IfFileExists{../figs/#1.pdf}{\includegraphics[width=\linewidth,height=#2,keepaspectratio]{../figs/#1.pdf}}{%
+  \IfFileExists{../figs/#1.png}{\includegraphics[width=\linewidth,height=#2,keepaspectratio]{../figs/#1.png}}{%
+  \fbox{\parbox[c][#2][c]{0.96\linewidth}{\centering\small\textit{Placeholder: \texttt{paper/v3/figs/#1.pdf} has not been drawn yet.}}}}}}
+
+% A boxed note (recipe box, result line, pending result).
+\newcommand{\notebox}[1]{\par\smallskip\noindent\colorbox{boxgray}{\parbox{\dimexpr\linewidth-2\fboxsep\relax}{\small #1}}\par\smallskip}
+
+% Owner notes print only in an owner copy (a file that sets \buildowner before \input{main}); the public and
+% anonymised copies never print them.
+\ifdefined\buildowner
+  \newcommand{\ownernote}[1]{\par\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{\small\textbf{Owner note.} #1}}\par}
+\else
+  \newcommand{\ownernote}[1]{}
+\fi
+
+% The two results that did not exist at writing. Replace their text in sections/placeholders.tex only.
+\input{sections/placeholders}
+
+\ifanon
+  % Anonymised copy: no venue notice, no line numbers, no identifying text.
+  \makeatletter
+  \@anonymousfalse
+  \renewcommand{\@notice}{}
+  \makeatother
+  \nolinenumbers
+  \newcommand{\subid}[1]{(withheld)}
+  \newcommand{\ownerid}{(withheld)}
+  \newcommand{\rankof}[2]{our rank withheld}   % a full noun phrase: reads right wherever the public copy prints rank N of M
+  \newcommand{\pubonly}[1]{}
+  \hypersetup{pdftitle={Decisions or Tokens? What Moves an Offline ARC-AGI-3 Agent, and How to Tell},pdfauthor={}}
+  \author{Anonymous Authors}
+\else
+  \newcommand{\subid}[1]{#1}
+  \newcommand{\ownerid}{vineethsaivs}
+  \newcommand{\rankof}[2]{rank #1 of #2}
+  \newcommand{\pubonly}[1]{#1}
+  \hypersetup{pdftitle={Decisions or Tokens? What Moves an Offline ARC-AGI-3 Agent, and How to Tell},pdfauthor={Vineeth Sai Varikuntla}}
+  \makeatletter\renewcommand{\@notice}{}\makeatother  % no "Preprint." footer
+  \author{Vineeth Sai Varikuntla \\ Independent \\ Kaggle: \texttt{vineethsaivs}}
+\fi
+
+\title{Decisions or Tokens? What Moves an Offline ARC-AGI-3 Agent, and How to Tell}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\input{sections/00_abstract}
+\end{abstract}
+
+% Reading guide: the page numbers come from labels, so they stay right when the text changes.
+\notebox{\textbf{Reading guide.} Pages 1 to \pageref{pg:bodyend} are the paper. The references follow, and the appendices (from page \pageref{pg:appstart}) are reference material: the full claims table, run records and how to regenerate everything.
+\textbf{Terms.} An \emph{arm} is one version of the agent under test, run several times. A \emph{draw} is one scored run on the leaderboard, one a day. A \emph{variant} is a build meant to play like the shipped one: a draft model with a retuned vocabulary map, or a keepalive that acts only while the server boots.}
+
+\input{sections/01_intro}
+\input{sections/02_setting}
+\input{sections/03_measure}
+\input{sections/04_curve}
+\input{sections/05_yield}
+\input{sections/06_harness}
+\input{sections/07_finetune}
+\input{sections/08_board}
+\input{sections/09_copy}
+\input{sections/10_related}
+\input{sections/11_limits}\label{pg:bodyend}
+
+\clearpage
+\bibliographystyle{abbrvnat}
+\bibliography{refs}
+
+\clearpage
+\appendix
+\phantomsection\label{pg:appstart}
+\input{sections/a_components}\FloatBarrier
+\input{sections/b_claims}\FloatBarrier
+\input{sections/c_draws}\FloatBarrier
+\input{sections/d_tried}\FloatBarrier
+\input{sections/e_yield}\FloatBarrier
+\input{sections/f_curve}\FloatBarrier
+\input{sections/g_serving}\FloatBarrier
+\input{sections/h_failures}\FloatBarrier
+\input{sections/i_finetune}\FloatBarrier
+\input{sections/i2_harness}\FloatBarrier
+\input{sections/i3_research}\FloatBarrier
+\input{sections/j_regen}\FloatBarrier
+\input{sections/k_licences}
+
+\end{document}

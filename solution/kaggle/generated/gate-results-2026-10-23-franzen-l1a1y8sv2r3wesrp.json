@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-23",
+  "gate": "OWNER OVERRIDE (2026-10-23 17:50Z): the owner directed that the fine-tuned model be submitted before its predeclared waves (GATES.md Round B (WE), stages 1 and 2) finish. Gates passed: (a') PASS with SR seed 0 (run_r3.sh, 12:19Z); (d) install check PASS. Waves: stage 1 running (3 of 9 runs playing at 17:46Z), no level read yet.",
+  "instrument": "Kaggle probe l1a1y8sv2r3wesrp v1 (kernel.log, serve.log); VM (a') ~/arc3r3/we/gate_a2",
+  "control": "the pin l1a1y8sv2r3kp v1",
+  "arm": {
+    "kernel": "vineethsaivs/arc3-franzen-l1a1y8sv2r3wesrp-a",
+    "version": 1,
+    "change": "the pin r3kp plus lora() of vineethsaivs/arc3-lora-grpo-we (WE, sha256 349be929..., trained from base on bistable levels, 50 steps) folded with the opt-in seeded stochastic-rounding merge (seed 0)"
+  },
+  "evidence": {
+    "install": "serve.log: 'stochastic rounding, seed 0' and 'lora: merged 300 tensors, scale 1.0'; 0 tracebacks; watchdog 0 relaunches",
+    "plays": "not shown on Kaggle: slow node, the 300 s probe budget ended before READY (1 action per game). The identical SR serving path played on Kaggle for WA-SR (l1a1y8sv2r3wasrp: 252 actions, 6 levels, 0 tracebacks)",
+    "a_prime": "PASS (style counters inside the base's 90% band)",
+    "training": "val NLL 0.5655 to 0.5628, entropy +1.0%, k3 near the floor; not null"
+  },
+  "verdict": "PROMOTE for the daily draw by owner override, not by the predeclared level gate. Not a measured regression (no level read exists). Rollback: if its first draw scores 0.00 or a day errors twice, re-pin r3kp. Finals: owner rule v4 still governs which draws are marked on 10-28; this draw is eligible only if WE later passes its waves.",
+  "what_this_does_not_claim": "Any level gain. Stage 1 and stage 2 continue and decide whether WE stays in the slot.",
+  "promote": true
+}

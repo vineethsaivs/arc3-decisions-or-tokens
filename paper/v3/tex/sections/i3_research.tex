@@ -1,0 +1,102 @@
+\section{The research pass behind the replay check}\label{app:research}
+
+This appendix records the research pass behind the replay check of Sec.~\ref{sec:harness}; Appendix~\ref{app:harness} has the build and its runs. % V3-W34
+
+\paragraph{Method.}
+On 2026-11-01 five agents each took one angle: public ARC-AGI-3 harnesses, the agent literature, a first-principles read of our harness code, a quantitative read of our transcripts, and the competitive meta. % V3-W34
+A synthesizer merged their 26 proposals into a model of where the clock goes, five ranked candidates (each with a spec, an offline test and a gate metric) and a list of 15 rejections, some of them merged or folded into candidates and three from public evidence. % V3-W34
+One skeptic per top-four candidate re-measured its evidence on our runs and returned an objection, an adjusted effect and build pitfalls: ten agents in all. % V3-W34
+Every skeptic put the level effect below what three runs can resolve, so we built one candidate and gated it on mechanism and no harm. % V3-W34
+
+\paragraph{What sets the clock.}
+We recomputed the transcript angle's headline numbers on the 11 Kaggle runs of the 15-stream family it read (275 game plays, 16,750 turns; Figure~\ref{fig:discovery}) with \texttt{paper/v3/analysis/discovery\_read.py}. % V3-W31
+Execution is cheap. % V3-W31
+Of 7,494 responses that ran three or more actions, 7.2\% were stopped by the no-op or stale-state guard and 0.9\% ended in a game over. Cleared levels took a median 0.64 of the human baseline's actions, 8.2\% of tool calls returned an error, and 73\% of level openings (level 2 and later) call a function written on an earlier level. % V3-W31
+Discovery is not. % V3-W31
+Later levels that took over 15 minutes are 27\% of later-level clears and hold 66\% of their clock. On those levels, code that resembles the clearing turn's (identifier Jaccard index at least 0.5) first appears with a median 13\% of the level's clock left; the proxy matched 94 of 272 levels. % V3-W31
+On cleared later levels, 17.3\% of the clock passes before the level's first action, and turns that take no action are 14\% of all turns and 30\% of the clock. % V3-W31
+Caveat: the transcript rule needs a later turn at a higher level, so it misses a level cleared on a game's last turn (1,016 later-level clears against the benchmark's 1,113). % V3-W31
+The pass concluded that the clock per level is set by how fast a wrong rule or a wrong goal dies, and that the cheapest counterexample is one the recorded history already holds. % V3-W34
+
+\paragraph{The candidates.}
+All four skeptics refuted their candidate as a level lever three runs could see (Table~\ref{tab:researchcand}). We built the replay check anyway: four of five angles proposed it, and it computes something for the model instead of adding advice. % V3-W34
+
+\begin{table}[!htb]
+\caption{The five ranked candidates. Effects are the skeptic's adjusted levels per 25-game run. The key facts are the skeptics' own measurements on three or more of our runs and were not rerun; the replay check's predictions are checked against its runs below.}\label{tab:researchcand} % V3-W34
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.11\linewidth}>{\raggedright\arraybackslash}p{0.24\linewidth}>{\raggedright\arraybackslash}p{0.13\linewidth}>{\raggedright\arraybackslash}p{0.33\linewidth}>{\raggedright\arraybackslash}p{0.11\linewidth}@{}}
+\toprule
+Candidate & What it changes & Skeptic, effect & Key fact behind the verdict & Outcome \\
+\midrule
+Replay check & Two sandbox helpers: replay the level's recorded transitions through the model's simulator, and test a goal guess on every recorded board; plus a host-time prompt clause & Refuted; 0 to $+1$ & In three runs, 17 of 75 stuck level plays had a simulator and 3 a check; 8 of 10 false-rule stuck levels fit every recorded transition; an earlier validation helper on this model was used in 1.5\% of calls & Built without the clause; promoted 2026-11-02 \\
+Code first & After a reply cut at the 12K output cap, the next opener redirects to code or a one- or two-action probe & Refuted; about 0 & The turn after a cut already acts: its first call defines a function or acts in 66 of 79; about 1.6\% of the clock is addressable; a forced tool call at this moment tied & Not built \\
+Coverage list & At stall and failure openers, list actions and click types tried from only one board state with no effect, plus an UNDO line & Refuted; about 0 (at most $+0.2$) & Its own back-test: 14 of 154 listed items (9\%) were later used with effect in a clearing run, against a 20\% bar; 1 of 49 on stuck levels & Not built (failed its back-test) \\
+Cost model & Replace the prompt's only objective line (fewest actions while reliable) with the scoring and clock model & Refuted; about 0 ($-6$ to $+3$) & Reasoning from the objective takes 0.7\% of the clock; a uniform 1.15 times rise in actions would cost about 4.5\% of score yet pass the proposed guard; deleting the same line in September cleared 30 levels against 35 & Not built \\
+Group diff & \texttt{frame\_diff} reports a corner-joined group whose parts all moved by one offset as one entry & No skeptic & Scroll, the last \texttt{frame\_diff} change, fired in its target games while bp35 stayed at one level in all three runs & Not built \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Rejected without a skeptic.}
+The main rejections, with the synthesizer's reasons. % V3-W34
+A halt-on-mismatch executor: the model already writes checked loops by hand (445 blocks in three runs), and an earlier host-enforced prediction gate lost 10 of 35 levels. % V3-W34
+A search helper: search snippets fail more often (15.5\% against 7.8\%), but the saving is tokens, the agent already runs near its token ceiling (Sec.~\ref{sec:curve}), and the model writes its own search on 170 of 272 long levels. % V3-W34
+Traceback hints in the style of SWE-agent \citep{yang2024sweagent}: tool errors are 8.2\% of calls, mostly the model's own bugs. % V3-W34 V3-W33
+Opener compaction: 71K retained history tied. Level-start object tables: 0.5K to 1.5K tokens per level start to save about 1\% of the clock. % V3-W34
+Cross-level memory: solved-level memory and a strategy audit were already dropped (Appendix~\ref{app:tried}). % V3-W34
+A stall cutoff and more streams: single public offline runs lost 9.1 points and scored 29.90 against 47.30 \citep{liang2026forum750885}. A shorter prompt lost about 12 points on Son Pham's team's own bench \citep{barney2026promptcommit}, and fine-tuning on our own cleared levels lost (Sec.~\ref{sec:finetune}). % V3-W33 V3-W34
+
+\paragraph{The built candidate, predicted against measured.}
+\textit{Helper use.} The skeptic predicted low use, after an earlier validation helper on this model that was called in 1.5\% of calls. % V3-W34
+The model wrote 33, 50 and 18 code blocks per run that call a helper, in 6, 6 and 5 games: 1.14\% of all code blocks (101 of 8,842), so the prediction held by the precedent's measure, whose denominator may differ. The gate's bar of 10 calls per run passed only because a run has about 2,900 code blocks. % V3-W29 V3-W34
+\textit{Level effect.} Predicted 0 to $+1$ level per run, with a standard error of about 4.5 levels for three runs; measured 126.67 against the control's 123.43, a lead of 3.2 inside that error, not claimed. % V3-W29 V3-W34
+\textit{Mechanism.} The skeptic warned that abstract-state simulators would turn every transition into an error without an adapter, and that \texttt{check\_goal} would have little to check. % V3-W34
+With a one-line adapter example in the prompt, \texttt{check\_model} printed 85 reports: 33 matched every checked transition, 42 named a wrong prediction and 10 only exceptions from the model's own code; 8 stopped at the time limit. \texttt{check\_goal} printed 25 and found no counterexample, as predicted. % V3-W29 V3-W34
+Not shown: a rule fixed after a mismatch, a false rule passed, or a level cleared because of a report. % V3-W29
+\textit{Build pitfalls.} The build fixed 10 of the skeptic's 12 pitfalls, left one (the call bar) and did not check one; the call bar stayed at 10 per run, below the hand-validation rate of about 19 to 23 blocks, so it could pass by substitution alone. % V3-W34
+Two readings the gate made report-only, levels on a window aligned to server readiness and a rule redefined within two turns of a mismatch, were not computed. % V3-W29
+
+\paragraph{The public harnesses.}
+The case for the replay check rested on public harnesses that play ARC-AGI-3 with an executable world model; Table~\ref{tab:researchlit} gives what each source's own text supports. % V3-W33
+
+\begin{table}[!htb]
+\caption{Mechanisms of public ARC-AGI-3 harnesses, from each source's own text (read 2026-11-02). (1) Every frame logged and queryable; (2) a hypothesis checked against all recorded history; (3) planning inside a simulator; (4) plans run step by step, stopping at the first prediction miss; (5) every recorded board treated as a non-goal. Enforced: the harness blocks the action. Prompted or instructed: the model is asked. EWM is read from its abstract and Twin's account. Retrodict \citep{ryanbbrown2026retrodict}, also named for this pattern, is left out: we hold no copy of its text.}\label{tab:researchlit} % V3-W33
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.12\linewidth}>{\raggedright\arraybackslash}p{0.14\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{0.14\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}@{}}
+\toprule
+System & (1) Log & (2) Check all history & (3) Plan in simulator & (4) Stop at first miss & (5) Non-goals \\
+\midrule
+Twin \citep{skoutnev2026twin} & yes: transition log & enforced before every scored action & yes: BFS in the checked model & enforced executor & yes; prompted in the reported runs, enforced in the released code \\
+Tycho \citep{lehmann2026tycho} & yes: typed frames, query library & partial: latest attempt per level, on every save & optional checked route & no: the route is advice & implicit: decision states must stay ongoing \\
+Kepler \citep{wu2026kepler} & yes: daemon log & instructed, not forced & yes: certified per-level programs & yes, but a failed prediction does not block & not stated \\
+arc-skill \citep{gowtham2026arcskill} & yes: append-only log & optional rules tier, used once & optional A* & enforced: a written prediction per press, halt at the first miss & not stated \\
+Rodionov ablation \citep{rodionov2026ablation} & recorded attempts replayable & verification variant only; prompted & yes, in executable variants & no & implicit: status compared at each step \\
+EWM \citep{rodionov2026ewm} & implied & yes: verifier programs & yes & plan executor & not stated \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Three caveats matter. % V3-W33
+Twin's 93.3 against 61.1 keeps the model and agent but removes five parts at once (world model, replay validation, exploration, planning and the halt-on-mismatch executor), with one scored run per game; its goal check ran by prompt in the reported runs (its Appendix D), and no experiment isolates enforced from prompted validation \citep{skoutnev2026twin}. % V3-W33
+Rodionov's verification variant ranks first in every setting, by 0.62 to 8.56 points over the variant it extends, but it is a prompted bundle (fixed interface, tools, simplification and replay), and the author says the experiments do not show how much comes from verification alone \citep{rodionov2026ablation}. % V3-W33
+Kepler instructs the backtest without forcing it and lets an action run when its prediction fails \citep{wu2026kepler}. % V3-W33
+All six run hosted frontier models; ours is a tool an open-weight model may call, closest to the prompted rows. % V3-W33
+
+\paragraph{What rivals published.}
+As read on 2026-11-01, no team in the top 12 had published what it changed after Franzen's Milestone 2 notebook \citep{franzen2026milestone2}. % V3-W33
+The Kaggle user xz, whose team is third on the board at 58.59, wrote that it ported its solution to Kaggle on 2026-10-25 and validates on the 25 public games plus a 30-game copycat set made by Team Turducken \citep{xz2026forum752485}. In another thread it wrote that it starts the games at the 10-minute mark and sends RESET every 7 minutes \citep{cottaar2026forum753843}. % V3-W33
+In that thread Tufa Labs reports that its scored notebooks lose about 40 minutes, which count against the 9 hours \citep{cottaar2026forum753843}. % V3-W33
+Team Turducken's expert pruning with a short healing fine-tune and its prompt coaching, and Son Pham's team's 12-point loss with a shorter prompt \citep{barney2026promptcommit}, rest on our repository's records of earlier reads, not on copies saved for this pass. % V3-W33
+
+\paragraph{Corrections to the research itself.}
+Checking the pass against its sources changed six statements. % V3-W31 V3-W32 V3-W33
+\begin{enumerate}\setlength{\itemsep}{2pt}
+\item Rank 3 is xz at 58.59, not Team Turducken, which is fifth at 56.02; one angle read a stale board. % V3-W33
+\item The digest's 81\% of level openings reusing earlier functions did not reproduce; by our definition (the first turn of a level 2 or later calls a function defined earlier in the game) it is 73\%. % V3-W31
+\item The digest said public harnesses had converged on five mechanisms; only Twin has all five and enforces the full-history check (Table~\ref{tab:researchlit}). % V3-W33
+\item The digest credited Twin's 32-point gap to enforced replay validation; the ablation is not replay-only, and Twin does not credit enforcement with most of it. % V3-W33
+\item The digest's specific EMPA rules \citep{tsividis2021empa} and AutumnBench's reset and no-op shares \citep{warrier2025autumnbench} are in no text we hold; nothing here uses them. % V3-W33
+\item The digest put 6 of 19 runs 12 to 22 minutes early, and an earlier draft of this paper said play starts about 728 seconds after the kernel whatever the server's state. Franzen's notebook releases the benchmark when the server is ready, or at a deadline about 720 seconds after start if it is not; 6 of 23 Kaggle runs of the 15-stream family started 12 to 21 minutes before the server was ready, and none of the three replay-check runs by more than a minute (Appendix~\ref{app:harness}); the five Vertex control runs were not read. % V3-W32
+\end{enumerate}

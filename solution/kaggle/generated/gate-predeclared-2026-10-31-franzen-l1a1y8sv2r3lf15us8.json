@@ -1,0 +1,21 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-31",
+ "declared_before_results": true,
+ "declared_at": "2026-10-30T05:39Z, before any seg8 run was pushed and before any unstick2 result",
+ "candidate": "l1a1y8sv2r3lf15us8 (W; copies us8b, us8c) = the unstick2 replica plus seg8, against the lf15 agent (A); l1a1y8sv2r3kp12lf15us8 (probe, would become the pin). Contingency if unstick2 is killed: the same gate on l1a1y8sv2r3lf15s8 (copies s8b, s8c; seg8 without unstick2) and probe l1a1y8sv2r3kp12lf15s8, m2 dropped",
+ "change": "franzen_overlays/seg8.py: every segmentation node gains `group`, the lowest node id among the same-color nodes joined to it through corner contacts (one 8-connected object); ids, hashes, boundaries and adjacency unchanged; the node line of the system prompt names the field. The module is spliced into the sandbox, so both views carry it. Offline solution/sim/test_franzen_seg8.py PASS on both builds (groups equal the 8-connected objects on a synthetic board and on all 184 human level starts)",
+ "evidence": "segmentation is the model's primary view (16,573 mentions in kaggle-lf15unst-1030-1) and is 4-connected; 71 of 184 human level starts in 13 of 21 games hold an object that 4-connectivity splits (8-connected, 3x3 or more, 2 or more nodes, color not a dot texture); bp35 L3's X marks (the level's key) read as 15 single pixels and a stuck run called them pure decoration (10-30 agent read). Baseline: 0 of 5,880 model code blocks in the two unstick runs read a `group` key",
+ "wave": "Kaggle only, after the 10-31 00:00Z quota refresh and after unstick2's W3 and probe: W1 (us8) and W2 (us8b) about 05:15Z 10-31 (2 h after the scored run starts), W3 (us8c) and the probe when they finish. Read with scratchpad unst/us8_gate.py. A pooled = the kv2 gate's 7 runs",
+ "gate": {
+  "m1_fires": "model code blocks that read a node's `group` (['group'] or .get('group')): W mean at least 15 per run and at least 5 in every W run",
+  "m2_response": "us8 only: unstick2's m2 holds pooled over W (of the turns that are the 3rd, 5th or 7th idle turn in a row on a level, at least 0.70 execute an action)",
+  "m3_actions": "W actions per run <= pooled A x 1.10 and W median actions/baseline on cleared levels <= pooled A + 0.05",
+  "no_harm": "W mean levels >= pooled A - 2.5 and W mean game score >= pooled A - 1.5",
+  "probe": "Kaggle probe installs and plays, 0 tracebacks in kernel.log and serve.log"
+ },
+ "reported_not_gated": "W levels and score against unstick2's W runs; tool output characters per call against the unstick runs",
+ "decision": "us8 ships (pin for the remaining draws) only if unstick2 passed its own gate and us8 passes m1, m2, m3, no_harm and the probe; kill on any miss; no further runs are added after reading. If unstick2 is killed, s8 takes the same slots under the same gate without m2. A pass after the 11-01 fire takes 11-02",
+ "rollback": "re-pin the previous pin (unstick2's probe build if it shipped, else l1a1y8sv2r3kp12lf15 v1) if the first live draw is 0.00 or a day errors twice",
+ "wave_amended": "2026-10-30T07:52Z, before any us8 result (gate unchanged, no run added): W1 (us8) runs at the 10-31 00:01Z refresh beside unstick2's W3, which ends before the 03:06Z scored submission; W2 (us8b) and W3 (us8c) at 05:15Z, then the probe; us8 is chosen now because unstick2 passes every item on 2 of 3 runs, and if unstick2 is killed at W3 the chain stops for a manual decision"
+}

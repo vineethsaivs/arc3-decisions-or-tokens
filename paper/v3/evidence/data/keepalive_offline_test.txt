@@ -1,0 +1,12 @@
+ok  overlay: three edits that compile; a second application and a missing anchor each leave solver.py unchanged and print why, with no exception
+ok  builder: l1a1y8sv2r3kp differs from l1a1y8sv2r3p only in cell 7, by the keepalive exec right after the harness patch (it runs first, then promptobs, toolfast, memcap, agentfix, replycache, wastefix)
+ok  stub model server: connections refused until READY, then /health is 200
+... 5 scenarios running in parallel, about 5 min at most
+ok  (4) control, the pin without the keepalive: one warmup RESET at 0.05 min, then the card closed at 15.09 min (15.05 idle): the run would bank its score so far
+ok  (1)(3)(4) never READY: keepalive RESETs on cd82-fb555c5d only at 9.05, 18.05, 27.05, 36.06, 45.06 min (gaps 9.001 to 9.004), then the cap; the card stayed open to 60.12 min, 15.06 after the last RESET
+ok  (1)(2)(5) READY at 38.01 min: 4 keepalive RESETs, the last at 36.06, none after READY; each game's first request gave up in place at 33.7 to 33.9 min (360 retries) and the next one got through; all 3 games played, none gave up or crashed
+ok  (7) READY before the release: no keepalive RESET (the model server is READY); all games played
+ok  (6) a RESET that raises in the thread at 9.05 min is logged (keepalive stopped after 0 RESET(s): RuntimeError: injected keepalive failure); no thread exception escaped and all games played after READY at 12.01
+
+8 checks passed
+python3 solution/sim/test_keepalive.py  13.55s user 3.12s system 6% cpu 4:07.34 total

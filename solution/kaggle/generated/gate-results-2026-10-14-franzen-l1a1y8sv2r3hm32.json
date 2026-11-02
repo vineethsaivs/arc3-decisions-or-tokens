@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-14",
+  "gate": "gate-predeclared-2026-10-12-franzen-hm32.json (declared 2026-10-12T13:35Z, before any push or run)",
+  "instrument": "one 25-game Kaggle replica (l1a1y8sv2r3hm32 v1) read with gate_hm32.sh against l1a1y8sv2r3 v1 (r3) and r2; plus the 300 s probe of the submittable build l1a1y8sv2r3hm32p v1",
+  "control": "l1a1y8sv2r3 v1: 975.3 tok/s at 14 running, clean step 36.6 ms, accept 2.830 at 8+ running, 60-80K 2.838, 80-100K 2.840, 129 levels",
+  "arm": {
+    "kernel": "vineethsaivs/arc3-franzen-l1a1y8sv2r3hm32p-a",
+    "version": 1,
+    "change": "the pin l1a1y8sv2r3p + the 32,768-id ARC traffic draft vocabulary (hotmap). Lossless: the target verifies every token"
+  },
+  "evidence": {
+    "install": "PASS on the items that can be read: 'hotmap: ARC traffic map 32768 ids (bitmap sha256 ad21d436929f)'; server argv speculative_token_map arc-traffic-32768.pt; 'arm overlay specstats' printed. NOT CHECKED: the spec: line in every transcript, because the replica's transcripts are not in the downloaded output (0 found); that item feeds only the report-only per-game accept",
+    "throughput": "PASS: 987.1 tok/s at 14 running (required 983.1; r3 975.3, r2 973.3), +1.2%",
+    "step": "PASS: clean step 36.0 ms at 14 running (required at most 36.45)",
+    "accept": "PASS: 2.838 at 8+ running (required at least 2.827); 80-100K 2.856 (required 2.835); 60-80K 2.833 against a floor of 2.833, exactly at the edge",
+    "health": "PASS: 0 OOM, 0 expandable_segments, 0 KV pool full, 0 free-device-mem warnings, 0 watchdog relaunches, 0 tracebacks, 0 give-ups, failclosed summary printed, cache hit 94.9%",
+    "levels": "PASS: 126 of 183 levels, mean score 56.95 (floor 105)",
+    "probe_l1a1y8sv2r3hm32p_v1": "PASS: hotmap install line, READY after 550 s (limit 640), 0 tracebacks, accept 2.721 at 8+ running (floor 2.65)"
+  },
+  "verdict": "PROMOTE. Every predeclared item that could be read passes: throughput +1.2%, step 0.6 ms shorter, accept up 0.008, health clean, 126 levels, and the submittable build installs the map and plays clean.",
+  "judgment_call": "The 60-80K accept bucket sits exactly on its floor and the transcript spec: lines were not available to check; both read as no evidence against, not as passes.",
+  "what_this_does_not_claim": "No level gain is claimed: 126 is inside the replica's run-to-run spread. The gain is serving time, +1.2% decode throughput at 14 running requests from one run.",
+  "promote": true
+}

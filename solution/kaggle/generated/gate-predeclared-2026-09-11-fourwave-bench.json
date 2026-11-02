@@ -1,0 +1,52 @@
+{
+ "schema_version": 1,
+ "created_at": "2026-09-11T18:20:00+00:00",
+ "arm": "FOURWAVE",
+ "name": "A bench that is FOUR waves, so the schedule blind spot is measurable for the first time",
+ "predeclared_before_any_result": true,
+ "kernel": "vineethsaivs/arc3-fourwave-bench-a",
+ "bundle": "vineethsaivs/arc3-q38-flashnext-ctx-v1 (the shipping config, UNCHANGED)",
+ "the_change": "two notebook lines: concurrency 28 -> 7, max_runtime_s_per_game 7920 -> 1950. Nothing else. No overlay, no new dataset.",
+ "WHY_THIS_IS_NOT_A_14TH_OVERLAY": [
+  "Every gate this project has run is 25 games at concurrency 28, which is ONE wave. The scored run is FOUR.",
+  "So no instrument we own can see any effect that depends on a game's POSITION in the schedule, in either direction.",
+  "That is a structural blind spot, not a noise problem, and ~27 arms of tuning have been run inside it.",
+  "This run buys the instrument. It changes no mechanism."
+ ],
+ "the_two_questions_in_the_blind_spot": {
+  "1_are_later_waves_DEGRADED": "The scored run opens all 110 games at t=0 (verified by execution, generated/scored-schedule-executed-2026-09-11.json, and by real bench data: 25 started_at values spanning 0.6 s). Wave 4 takes its first action ~23,760 s later. If serving drifts or environments go stale, wave 4 is worth less than wave 1 and it looks exactly like the hidden set being hard. This is 26 of 110 games, and it would explain a large part of the unexplained 0.44 bench-to-board ratio.",
+  "2_could_later_waves_be_BETTER": "NVIDIA's AVO carries memory across runs; Sensi (arXiv 2603.17683) accumulates discovered rules across tasks. Our arm DD v1 shared one memory file across all 25 games and scored 33 levels / 5 zeros / 8 deep; arm DD2 'fixed' it to per-game memory and scored 27 / 7 / 7. The fix moved every reading the wrong way, and CLAUDE.md records it as 'the fix made it WORSE'. NEITHER run tested the published mechanism, because 25 games at concurrency 28 play SIMULTANEOUSLY: there is no earlier wave to learn from. Both numbers are inside the noise floor, so this is a direction, not a result."
+ },
+ "THIS_RUN_CARRIES_NO_MEMORY_CHANGE": "It is the NULL that any cross-wave mechanism has to beat. Running the mechanism first, without this, would be unattributable forever (rule 15(d)).",
+ "why_the_design_is_matched_and_not_just_cheaper": {
+  "claim": "concurrency 7 for 1,950 s gives a game the same MODEL DECISIONS as concurrency 28 for 7,808 s",
+  "mechanism": "vLLM admits about 5 requests whatever the harness concurrency is (CLAUDE.md: '5 admitted and 19 waiting', and 'raising admission 5 -> 8 did not change total tokens'), so admission is KV-bound, not request-bound. Per-game serving share is therefore 5/concurrency.",
+  "arithmetic": "scored 5/28 x 7808 = 1396 s of serving per game; four-wave 5/7 x 1950 = 1393 s",
+  "decisions": "a decision costs ~330 s of wall clock at concurrency 28, so ~82 s at concurrency 7; 1950/82 = ~23.6 decisions per game against the scored run's ~23.4",
+  "cost": "4 x 1950 = 7800 s of play plus ~565 s setup = ~2.3 GPU-h, the same as today's one-wave bench",
+  "game_set": "the SAME public 25, so game difficulty is controlled"
+ },
+ "INSTRUMENT_GATE_check_this_FIRST": {
+  "condition_1": "the log prints PUBLIC25_SETTINGS with budget_s=1950.0 and concurrency=7. If not, the arm was a no-op.",
+  "condition_2": "per-game final_wallclock_seconds are all about 1950 and about equal. If they are not, games returned their slots early, the wave blocks are not clean, and wave = index // 7 is invalid.",
+  "condition_3": "decisions per game is 18 to 30. If it is far outside that, the serving-match arithmetic above is WRONG and this run measures a shorter game, not a four-wave schedule. Report that as an instrument failure, NOT as a wave-position result."
+ },
+ "PRIMARY_VERDICT": {
+  "measure": "the GAP: mean paired delta of waves 2-4 minus mean paired delta of wave 1, where each game's delta is its levels here minus its own mean levels across the one-wave family (44/40/47 runs of the same config on the same 25 games). Paired within game, so game difficulty cannot drive the pattern.",
+  "NO_WAVE_EFFECT": "|GAP| < 1 pooled sd. Later waves are neither degraded nor helped. The scored run's wave 4 is fine, and this becomes the baseline a memory arm must beat.",
+  "LATER_WAVES_DEGRADED": "GAP <= -1 sd. A live defect in the scored run worth up to 26 of 110 games. This would be the most valuable finding of the campaign and it is directly fixable.",
+  "LATER_WAVES_HELPED": "GAP >= +1 sd. Surprising, since nothing is shared. Suspect a confound before believing it: game order is list order, not randomised."
+ },
+ "DO_NOT_COMPARE_THE_TOTAL_TO_44_40_47": "This is a different schedule. The level total is not comparable to any other bench in this project. Only the paired GAP is.",
+ "known_confounds_declared_before_the_run": [
+  "Game order is the fixed public-25 list order, not randomised, so wave membership is confounded with whatever that ordering correlates with. The paired-against-own-baseline reading is what controls for it; the raw per-wave totals do not.",
+  "n is 7 games in wave 1 against 18 in waves 2-4. That is small, and the pooled sd is reported so the gap is read in sd units rather than as a level count.",
+  "At concurrency 7 vLLM batches 7 requests rather than 28. If throughput per admitted request differs from the assumed 5-admitted model, condition 3 catches it.",
+  "One run. Nothing here promotes anything."
+ ],
+ "cost": "~2.3 GPU-h, one ordinary commit, zero submission slots",
+ "offline_validation": "solution/sim/test_scored_schedule_110.py, 8 checks, including that 25 games at concurrency 7 schedules as 4 waves inside 7,800 s, that all 25 are reached, and that semaphore admission order matches list order in blocks of 7 (which is what makes wave = index // concurrency a sound readout)",
+ "readout": "python3 solution/analysis/wave_position_readout.py <benchmark.json> --concurrency 7",
+ "THRESHOLD_IS_NOW_EMPIRICALLY_CALIBRATED": "The 1 sd threshold was assumed. It is now MEASURED: partitioning all 42 recorded one-wave runs into fake waves of 7 samples the GAP under the null, giving mean +0.07 sd, sd 0.39, and |gap| >= 1.0 sd in only 1 of 42 runs (about 2%). The 95th percentile is 0.68 sd, so 1.0 sd is CONSERVATIVE and the gate stands. Caveat: those runs played every game concurrently, so the null contains game-ordering and per-game variance but no real time-ordering effect; it is a lower bound on the noise. Record: generated/wave-gap-null-calibration-2026-09-11.json",
+ "WARNING_ADDED_2026-09-11_IT_CANNOT_SEE_THE_EXPIRY": "This arm's waves first act at 0 / 32.5 / 65 / 97.5 minutes, ALL under the 120-minute point where a game idle beside a busy scorecard was measured to die, and two of them under the 60-minute point that survived. It was designed to match DECISIONS per game, not exposure time. So a clean NO-WAVE-EFFECT result here is EXPECTED and is NOT evidence against the expiry finding. Reproducing the scored run's exposure needs waves at least 120 minutes apart. See generated/wave-expiry-REOPENED-2026-09-11.json and -FIX-OPTIONS-."
+}

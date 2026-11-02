@@ -1,0 +1,19 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-08",
+ "instrument": "GCP G4 25-game replica (same card as Kaggle; calibrated against Kaggle replicas), two runs per arm, plus a 300 s Kaggle probe for install and liveness",
+ "control": "pinned p448s14dp (dpctl): 123 and 101 levels, pooled 112.0 levels, mean game score 51.21, 741.7 tok/s",
+ "arm": {
+  "kernel": "vineethsaivs/arc3-franzen-l1a1p-a",
+  "version": 1,
+  "change": "p448s14dp plus transcript-waste fixes, reply-cache round trip, and the A1 agent fixes (RESET behind a level-start guard, stale-guard catch contract, level_starts/attempt_starts); the probe build differs from l1a1 only in the replica runtime (cell 19)"
+ },
+ "evidence": {
+  "gcp_l1a1": "113 and 109 levels, pooled 111.0, mean game score 51.51, 775.5 tok/s (+4.6%), cache hit 94.0%",
+  "mechanisms": "previous-reply cache reuse 93% vs 38%; burn-to-reset episodes 0 and 0 (L1: 11 and 7); 39 to 45 manual RESETs, no level lost",
+  "noise": "two byte-identical control runs differed by 22 levels, so a 1-level gap is a tie"
+ },
+ "smoke_result": {"install_lines": "wastefix, replycache, agentfix, d_prime all present", "tracebacks": 0, "games_with_actions": 14, "harness_tok_s": 704.7, "cache_hit_pct": 92.8},
+ "verdict": "PROMOTE. Ties the pooled control on levels (111.0 vs 112.0) with the highest pooled game score (51.51 vs 51.21) and the fastest serving (+4.6%), and its mechanisms are verified in both runs. Under the standing rule a tie with verified mechanisms ships. The Kaggle probe installs every overlay with no traceback.",
+ "promote": true
+}

@@ -1,0 +1,8 @@
+{
+  "arm": "arc3-gg7-k448p384-a v1: GG7 on michaeltgao/duck2-k448p384pub (keep 384 experts), KV 19 GiB, max_num_seqs 16, MTP 0",
+  "result": {"levels": 47, "zeros": 2, "mean_final_score": 11.28, "actions_per_game": 165.9},
+  "controls": {"GG7": {"levels": 47, "mean_final_score": 10.54}, "GG7-K448": {"levels": 50, "mean_final_score": 13.53}},
+  "single_point_check": "sb26 cleared 7 (k448: 2). Excluding sb26: 40 vs k448 48 vs GG7 45.",
+  "mechanism": "Most throughput of any arm: Running 15.9, 368.4 tok/s, 15.24x concurrency at 48,128. Quality fell: lp85 1 (k448 5), sc25 0 (k448 3).",
+  "verdict": "Below k448. Pruning to 384 costs more capability than the extra concurrency buys; 448 is the sweet spot of the two. k448 ships."
+}

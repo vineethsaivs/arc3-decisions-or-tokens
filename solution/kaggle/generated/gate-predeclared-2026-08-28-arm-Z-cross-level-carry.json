@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-28T23:20:00+00:00",
+  "arm": "Z",
+  "name": "cross-level carry: the harness writes the action-effect note itself",
+  "predeclared_before_any_run": true,
+  "bundle": "vineethsaivs/arc3-q38-xlevel-v1",
+  "kernel": "vineethsaivs/arc3-q38-xlevel-ordinary-commit",
+  "control": "vineethsaivs/arc3-q38-ctxwin-temp09-v1, already run: 35 levels, 4 zero-level games, mean 6.722. No control run needs buying.",
+  "the_defect_this_attacks": {
+    "where": "tool_agent.py _update_summarized_knowledge_from_step_summary",
+    "what": "every level transition blanks world_model, goal_model, action_model, recent_findings, open_questions and current_plan. The only spared field, cross_level_notes, is written ONLY when the model emits a 'Cross-level notes:' prefix, measured at 0 of 386 responses on the shipped 2.65 config.",
+    "and_history_does_not_save_it": "_persistent_history_messages keeps only the last N assistant turns, so the level-1 solution rolls out of context within about ten turns of arriving on level 2.",
+    "why_it_is_wrong": "blanking LEVEL-specific state is right, the layout changed. Blanking GAME-specific state is not: what each action does is constant across a game's levels, and the system prompt says so verbatim ('Levels often build on earlier mechanics')."
+  },
+  "MECHANISM_GATE_check_this_first": {
+    "reason": "arm V shipped correctly and the model declined to use it, and the predeclared gate correctly refused to evaluate the primary verdict. This arm cannot fail that way (the harness writes the note, the model is asked for nothing) but the gate still runs, to catch the note never being BUILT.",
+    "condition": "In the arm's transcripts, the string 'Carried across levels, measured by the harness' must appear in the USER PROMPT of at least 80 percent of turns that occur after the run's first level transition.",
+    "if_it_fails": "record INSTRUMENT FAILURE and do NOT evaluate the primary verdict. Do not record 'cross-level memory was tested and rejected'."
+  },
+  "PRIMARY_VERDICT": {
+    "measure": "total levels over the 25-game bench, and the paired per-game sign test against the control, with the sign test taking precedence.",
+    "PROMOTE": "sign test favours the arm, or level total >= 40",
+    "TIE_incumbent_keeps_the_slot": "level total 30 to 39 with no sign-test separation",
+    "REJECT": "level total <= 29",
+    "why_those_bands": "a byte-identical rerun of the shipped config returned 29 where the original returned 33, so one sigma is about 4 levels and the n=1 vs n=1 MDE is about 12.6. These bands reject clear losers only; they cannot prove capability.",
+    "ties_go_to_the_incumbent": "explicitly. Never promote on 'the higher-variance config ships at a tie': on a null arm that promotes about 65 percent of the time."
+  },
+  "SECONDARY_the_measure_this_arm_actually_targets": {
+    "metric": "games reaching level 3 or deeper, and the fraction of level-2 episodes cleared.",
+    "baseline_from_63_q38_game_runs": "19 of 25 games reach level 2, 8 reach level 3. P(clear a level | still unsolved after 20 turns on it) is 27.9 percent.",
+    "note": "this is DIRECTIONAL only and is not part of the promote decision. It is recorded now so it cannot be selected after the fact."
+  },
+  "cost": "zero environment actions, so the efficiency term of the score cannot move. ~2.4 GPU-h for the arm run.",
+  "rule_14": "the note contains action labels, execution counts and board-change counts. No game id is read anywhere.",
+  "offline_evidence": "solution/sim/test_cross_level_carry.py, 12 checks, driven against the patched shipped ToolAgent",
+  "overlay": "solution/kaggle/anim_overlay/apply_cross_level_carry.py"
+}

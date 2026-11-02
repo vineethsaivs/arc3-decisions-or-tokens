@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-24T17:51:14.006580+00:00",
+  "subject": "Predeclared gates for arms R and S, written BEFORE either was pushed. Both are SOURCE changes on the arm-K base, and both are sized above the +8 bench-level bar the top-5 plan requires.",
+  "control": {
+    "arm": "arm K, q38 + ctx 48,128 + temperature 0.9 + top_k 100",
+    "kernel": "vineethsaivs/arc3-q38-ctxwin-topk100-ordinary-commit",
+    "levels": 44,
+    "zero_level_games": 1,
+    "mean": 8.246,
+    "caveat": "n=1. A byte-identical replicate (arm P) is in flight. If arm P returns <= 35, re-baseline these two gates against the pooled pair before reading them."
+  },
+  "gate_rules_in_force": "solution/kaggle/generated/gate-amendment-2026-08-24-remove-variance-ratchet.json",
+  "shared_preconditions": [
+    "All 25 games run and hold their full 7,920s slot.",
+    "Peak GPU KV cache usage strictly below 0.90.",
+    "KV cache size 398,272 tokens (confirms fp8 KV is live).",
+    "Zero 'maximum context length' errors.",
+    "Zero Python tracebacks from tool_agent.py in the kernel log. Both arms edit source, unlike every sampling arm before them, so a crash is a NEW failure mode: any traceback is an automatic REJECT regardless of level count."
+  ],
+  "arms": {
+    "q38-noimg-v1": {
+      "kernel": "vineethsaivs/arc3-q38-noimg-ordinary-commit",
+      "source_dataset": "vineethsaivs/arc3-q38-noimg-v1",
+      "change": "tool_agent.py only: strip grid images from persisted history. The current turn's image is still attached. Single variable against arm K, verified: exactly one differing file.",
+      "mechanism_and_size": "A median analyzer request carries EIGHT base64 grid images and exactly one shows a board that still exists. _estimate_tokens is len(json.dumps(payload))//3 over the whole payload, so it charges an image its BASE64 length: about 1,378 tokens against a true Qwen3-VL cost of roughly 256. A median request therefore spends about 11,000 estimated tokens, some 23% of the 48,128 history budget, on pictures of the past. The history budget is the ONE axis with a confirmed win here (31,744 -> 48,128 returned 33 levels against 23, paired p = 0.029), so freeing a comparable amount of it is the same lever pulled a second way.",
+      "why_this_is_not_the_rejected_estimator_fix": "The estimator fix (imgtok, 7 gained / 9 lost) changed the PRICE of an image, which admits MORE stale images and raises the real vision-token load. This changes the QUANTITY, so estimated and real cost fall together. It also predicts imgtok's failure rather than contradicting it.",
+      "predicted_side_effect": "Prefix-cache hit rate should RISE, not fall. With every persisted image stripped, no retained message ever changes between turns, so history becomes strictly append-only. If the hit rate FALLS, the mechanism is not doing what this gate claims and the result should be distrusted even if levels rise.",
+      "expected_size": "+6 to +14 bench levels, point estimate +9",
+      "PROMOTE_requires_all_of": [
+        "total_levels >= 44",
+        "zero_level_games <= 1",
+        "paired sign test against arm K shows gained - lost >= 4"
+      ],
+      "REJECT_if_any_of": [
+        "total_levels <= 35",
+        "any shared precondition fails"
+      ],
+      "INCONCLUSIVE_band": "36 to 43. Ties go to the incumbent, arm K."
+    },
+    "q38-deathmem-v1": {
+      "kernel": "vineethsaivs/arc3-q38-deathmem-ordinary-commit",
+      "source_dataset": "vineethsaivs/arc3-q38-deathmem-v1",
+      "change": "tool_agent.py line 1317 only: remove the game_over clause from the summarised-knowledge wipe. Level transitions and run completion still wipe. Single variable against arm K, verified: a three-line diff in one file.",
+      "mechanism_and_size": "The summarised block is the agent's ONLY trim-proof memory. It is cleared whenever the last step reports level_transition OR run_complete OR game_over, and the solver AUTO-RESETS on GAME_OVER with levels_completed surviving, so the agent resumes the SAME level with everything it learned about that level deleted. Measured over 40 recorded plays: 238 deaths against 41 level transitions, so 85% of all wipes are deaths, about six lobotomies per game, and the block is empty on 79% of analyzer turns.",
+      "what_is_deliberately_NOT_bundled": "Moving world/goal/action model into cross_level_notes on a real level transition. That is a second variable and gets its own arm. Note cross_level_notes is emitted ZERO times by the model across those 40 plays, so the carry-forward path is currently dead code and every wipe is total.",
+      "expected_size": "+5 to +13 bench levels, point estimate +8",
+      "predicted_side_effect": "The fraction of analyzer turns carrying a non-empty knowledge block should rise well above the measured 21%. If it does not move, the overlay is not reaching the code path that matters.",
+      "PROMOTE_requires_all_of": [
+        "total_levels >= 44",
+        "zero_level_games <= 1",
+        "paired sign test against arm K shows gained - lost >= 4"
+      ],
+      "REJECT_if_any_of": [
+        "total_levels <= 35",
+        "any shared precondition fails"
+      ],
+      "INCONCLUSIVE_band": "36 to 43. Ties go to the incumbent, arm K.",
+      "risk_recorded_in_advance": "Stale knowledge is a real hazard: after a death the world model may describe a hypothesis that just got the agent killed. The bet is that a wrong-but-revisable model beats an empty one, since the prompt explicitly instructs the model to revise any carried item that the current frame contradicts, and the model is still told it reached GAME_OVER (tool_agent.py:1292 is untouched)."
+    }
+  },
+  "overlay_sha256": {
+    "apply_stale_image_strip.py": "acbf3ecfdcc83084ff21b52b94aa79c119af73674b4d9cb363e0dafaf614e1c4",
+    "apply_death_memory.py": "e30d8cb2807e66e2c63d6f197eba400058d5075bf8699de565a59e61f835de2e"
+  },
+  "offline_evidence": {
+    "solution/sim/test_stale_image_strip.py": "5 checks, all passing, including the real patched function driven over a realistic history",
+    "solution/sim/test_death_memory.py": "5 checks, all passing, including a premise guard that the stock tree really does wipe on death"
+  }
+}

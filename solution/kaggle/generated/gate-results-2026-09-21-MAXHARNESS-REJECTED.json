@@ -1,0 +1,38 @@
+{
+  "record": "gate-results-2026-09-21-MAXHARNESS-REJECTED",
+  "kernel": "vineethsaivs/arc3-maxharness-a",
+  "read_against": "generated/maxharness-prompt-cost-and-duplication-2026-09-20.json and the gate in the bundle manifest, both written before the run",
+  "RESULT": {"levels": 22, "zeros": 10, "control_ONEWAVE": 46, "verdict": "REJECT. The REJECT line was <= 30. Rule 15(c) bars shipping it, permanently."},
+  "EVERY_MECHANISM_FIRED_AND_THAT_IS_THE_POINT": {
+    "note": "Counters are host-side and readable, in the artifacts/*_events.jsonl stream under type=experiment. They are NOT in viewer_data.json, whose viewer_steps list is empty; look in the events stream.",
+    "wm_step_resolved": "506 calls across 18 of 25 games. The harness found and called a step function THE MODEL WROTE.",
+    "wm_validate_runs": "3,840, of which 3,597 passed and 243 failed",
+    "wm_cells_claimed": "13,851,749",
+    "wm_batch_refused": "18 across 11 games, so the refusal never wedged the agent",
+    "expect_checked": "508, matched 448, halts 60, actions abandoned 101",
+    "steplog_records": "891 across 25 of 25; steplog_helper_calls 100 across 15 of 25, i.e. the model really called the log helpers",
+    "consolidation_calls": "15 across 11 games, writing 57,435 bytes of code into memory['prelude']",
+    "stuck_directive_fired": "41 across 6 games"
+  },
+  "ADOPTION_TRIPLED_AND_THE_SCORE_HALVED": {
+    "adoption": "Model-authored world model resolved in 18 of 25 games, against GG8's 6 of 25 and GG6's 5 of 25. This is by far the highest formalism adoption this project has ever measured.",
+    "levels": "22, against GG8's 35 and ONEWAVE's 46."
+  },
+  "THE_MECHANISM_OF_THE_LOSS_IS_ONE_NUMBER": {
+    "actions_per_game": {"sampling_arm_34_levels": 109.2, "GG8_35_levels": 66.8, "MAXHARNESS_22_levels": 35.8},
+    "reading": "Environment actions per game fall monotonically as world-model machinery is added, and levels fall with them. Max-harness plays ONE THIRD the environment actions of the sampling arm inside the identical 7,920-second clock. Every turn spent writing, validating, searching and consolidating a world model is a turn not spent playing. The machinery does not fail, it DISPLACES play.",
+    "why_this_is_not_an_integration_failure": "It is the opposite. The integration worked: adoption tripled, validation ran 3,840 times at a 94% pass rate, the model called the log helpers 100 times unprompted, and the refusal path fired only 18 times. The thesis was tested properly and it lost."
+  },
+  "WHAT_THIS_ESTABLISHES": {
+    "claim": "On an open-weight model inside a fixed wall clock, the certify-then-plan architecture trades environment actions for modelling, and on ARC-AGI-3 that trade is bad.",
+    "why_it_generalises": "Every published instance of this architecture runs a closed frontier model, and several report near-ceiling scores. None reports its environment-actions-per-game against a no-harness control inside a fixed deadline. Our result says the harness multiplier they report may be paid for by a token budget we do not have: Twin spends roughly 224,000 tokens per scored action.",
+    "paper_value": "This is the open-weight data point the literature does not have, and it is a cleaner result than the certification-infeasibility scan because every mechanism is instrumented host-side and confirmed firing."
+  },
+  "WHAT_TO_DO_WITH_IT": [
+    "Do NOT ship max-harness. Do not re-run it whole.",
+    "Do NOT conclude the individual overlays are dead. Eleven variables moved at once and the counters localise the COST, not the blame.",
+    "The next test of any of these parts must hold ACTIONS PER GAME roughly constant, or it is testing the displacement and not the idea.",
+    "The interior-change arm is the right shape by contrast: it adds one honest observation field and NO model-facing machinery, so it cannot displace play."
+  ],
+  "AN_INSTRUMENT_NOTE_WORTH_KEEPING": "Counters landed in artifacts/*_events.jsonl, not in viewer_data.json. The first place I looked, viewer_data.json, has an empty viewer_steps list and a lastEvent that is a plain action record. Download with the filter events.jsonl and read records whose type is experiment."
+}

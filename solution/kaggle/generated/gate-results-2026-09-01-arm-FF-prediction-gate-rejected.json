@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-09-01T03:25:00+00:00",
+  "arm": "FF",
+  "kernel": "vineethsaivs/arc3-q38-predgate-ordinary-commit",
+  "bundle": "vineethsaivs/arc3-q38-predgate-v1",
+  "subject": "The host-enforced prediction gate is REJECTED. The mechanism worked, the model complied, and it lost 10 levels.",
+  "RESULT": {
+    "levels": 25,
+    "control_levels": 35,
+    "band": "REJECT (<= 29), and below the 30-level eligibility floor",
+    "zero_level_games": 9,
+    "control_zeros": 3,
+    "games_at_level_2_or_deeper": 5,
+    "control_deep": 9,
+    "paired_sign_test": "3 gained / 11 lost / 11 tied. Clear separation AGAINST the arm.",
+    "shipped_scorer_mean": 4.94,
+    "control_mean": 5.858,
+    "shipped_scorer_mean_excluding_ft09": 4.551,
+    "control_mean_excluding_ft09": 5.507,
+    "environment_actions": 2467,
+    "control_actions": 3347,
+    "note": "both mean columns agree and the sign test agrees, so unlike arm DD this is not one game."
+  },
+  "MECHANISM_GATE": {
+    "verdict": "PASS. This is not an integration failure and must not be recorded as one.",
+    "evidence": "over two sampled games: 260 occurrences of `predict=`, 885 of `exact`, 413 of `prediction`, and only 5 of `action() refused`. The model understood the contract and complied with it almost every time; the bounded 2-refusal escape hatch was barely needed.",
+    "so": "the gate did exactly what it was built to do. The idea is what failed."
+  },
+  "READING": {
+    "what_was_expected": "a published harness measured single exploratory presses missing 37.1 percent of the time against 2.9 percent for planned batched sequences, over 7,627 graded predictions.",
+    "what_happened": "levels 35 -> 25, zero-level games 3 -> 9, environment actions 3,347 -> 2,467 (a 26 percent drop).",
+    "the_most_likely_cause": "a tax on an already-scarce resource. Our median game gets about 3 act-and-observe cycles per level. Requiring a computed 64x64 prediction before every press spends part of a cycle on bookkeeping, and the measured effect is that the agent acts 26 percent less and clears 10 fewer levels. The published figure was measured on a CLOSED FRONTIER model in a harness built around the gate, and it does not transfer to a 27B open model in ours.",
+    "what_this_does_NOT_show": "that predictions are worthless. It shows that MANDATING one before every press costs more than the feedback returns, at our cycle budget. A cheaper form (grade a prediction when the model volunteers one, never refuse) is untested, but note that voluntary machinery is the shape this repo has repeatedly measured inert, so the cheap form is probably a no-op rather than a win."
+  },
+  "A_HYPOTHESIS_RAISED_AND_WITHDRAWN_THE_SAME_HOUR": {
+    "the_tempting_pattern": "across all five configs measured tonight, r(actions, levels) = +0.954, which would contradict CLAUDE.md's closure of the clock family on r = +0.053.",
+    "why_it_is_wrong": "the correlation is carried entirely by polyphony's (104 actions, 0 levels) point, which is a broken arm that never played. Excluding it, r = +0.474 on n = 4, and AVO v2 contradicts it outright with the MOST actions (3,601) and nearly the FEWEST levels (27).",
+    "recorded_because": "it is the same single-point trap that nearly promoted arm DD on ft09 six hours earlier, and it should be on the record that the check was run on our own hypothesis and not only on the arms."
+  },
+  "DECISION": "REJECT. Ineligible for the 2026-09-02 slot under the predeclared rule.",
+  "cost": "2.4 GPU-h."
+}

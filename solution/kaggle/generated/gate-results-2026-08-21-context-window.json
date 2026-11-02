@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-21T19:56:05.018788+00:00",
+  "subject": "Gate results for the context-window and multimodal-upscale arms",
+  "gate_predeclared_in": "solution/kaggle/generated/gate-predeclared-2026-08-21-context-window.json",
+  "gate_written_before_either_arm_was_pushed": true,
+  "control": {
+    "name": "combined-v2",
+    "levels": 23,
+    "mean": 4.248,
+    "actions": 1520,
+    "zero_level_games": 9,
+    "decisions": 465,
+    "decisions_per_game": 16,
+    "peak_kv": 0.414,
+    "final_prefix_hit": 0.622,
+    "generation_tok_s": 533.4,
+    "public_draw": 1.71
+  },
+  "arms": {
+    "q38-context-window-v1": {
+      "verdict": "PROMOTE",
+      "kernel": "vineethsaivs/arc3-q38-ctxwin-ordinary-commit",
+      "source_dataset": "vineethsaivs/arc3-q38-context-window-v1",
+      "change": "analyzer history budget 31,744 -> 48,128; vLLM --max-model-len 65,536 -> 81,920 so generation headroom stays 33,792",
+      "outcome": {
+        "levels": 33,
+        "mean": 5.963,
+        "actions": 1979,
+        "zero_level_games": 5,
+        "decisions": 560,
+        "decisions_per_game": 24
+      },
+      "mechanism": {
+        "median_retained_assistant_turns": {
+          "control": 6,
+          "arm": 10,
+          "modelled": 8.3
+        },
+        "history_drop_rate": {
+          "control": 0.281,
+          "arm": 0.177
+        },
+        "append_only_rate": {
+          "control": 0.713,
+          "arm": 0.819
+        },
+        "median_history_tokens": {
+          "control": 23488,
+          "arm": 36775
+        },
+        "basis": "solution/analysis/history_hysteresis_replay.py over each arm's OWN 25 transcripts at its OWN budget"
+      },
+      "serving": {
+        "peak_kv": 0.576,
+        "final_prefix_hit": 0.567,
+        "generation_tok_s": 431.2,
+        "max_model_len": 81920,
+        "analyzer_context_window": 49152,
+        "waiting_gt_0_samples": "7 of 797",
+        "context_length_errors": 0,
+        "relaunch_to_stock_events": 0
+      },
+      "gate_conditions": {
+        "total_levels >= 23": "PASS (33)",
+        "zero_level_games <= 9": "PASS (5)",
+        "median retained turns > control": "PASS (10 > 6)",
+        "generation throughput within 20% of 533.3": "PASS but MARGINAL (431.2, a 19.2% drop against a 20% bar)",
+        "reject if total_levels <= 20": "not triggered",
+        "reject if peak KV >= 0.90": "not triggered (0.576)",
+        "reject if context-overflow retries > 2%": "not triggered (0 errors)",
+        "shared: all 25 games ran": "PASS, and all 25 held the full 7,920s slot",
+        "shared: zero relaunch-to-stock": "PASS. The string 'relaunching stock vLLM' appears in all three kernel logs at t=7-8s as the setup script's own SOURCE being echoed, not as an event; KV size 398,272 (not 199,136) confirms fp8 KV is live in every arm."
+      },
+      "paired_sign_test_vs_control": {
+        "games_gained": 11,
+        "games_lost": 3,
+        "unchanged": 11,
+        "one_sided_p": 0.0287,
+        "two_sided_p": 0.0574,
+        "note": "For scale, the context-hysteresis arm's own paired test against the publisher's byte-identical control was p = 0.388. This is the first arm in the project with a paired result anywhere near significance."
+      },
+      "why_this_is_believed": "The outcome and the mechanism both moved, in the predicted direction, and the gain is DISTRIBUTED: 11 of 25 games gained and only 3 lost. It is not a single-game artefact. Notably ft09, the game the docs single out as swinging the 25-game mean by +/-1.0, LOST 2 levels, so the mean gain of +1.72 is achieved despite its biggest known confound moving against us.",
+      "honest_caveats": [
+        "Generation throughput fell 19.2%, just inside the 20% bar. That is the expected cost of longer prompts and is the right trade given fp8 KV already showed +28.7% delivered tokens buys +0 levels, but a tighter bar would have failed it.",
+        "Live prefix-cache hit rate FELL, 62.2% to 56.7%, because each request is larger. The append-only rate (the replay proxy for cache stability) rose 71.3% to 81.9%. These disagree in sign and only the second is a mechanism measurement.",
+        "n = 1 commit. At the level-count noise of this instrument a byte-identical rerun has differed by 6 levels. +10 is outside that, and the paired test is the stronger evidence, but this is still one run.",
+        "This does NOT establish a hidden-set gain. Per-draw sigma on the board is 0.315."
+      ]
+    },
+    "q38-ctxwin-upscale16-v1": {
+      "verdict": "REJECT",
+      "kernel": "vineethsaivs/arc3-q38-ctxwin-up16-ordinary-commit",
+      "change": "MULTIMODAL_UPSCALE 8 -> 16 on top of the context-window arm",
+      "control_for_this_arm": "the context-window arm, not combined-v2",
+      "outcome": {
+        "levels": 23,
+        "mean": 3.702,
+        "actions": 1654,
+        "zero_level_games": 9,
+        "decisions": 501,
+        "decisions_per_game": 18
+      },
+      "gate_conditions": {
+        "total_levels >= the context-window arm's and >= 23": "FAIL (23 against 33)",
+        "zero_level_games <= the context-window arm's": "FAIL (9 against 5)",
+        "reject if generation throughput below 400": "not triggered (460.7)"
+      },
+      "serving": {
+        "peak_kv": 0.52,
+        "final_prefix_hit": 0.54,
+        "generation_tok_s": 460.7,
+        "analyzer_context_window": 49152,
+        "multimodal_upscale": 16
+      },
+      "this_is_exactly_what_the_phantom_token_model_predicted": "Upscale 16 raises the ESTIMATED image charge from 1,585 to 3,891 tokens (2.45x) against a true cost of 256 to 1,024, so it spends the raised context budget on phantom tokens and pushes retained history back down. The model put arm B at 5.9 retained turns against arm A's 8.3, essentially back to the shipped config's 5.5. The measured level count lands exactly on the control's 23. Outcome matches prediction.",
+      "consequence": "This is a rejection of upscale 16 AS SHIPPED TODAY, not of the visual-resolution hypothesis. Retest it only AFTER the image-token estimator fix, which drops the upscale-16 charge from 3,891 to 1,039."
+    }
+  },
+  "what_this_does_not_settle": "Whether the gain transfers to the hidden set. Per-draw board sigma is 0.315 and a byte-identical resubmission of our previous best scored 1.68 then 1.05. The 25-game commit can kill a lever or fail to kill it; the paired sign test at p=0.029 is the strongest promotion evidence this project has produced, and it is still one run."
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-30T02:10:00+00:00",
+  "subject": "Gate results for arm X (bootstrap probe) and arm AA (ACTION7 -> UNDO). Both TIE on levels; neither promoted. Arm AA's MECHANISM is confirmed repaired and the fix is carried forward as maintenance, not as a promotion.",
+  "control": "q38-temp09-v1, the bundle that drew our banked 2.65: 35 levels, 4 zero-level games",
+  "arm_X_bootstrap_probe": {
+    "kernel": "vineethsaivs/arc3-q38-probe3-ordinary-commit",
+    "levels": 34, "control_levels": 35, "zeros": 4, "control_zeros": 4,
+    "paired_sign_test": "3 gained / 4 lost",
+    "MECHANISM_GATE": "PARTIAL. taaf_setup_env.json shows BOOTSTRAP_PROBE=1, BOOTSTRAP_PROBE_CAP=6, so the overlay was live. But whole-game action-class coverage did NOT improve: 2 of 25 games still end with an offered-but-never-played class, the same as the arm without the probe.",
+    "why_the_effect_is_invisible": "The 40-percent-uncovered figure that motivated this arm was measured on LEVEL 1 ONLY. Across a whole game the agent already covers ~92 percent of offered classes unaided, so a probe capped at 6 actions and firing only on untried classes at level start has very little left to do. The arm is not broken; the headroom was smaller than the level-1 statistic implied.",
+    "VERDICT": "TIE band, sign test slightly against. Incumbent keeps the slot. NOT PROMOTED.",
+    "note_on_convergent_discovery": "The top-of-board polyphony bundle calls its own bootstrap probe load-bearing, but probes EVERY class at EVERY level start with probe_cap 12, against our gap-filling probe capped at 6. Our result bounds the gap-filling form only; it says nothing about theirs."
+  },
+  "arm_AA_undo_action": {
+    "kernel": "vineethsaivs/arc3-q38-undo-ordinary-commit",
+    "levels": 35, "control_levels": 35, "zeros": 3, "control_zeros": 4,
+    "paired_sign_test": "3 gained / 2 lost, which is not separation",
+    "MECHANISM_GATE": "PASS, decisively.",
+    "mechanism_evidence": {
+      "undo_offered_in": "exactly 6 of 25 games, matching the documented '6 of the 25 public games expose it' with no tuning",
+      "undo_EXECUTED": "2 times in this arm, against 0 in the arm run the same night on the unpatched map, and 0 in 68,682 recorded actions historically",
+      "batch_rejections": "'Unknown action' fell from 28 (unpatched arm, same night) to 4. A 7x reduction. Each rejection discarded a WHOLE batch, so this recovered valid actions too, not only the undo."
+    },
+    "VERDICT": "TIE on levels (35 vs 35). The predeclared gate says ties go to the incumbent and forbids promoting on a variance argument. NOT PROMOTED into the rotation.",
+    "BUT_THE_FIX_IS_CARRIED_FORWARD": "This is a maintenance decision, explicitly separate from the gate. The gate exists to stop noise being promoted as capability, and no capability claim is being made: the level totals are identical. What is established is that a code path which advertised an action and then rejected the entire batch containing it is now repaired, at zero measured cost and with one fewer zero-level game. Every future bundle, including the polyphony port, applies apply_undo_action.py.",
+    "a_finding_we_could_not_have_had_before": "With the action reachable, the model still chose it only twice. THAT is the genuine 'the model rarely uses undo' result. The old 0-of-68,682 figure was not evidence of preference, because the action could not execute at all.",
+    "loose_end": "4 'Unknown action' rejections remain in this arm. Not diagnosed. Likely the model inventing action names outside the map; worth one grep before any future action-space change."
+  },
+  "the_pattern_now_at_seven_arms": "Arms V, W, Y, Z, X and AA have all landed inside the noise floor of the 25-game bench, and arms Y, Z and AA had CONFIRMED working mechanisms. Harness-level overlays on this architecture are exhausted as a source of level gains. This is the empirical case for the polyphony port, and it is also a publishable result in its own right."
+}

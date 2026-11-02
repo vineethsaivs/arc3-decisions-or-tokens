@@ -1,0 +1,22 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-28",
+ "gate": "gate-predeclared-2026-10-28-franzen-l1a1y8sv2r3lf15.json: ship on m1 (tokens), m2 (cache, no OOM), no harm and a clean Kaggle probe; a tie on levels with the token gain ships",
+ "instrument": "Vertex wave 4 W (l1a1y8sv2r3lf15) + 2 concurrent A (l1a1y8sv2r3lfk), 25 games, 7,200 s, 18:47 to 22:40Z; the 8 lf runs of 10-27 pooled for no harm; Kaggle probe 300 s per game",
+ "control": "l1a1y8sv2r3lfk (the pin's agent at 14 streams) concurrent, plus the 8 lf runs (10-27)",
+ "arm": {
+  "kernel": "vineethsaivs/arc3-franzen-l1a1y8sv2r3kp12lf15-a",
+  "version": 1,
+  "change": "the pin l1a1y8sv2r3kp12lf with 15 admitted games, 15 server requests and 75 Mamba slots instead of 14 and 70"
+ },
+ "evidence": {
+  "m1_tokens": "PASS: W 6.631M generated tokens per run against concurrent A 6.496M (+2.1%) and the lf pool 6.511M (+1.8%); bars 6.61M and 6.594M",
+  "running": "W 13.58 running requests on average against 12.66 (A) and 12.66 (lf): the idle slot is filled",
+  "m2_cache": "PASS: prefix hit 0.9529 against A 0.9561 (bar 0.9511); new prefill 9.71M against 9.01M (A) and 9.37M (lf); 0 OOM or relaunch lines in 4 W serve.logs",
+  "no_harm": "PASS: W 120, 125, 122, 135 = 125.5 against the pool (8 lf + 2 A) 124.2 (bar 121.7); without W's best game (ka59) 119.8 against 119.4 (bar 116.4)",
+  "probe": "PASS: Kaggle v1 19:01Z, READY after 577 s, decode graphs bs 1 to 15 captured, games played (10 levels, 250 actions), 0 tracebacks in kernel.log and serve.log, no OOM"
+ },
+ "promote": true,
+ "verdict": "PROMOTE. A 15th admitted game fills the decode slot that idled while games run python (+0.9 running requests, +2.1% tokens) at the same cache hit within 0.3 points and no memory failure; levels tie. Expected about +1.5% score by the clock reading, below what 4 runs resolve. Rollback: re-pin l1a1y8sv2r3kp12lf v2 if the first live draw is 0.00 or a day errors twice.",
+ "what_this_does_not_claim": "No level gain: 125.5 against 124 is a tie. The scored run's 110-game regime admits 15 games of 110 instead of 14; the replica's per-game slot time is unchanged by design, so the gain is the same idle-slot fill."
+}

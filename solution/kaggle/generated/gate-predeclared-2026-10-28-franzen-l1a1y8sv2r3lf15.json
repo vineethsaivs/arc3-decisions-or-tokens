@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-28",
+  "declared_before_results": true,
+  "candidate": "l1a1y8sv2r3lf15 (wave W) against l1a1y8sv2r3lfk (wave A); l1a1y8sv2r3kp12lf15 (probe, would become the pin)",
+  "change": "15 admitted games, 15 server requests and 75 Mamba slots instead of 14 and 70; nothing else",
+  "why": "at 14 streams the server runs 12.7 requests on average and queues 0.1 (lf wave serve.logs): about one decode slot idles while games execute python. Scaling 10->14 running gave 872->972 tok/s, so a 15th game should add about +2.5% tokens; the clock reading (V3-W13) prices +1% compute at about +0.73% score",
+  "risk": "KV p99 0.859 to 0.867 and max 0.92 at 14 streams; a 15th context could evict cached prefixes at peak (more new prefill) or OOM (watchdog relaunches)",
+  "wave": "Vertex: 4 W + 2 A concurrent (vertex_submit.sh, overflow to us-east4); about $33",
+  "gate": {
+    "m1_tokens": "W mean generated tokens per run >= 6.61M (the 8 lf runs' 6.511M x 1.015) AND >= concurrent A mean x 1.015",
+    "m2_cache": "W prefix-cache hit rate (cached / (cached + new) prefill tokens) >= concurrent A - 0.5 points; no server relaunch or OOM in any W serve.log",
+    "no_harm": "W mean levels >= (8 lf runs plus concurrent A, pooled) - 2.5, and without W's best game >= that pool - 3",
+    "probe": "Kaggle probe of l1a1y8sv2r3kp12lf15 installs and plays (READY, bs-15 graphs captured, 0 tracebacks)"
+  },
+  "decision": "ship on m1, m2, no_harm and the probe; a tie on levels with the token gain ships (CLAUDE.md, How we measure); kill on any miss",
+  "rollback": "re-pin l1a1y8sv2r3kp12lf v2 if the first live draw is 0.00 or a day errors twice"
+}

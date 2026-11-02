@@ -1,0 +1,24 @@
+{
+ "2.0": {
+  "S_base_at_rho_over_x": 37.2175304646561,
+  "a_slow_rho1": 43.201951580287414,
+  "b_trims_scaled": 43.1451790228613,
+  "c_constants_scaled": 42.83247711612598,
+  "d_both": 37.2175304646561
+ },
+ "2.5": {
+  "S_base_at_rho_over_x": 30.150806548467465,
+  "a_slow_rho1": 37.791368017726604,
+  "b_trims_scaled": 37.88277752494929,
+  "c_constants_scaled": 34.9949640416279,
+  "d_both": 30.150806548467465
+ },
+ "3.0": {
+  "S_base_at_rho_over_x": 27.270136367334743,
+  "a_slow_rho1": 33.38200945365879,
+  "b_trims_scaled": 31.59566716254543,
+  "c_constants_scaled": 28.64013671512028,
+  "d_both": 27.270136367334743
+ },
+ "rate_equals_window_max_abs_diff_10_seeds": 0.0
+}

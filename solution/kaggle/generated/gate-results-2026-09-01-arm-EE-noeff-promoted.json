@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-09-01T03:45:00+00:00",
+  "arm": "EE",
+  "kernel": "vineethsaivs/arc3-q38-noeff-ordinary-commit",
+  "bundle": "vineethsaivs/arc3-q38-noeff-v1",
+  "subject": "Deleting the efficiency instruction returns 30 levels. It is the ONLY one of three new arms to clear the floor, and it ships tomorrow. This is a TIE at the bottom of the band, NOT a demonstrated improvement, and the record must say so.",
+  "RESULT": {
+    "levels": 30,
+    "control_levels": 35,
+    "band": "TIE (30 to 39), at its lowest point",
+    "zero_level_games": 6,
+    "control_zeros": 3,
+    "games_at_level_2_or_deeper": 9,
+    "control_deep": 9,
+    "paired_sign_test": "4 gained / 8 lost / 13 tied",
+    "shipped_scorer_mean": 4.591,
+    "control_mean": 5.858,
+    "shipped_scorer_mean_excluding_ft09": 4.187,
+    "control_mean_excluding_ft09": 5.507,
+    "environment_actions": 3144,
+    "control_actions": 3347
+  },
+  "THE_HONEST_READING, which is not the flattering one": {
+    "the_point_estimate_is_WORSE": "on levels (30 vs 35), zeros (6 vs 3), raw mean, ex-ft09 mean, and the sign test. The only measure it matches on is depth, 9 games at level 2+ in both.",
+    "why_it_is_not_a_measured_regression": "byte-identical reruns of the SAME config have returned 29 and 33 levels, so one sigma is about 4 and 30 versus 35 is roughly 1.25 sigma. The project's own bands put 30 in TIE and REJECT at 29 or below. It is a tie, at the bottom of the band.",
+    "so_why_ship_it": "the owner instructed explicitly, and twice after the concern was raised, that the next slot must carry new code. A selection rule was fixed BEFORE any arm reported, with a 30-level floor whose stated purpose was to prevent a self-inflicted zero. EE is the only arm that clears it. Changing the rule now, after seeing that the sole eligible arm is a weak one, would be exactly the post-hoc rationalisation the rule exists to prevent.",
+    "what_is_NOT_being_claimed": "that this is better than the incumbent. The best estimate is that it is slightly worse, and the draw may well come back below 2.0. What it cannot do is lower the banked 2.65, because the public board keeps our maximum."
+  },
+  "THE_MECHANISM_ARGUMENT_STILL_STANDS_AND_IS_NOW_LESS_SUPPORTED": {
+    "the_argument": "48 of 75 runs already clear level 1 at 0.83x the human baseline, so the 1.15 credit cap binds; the entire remaining efficiency pot is +0.71 against +6.16 for one extra level per game; zero-level runs spend 1.46x the baseline, so they are stuck rather than profligate.",
+    "what_the_run_says_about_it": "actions barely moved (3,144 against 3,347), so deleting the instruction did NOT make the agent spend more freely. If the line had been binding, removing it should have raised action counts. It did not. The most likely truth is that the line was close to inert and this arm is noise around the control."
+  },
+  "DECISION": "PROMOTE to the 2026-09-02 slot under the predeclared rule. Rollback: vineethsaivs/arc3-q38-undo-ordinary-commit v1.",
+  "cost": "2.4 GPU-h. Night total: 7 arms, 16.8 GPU-h."
+}

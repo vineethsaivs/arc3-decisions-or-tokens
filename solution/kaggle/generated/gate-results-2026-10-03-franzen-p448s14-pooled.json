@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-03",
+  "plan": "docs/PLAN_2026-10-01.md",
+  "instrument": "25-game scored-run replica (7,200 s shared window), two runs per config",
+  "control": {"config": "p448, 12 admitted streams",
+              "runs": [{"kernel": "vineethsaivs/arc3-franzen-p448-a", "version": 1, "levels": 122, "mean_game_score": 55.72, "harness_tok_s": 618.9, "cache_hit_pct": 93.1},
+                       {"kernel": "vineethsaivs/arc3-franzen-p448rep-a", "version": 1, "levels": 106, "mean_game_score": 46.88, "harness_tok_s": 687.1, "cache_hit_pct": 93.4}]},
+  "arm": {"kernel": "vineethsaivs/arc3-franzen-p448s14-a", "version": 1,
+          "change": "p448 at 14 admitted streams with 70 Mamba slots",
+          "runs": [{"kernel": "vineethsaivs/arc3-franzen-p448s14-a", "version": 1, "levels": 117, "mean_game_score": 53.51, "harness_tok_s": 731.2, "cache_hit_pct": 93.3},
+                   {"kernel": "vineethsaivs/arc3-franzen-p448s14rep-a", "version": 1, "levels": 111, "mean_game_score": 52.15, "harness_tok_s": 729.3, "cache_hit_pct": 93.4}]},
+  "pooled": {"levels": {"p448": 114.0, "p448s14": 114.0}, "mean_game_score": {"p448": 51.30, "p448s14": 52.83}, "harness_tok_s": {"p448": 653.0, "p448s14": 730.3}},
+  "verdict": "Levels tie when pooled (114 against 114), the per-game score the board uses is higher for 14 streams in both runs' average (52.8 against 51.3) and steadier (53.5 and 52.2 against 55.7 and 46.9), and harness tokens per second is 12% higher in both runs with prefix-cache hits unchanged. The hidden run is token-limited per game, so the throughput gain is the mechanism that should carry over. PROMOTE under the rule that a tie with a verified mechanism ships.",
+  "promote": true,
+  "what_this_does_not_claim": "Two runs per config; the level totals spread by 6 to 16 between identical runs, so neither config is shown better on levels alone."
+}

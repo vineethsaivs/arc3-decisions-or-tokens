@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-09-01T01:15:00+00:00",
+  "subject": "SELECTION RULE for the 2026-09-02T00:00Z slot, written BEFORE any of the three candidate arms reported. The owner has instructed that the next submission must carry new code; this file fixes HOW the arm is chosen so the choice cannot be rationalised after the numbers are seen.",
+  "predeclared_before_any_result": true,
+
+  "THE_INSTRUCTION_AND_HOW_IT_IS_HONOURED": {
+    "owner_instruction": "the next submission MUST contain the latest changes",
+    "what_that_overrides": "CLAUDE.md rule 15(d), which forbids shipping an ungated structural change into a scored slot. The owner has reaffirmed after the concern was raised twice, so it is their decision and it is taken.",
+    "what_it_does_NOT_override": "rule 15(c), never ship a MEASURED REGRESSION. That rule is not caution, it is arithmetic: an arm measured at 0 levels would score approximately 0 on the board and teach nothing. Shipping polyphony would have been exactly that. The instruction is honoured by shipping the BEST new arm, not an arbitrary one.",
+    "the_guarantee_that_is_actually_being_made": "the slot carries new code as long as at least ONE of the three arms produces a completed kernel that is not a measured zero. All three complete tonight, hours before the slot opens."
+  },
+
+  "THE_CANDIDATES, all pushed before this file was written": [
+    {"arm": "FF", "kernel": "vineethsaivs/arc3-q38-predgate-ordinary-commit", "change": "host-enforced prediction gate on action(), bounded at 2 refusals per call", "prior_for_ranking": "highest. The only lever whose mechanism is not already in our dead-ideas table, with a published effect size of 37.1 percent miss versus 2.9 percent."},
+    {"arm": "DD2", "kernel": "vineethsaivs/arc3-q38-avo2-ordinary-commit", "change": "AVO agent with the per-game memory fix", "prior_for_ranking": "lowered to about 0.15 by arm DD, which tied at 33 versus 35 with all four mechanisms confirmed live."},
+    {"arm": "EE", "kernel": "vineethsaivs/arc3-q38-noeff-ordinary-commit", "change": "delete the saturated efficiency instruction from prompts.py:17", "prior_for_ranking": "lowest expected effect, but it is a one-line deletion and cannot plausibly break anything."}
+  ],
+
+  "THE_SELECTION_RULE, in order, no discretion": [
+    "1. ELIGIBILITY. An arm is eligible only if its kernel status is `complete` AND its 25-game level total is >= 30. The 30 floor is the REJECT boundary this project already uses, and it exists to stop a self-inflicted zero: polyphony would have shipped 0 levels.",
+    "2. RANK the eligible arms by total levels, DESCENDING.",
+    "3. TIE-BREAK on the ex-ft09 shipped-scorer mean, not the raw mean. Arm DD read +17.8 percent on the raw mean and MINUS 0.305 once ft09 was removed, and ft09 alone swings the 25-game mean by about 1.0. Any rule that ranks on the raw mean will be fooled by one game.",
+    "4. SECOND TIE-BREAK, if still level: prefer the arm with more games reaching level 2 or deeper, because rank 5 is already past the pure-breadth ceiling.",
+    "5. THIRD TIE-BREAK, if still level: prefer FF over DD2 over EE, the prior order fixed above before any result.",
+    "6. IF NO ARM IS ELIGIBLE, meaning every one is a measured zero or fails to complete, ship the incumbent and say so plainly. This is the only branch that does not carry new code, and it fires only when carrying new code would mean knowingly shipping a zero."
+  ],
+
+  "WHAT_IS_DELIBERATELY_NOT_IN_THE_RULE": {
+    "no_significance_test": "on a max-keeping public board a wrong promote costs 0.095 board points and a right one pays 0.205, so a candidate needs only about a 21 percent prior. Demanding significance from a bench with a ~12.6-level MDE would reject everything forever, which is how this project spent the last three weeks flat.",
+    "no_variance_argument": "never promote because a config is noisier. That rule promotes a null arm about 65 percent of the time.",
+    "no_post_hoc_metric_choice": "the metric is total levels, with the ex-ft09 mean as tie-break only. Both are fixed here, before the numbers exist."
+  },
+
+  "MECHANICS": {
+    "why_a_hand_submission_is_needed": "the launchd job at 17:06 local ships whatever is in the ROTATION, and none of these arms is in it. The picker script submits first and writes the record file the launchd job checks, so the two cannot double-fire.",
+    "script": "solution/kaggle/submit_pick_tonight.sh, extended to accept a candidate directory as well as a kit config name",
+    "hard_precondition": "submit_candidate.py:143 refuses a kernel version whose status is not `complete`. All three arms complete tonight; the slot opens 2026-09-02T00:00Z.",
+    "authorization_evidence": "each arm needs a candidate_authorization JSON before submit_candidate will bind it. These are generated from the gate results once the runs report, using the same shape as q38-undo-authorization-2026-08-31.json."
+  },
+
+  "HONEST_STATEMENT_OF_RISK": "This ships a config on n=1 from an instrument whose byte-identical reruns span 29 to 33 levels. The arm chosen may well be no better than the incumbent, and the draw may come back below 2.0. What it cannot do is lower our banked 2.65, because the public board keeps our maximum. The cost of being wrong is one day of information; the cost of never trying is the last three weeks."
+}

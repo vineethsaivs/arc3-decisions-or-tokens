@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "declared_at": "2026-10-12T03:37Z, before any run of either build",
+  "arm": "l1a1y8sv2d3 (vineethsaivs/arc3-franzen-l1a1y8sv2d3-a) and its probe l1a1y8sv2d3p: l1a1y8sv2 + the D3 refit of the drafter's 29 dense mtp.* tensors (dataset vineethsaivs/flashnext-mtp-d3, sha256 8d9a42d3...), no other rider",
+  "why": "ursuciprian's D3 refit lifted accepted drafts over 3 positions 2.015 to 2.178 (+8.1%) on their stack; the verifier expects accept length 2.70 to about 2.77 here (train/serve gaps in chain K/V and the target), about +1.5% tokens per game; lossless, the target verifies every token",
+  "probe_gate": [
+    "kernel.log shows 'd3draft: 29 mtp.* tensors spliced'",
+    "READY at 640 s or less",
+    "0 tracebacks or CUDA errors",
+    "mean accept length over decode lines with 8+ running at least 2.65 (y8-family probes 2.584, 2.603, 2.609); below that the replica is not run"
+  ],
+  "replica_gate": [
+    "accept length at 8+ running at least 2.76 (control 2.704)",
+    "accept length by mean context per running request at least control + 0.04 in both the 60-80K and 80-100K buckets",
+    "clean step at 14 running at most 37.1 ms (servelog.py; control 36.5)",
+    "cache hit at least 93.6%, KV max below 0.98, 0 retractions, 0 tracebacks, failclosed summary printed",
+    "at least 105 levels"
+  ],
+  "promote": "all replica items hold",
+  "hold": "accept 2.73 to 2.76 with neither bucket below control: ship only alongside another promoted change",
+  "reject": "accept below 2.73, either 60-100K bucket below control, <= 104 levels, or a crash",
+  "note": "harness tok/s is reported, not gated (758 to 800 between identical runs)",
+  "probe_result": "l1a1y8sv2d3p v1 (05:00Z to 05:16Z): PASS. 'd3draft: 29 mtp.* tensors spliced'; READY after 493 s; 0 tracebacks, 0 CUDA errors; mean accept length at 8+ running 2.718 (y8-family probes 2.584, 2.603, 2.609); by context 0-20K 2.693, 20-40K 2.739. The replica question moves to l1a1y8sv2r2 (pushed 05:17Z), where D3 is judged on its accept-length items alone"
+}

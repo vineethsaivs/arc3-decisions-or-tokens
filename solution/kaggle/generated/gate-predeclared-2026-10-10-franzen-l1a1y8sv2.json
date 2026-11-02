@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "declared_at": "2026-10-10T06:25Z, before any run of the arm",
+  "arm": "l1a1y8sv2 (vineethsaivs/arc3-franzen-l1a1y8sv2-a): l1a1 plus yields after 8,192 tokens, the QSA ring fix and the async M-RoPE upload, plus both fail-closed checks",
+  "why": "the candidate for the next pin if l1a1y8 passes its own gate: it adds two serving changes with no memory cost (a correctness fix and a lossless copy) to the yield change",
+  "instrument": "25-game replica, one run; franzen_readout.py",
+  "controls": "l1a1y8 run 1: 128 levels, mean 61.18, 780.7 tok/s, cache hit 95.3%, accept 2.70, openers 1,340; l1a1 GCP runs 113 and 109",
+  "mechanism_required": [
+    "install lines for qsaring and asyncmrope; failclosed summary printed",
+    "openers at most 1,450 (the yield mechanism carried through)",
+    "tok/s not below 97% of l1a1y8 run 1; accept length within 0.05; cache hit within 2 points",
+    "0 tracebacks, 0 analyzer give-ups, 0 scheduler exceptions"
+  ],
+  "promote": "only if l1a1y8 passes its predeclared gate (pooled over its two runs) AND this run holds the mechanism AND scores at least 105 levels",
+  "fallback": "if l1a1y8 passes but this run fails, promote the yield change alone (probe build of l1a1y8)",
+  "reject": "<= 104 levels, a crash, or a serving metric outside the bounds"
+}

@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-09-02T07:30:00+00:00",
+  "predeclared_before_any_result": true,
+  "arm": "GG",
+  "subject": "Qwen3.8-Flash-Next (176B MoE, 6B active, NVFP4) served by keithtyser's pinned vLLM stack UNDER OUR q38 agent tree. First experiment of docs/PLAN_TOP3.md. Written before any GG kernel or GCP run exists.",
+  "candidate": {
+    "agent_tree": "src/ARC3-Inference from vineethsaivs/arc3-q38-undo-v1 (q38 TAAF tree + context hysteresis 0.70 + ACTION7 repair + hard_noop_guard), unchanged",
+    "serving_stack": "copied byte-for-byte from keithtyser/duck-qwen38-nvfp4-mtp-vllm-smoke-v1 v10: serving_setup.py, serving_teardown.py, vllm_server_watchdog.py, vllm-patches/ (RadixArk NVFP4 PLE FP8 loader patch), setup_commands.json = [\"$PYTHON\" \"$TAAF_KAGGLE_BUNDLE_DIR/serving_setup.py\"]",
+    "model": "Kaggle model keithtyser/qwen3-8-flash-next-nvfp4/PyTorch/radixark-modelopt-fp4/1 = RadixArk/Qwen3.8-Flash-Next-NVFP4 @ 7b719225242aacd3dbd3f9407468c2ee9a9d2594, 419 files, 135,253,622,894 bytes",
+    "runtime": "dataset keithtyser/qwen38-flash-next-vllm-nvfp4-runtime-v1 (7.9 GB, docker layers of vllm/vllm-openai:qwen38-flash-next sha256:fc120ece0a388cc0aa1caad4a9f1cd92113484ab7ec2fd0efadd62585be05bf8, vLLM v0.1.dev20073+g8e685d198)",
+    "serving_profile": "his measured winner kv5-bf16-mtp3-c8-cg32: TAAF_VLLM_KV_CACHE_MEMORY_BYTES=5368709120, KV dtype auto, MTP 3, max_num_seqs 8, max_num_batched_tokens 8192, cudagraph capture 32, prefix caching OFF, OMP threads 1",
+    "agent_env": "LOCAL_ANALYZER_CONTEXT_WINDOW=32768 (forced by the 105,202-token KV pool; NOT our 49,152), LOCAL_ANALYZER_TEMPERATURE=0.9, TOP_K=20, TOP_P=0.95, MULTIMODAL_UPSCALE=8, everything else as in arc3-q38-undo-v1",
+    "notebook": "a copy of keithtyser's notebook (known to boot this stack on Kaggle) with only the dataset refs, model ref, id and title changed. Never a hand-built notebook (CLAUDE.md rule 15 b2).",
+    "variables_changed_vs_control": "TWO, and they cannot be separated: (1) the model + serving stack, (2) the analyzer context window 49,152 -> 32,768 which the KV pool forces. Recorded honestly; the context step is worth about -5 to -10 levels on the 27B (dose response 23 / 33 / 30 at 31,744 / 48,128 / 64,512), so a GG tie would already imply the model is worth about +5 to +10."
+  },
+  "control": {
+    "bundle": "vineethsaivs/arc3-q38-undo-v1, kernel arc3-q38-undo-ordinary-commit v1",
+    "levels": 35,
+    "zero_level_games": 3,
+    "games_at_level_2_or_deeper": 9,
+    "shipped_scorer_mean": 5.858,
+    "ex_ft09_mean": 5.507,
+    "decisions": 614,
+    "actions": 3347,
+    "per_game_levels": {"ar25": 4, "bp35": 1, "cd82": 1, "cn04": 1, "dc22": 1, "ft09": 2, "g50t": 0, "ka59": 1, "lf52": 1, "lp85": 3, "ls20": 1, "m0r0": 1, "r11l": 2, "re86": 2, "s5i5": 1, "sb26": 1, "sc25": 2, "sk48": 0, "sp80": 1, "tn36": 2, "tr87": 0, "tu93": 3, "vc33": 2, "wa30": 1},
+    "reference_runs_that_motivate_the_arm": {
+      "keithtyser_flashnext_on_old_duck_2026_09_01": {"levels": 36, "zeros": 6, "deep": 11, "mean": 6.759, "decisions": 659, "actions": 3695, "source": "kernels/output keithtyser/duck-qwen3-8-flash-next-nvfp4-mtp benchmark.json, run 2026-09-01T02:39Z to 05:00Z"},
+      "keithtyser_q38_27b_on_old_duck": {"levels": 25, "zeros": 8, "deep": 7, "mean": 3.879, "decisions": 525, "actions": 2176, "source": "kernels/output keithtyser/duck-qwen3-8-27b-fp8 benchmark.json"},
+      "paired_within_his_harness": "Flash-Next better on 11 games, worse on 3, tied 11 (one-sided sign p = 0.029)",
+      "paired_our_tree_vs_old_duck_on_27b": "ours better on 9, worse on 1, tied 15 (p = 0.011)",
+      "paired_his_flashnext_vs_our_27b_tree": "8 / 7 / 10, a tie at 36 vs 35"
+    }
+  },
+  "INSTRUMENT": {
+    "single_run_25_game_total_sd": 6.79,
+    "basis": "four byte-identical replicate pairs (33/29, 44/28, 42/33, 29/33), generated/zero-gpu-sweep-2026-09-01.json",
+    "arm_minus_control_sd_at_n1": 9.6,
+    "MDE_80_power_on_totals": 27,
+    "why_the_gate_uses_the_paired_sign_test": "throughput and decisions per game are identical within replicate pairs, yet 11 of 12 differing games moved the same way in one pair; totals inherit that session-level component, per-game signs are the sharper statistic. Both promotions in this project's history (context window 11/3, Flash-Next in keithtyser's harness 11/3) were sign-test results."
+  },
+  "MECHANISM_GATE_checked_first": {
+    "1_model_loaded": "vllm-openai-server.log reports 'Model loading took' between 78 and 86 GiB and the served model name Qwen/Qwen3.8-Flash-Next-NVFP4; anything else is an INSTRUMENT FAILURE and the primary verdict is not evaluated",
+    "2_ple_offload_live": "log contains 'PLE-offload' progress lines and VLLM_PLE_CPU_OFFLOAD=1 in the launch env; 'Available RAM' at load >= 100 GiB",
+    "3_kv_pool": "'GPU KV cache size' >= 95,000 tokens",
+    "4_no_restart": "vllm_server_watchdog restarted the server 0 times; a restart makes the run a smoke test, not a measurement",
+    "5_the_agent_played": "total decisions across 25 games >= 450 and total environment actions >= 2,000 (control 614 / 3,347; keithtyser 659 / 3,695). Below that the serving profile is starving our tree and the result is a serving finding, not a model finding",
+    "6_tool_calls_parse": "'Unknown action' deduped rejections <= 6 and malformed tool-call arguments < 5 percent of model responses",
+    "7_no_traceback_in_our_three_files": "tool_agent.py, solver.py, python_tool_sandbox.py"
+  },
+  "PRIMARY_VERDICT_bands_on_total_levels": {
+    "crash_or_mechanism_failure": "INSTRUMENT FAILURE. Fix on GCP before spending another Kaggle hour. Not a rejection of the model.",
+    "<= 29": "REJECT for the daily slot (the standing floor that stops a measured regression shipping). Keep the stack for the profile arms; the model is not refuted by one run inside the noise.",
+    "30 to 45": "TIE band. Decide on the paired sign test against the control's per_game_levels: PROMOTE into a 1:1 rotation with the incumbent if games gained >= 2 x games lost (e.g. 8 / 4), otherwise HOLD and run the GCP replicate before any slot",
+    ">= 46": "PROMOTE outright and ship in the next daily slot after daily_submit.sh sync. 46 is +11 over control, the same size as both prior promotions."
+  },
+  "SECONDARY_readings_reported_beside_the_primary_never_instead": [
+    "zero-level games (control 3)",
+    "games at level 2 or deeper (control 9)",
+    "shipped-scorer mean AND ex-ft09 mean (control 5.858 / 5.507); a move carried by ft09 alone does not count",
+    "decisions per game and generated tokens per decision (control 24.6 / 4,886)",
+    "KV usage and 'Waiting' queue depth from the vLLM log, to price the serving-profile arms GG2"
+  ],
+  "PRIORS_written_before_the_run": {
+    "P_instrument_failure": 0.25,
+    "P_levels_<=29": 0.15,
+    "P_30_to_45": 0.40,
+    "P_>=46": 0.20,
+    "note": "the instrument-failure prior is high because this is a new runtime, a new quantization kernel path on sm_120, a 135 GB model on NFS, and a PLE offload into host RAM, none of which this account has ever booted"
+  },
+  "WHAT_IS_NOT_ALLOWED": [
+    "changing the metric after the numbers exist (total levels first, sign test second, means third)",
+    "promoting on a variance argument",
+    "reading a 33 as a win because the context window shrank (that is exactly why the two-variable caveat is written above)",
+    "spending a scored slot on GG before a completed Kaggle commit exists"
+  ],
+  "DAILY_SLOT_RULE_if_promoted": "GG alternates 1:1 with D-undo (the 3.15 config) until 2026-09-14, then the config with the higher mean of its draws gets 2 of every 3 slots; from 2026-10-01 only the highest measured MEAN ships (private board, mean of two auto-selected runs).",
+  "cost": "build 1.5 days; GCP bring-up about 4 hours and 10 USD if quota exists; Kaggle 2.4 GPU-h per 25-game commit; first commit possible 2026-09-05 when the weekly quota resets"
+}

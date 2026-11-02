@@ -1,0 +1,18 @@
+metric,vertex_cal1,kaggle_franzen-l1a1y8sv2r3-v1,diff_pct_or_pt,source_and_check
+harness tok/s (generated tokens / play window),886.9,885.5,+0.2%,franzen_readout.py on both run dirs (recomputed): 6424735/7244.06 s vs 6425664/7256.83 s
+decode tok/s mean,950.6,950.7,0.0%,franzen_readout.py (recomputed)
+decode tok/s p90,1093.9,1094.5,-0.1%,franzen_readout.py (recomputed)
+accept length (all requests),2.809,2.830,-0.7%,accept_by_context.py (recomputed)
+accept at 60 to 80K context,2.818,2.838,-0.7%,accept_by_context.py (recomputed)
+accept at 80 to 100K context,2.818,2.840,-0.8%,accept_by_context.py (recomputed)
+cache hit %,95.08,95.03,+0.05 pt,franzen_readout.py (recomputed)
+clean decode step at 14 running (ms),36.3,36.6,-0.8%,servelog.py (recomputed)
+decode share of window %,84.6,84.2,+0.4 pt,servelog.py (recomputed)
+running mean,13.05,13.06,-0.1%,franzen_readout.py (recomputed)
+KV mean,0.661,0.659,+0.3%,franzen_readout.py (recomputed)
+prefill ms per 1K new tokens,109.5,108.6,+0.8%,franzen_readout.py (recomputed)
+target weight load (s),308.8,258.1,+19.6%,serve.log 'Load weight end' (read); us-east4 probe 245.0; untreated page cache 702.9 (probe2)
+READY after notebook start (s),563,558,+5 s,franzen_readout.py (recomputed)
+levels (25 games),126,129,-3,franzen_readout.py (recomputed)
+mean game score,58.44,58.46,-0.02,franzen_readout.py (recomputed)
+games at 0 levels,0,0,0,franzen_readout.py (recomputed)

@@ -1,0 +1,29 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-04",
+ "plan": "docs/PLAN_2026-10-01.md",
+ "instrument": "scheduler simulator (solution/analysis/scheduler_sim.py) for the effect, plus a 1,800 s Kaggle smoke run for install and liveness. The 25-game replica cannot resolve a priority rule: it offers the scheduler 2 games per slot where the hidden run offers 8.",
+ "control": "pinned p448s14 with Franzen's live priority rule; first scored draw 28.97",
+ "arm": {
+  "kernel": "vineethsaivs/arc3-franzen-p448s14dp-a",
+  "version": 1,
+  "change": "p448s14 plus shiiin9's D-prime slot priority (AFF AI CLUB public notebook), embedded verbatim and installed in cell 19 before the run, active in the scored run"
+ },
+ "evidence": {
+  "simulator": "solution/kaggle/generated/scheduler-sim-2026-10-04-dprime.json: hidden regime (110 games, 14 slots) +2.81 public game score over Franzen's live rule (paired se 0.45); +2.6 to +3.3 across trim cadence, serving speed and slot count; reproduces the replica and Franzen's 100-game run within 3%",
+  "author": "shiiin9 reports +1.5 board points from an independent simulator and drew 31.54 with it against 27.62 and 29.67 for their earlier configs"
+ },
+ "smoke_result": {
+  "install_line": "#OURS_FORM ok version=d_prime priority_value replaced; fresh-first removed; tail fade 0.4",
+  "tracebacks_in_kernel_log": 0,
+  "games_started": 18,
+  "games_first_admitted_after_600s": 4,
+  "games_with_a_mid_run_wait_over_300s": 5,
+  "levels_in_1800s_window": 36,
+  "harness_tok_s": 709.1,
+  "cache_hit_pct": 93.4,
+  "running_mean": 12.85
+ },
+ "verdict": "PROMOTE. The rule installs in the notebook process (install line printed, no traceback), hands slots over at trims and admits waiting games by formula (4 games first admitted after 600 s, 5 resumed after waits), and serving is unchanged (93.4% cache hits, 12.85 running of 14). The effect is gated where it can be measured: the calibrated simulator puts it 2.6 to 3.3 public game score above Franzen's rule in the hidden regime in every variant, matching its author's independent estimate and board draw. Model calls are unchanged; only which game decodes next changes.",
+ "promote": true
+}

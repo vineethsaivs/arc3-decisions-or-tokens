@@ -1,0 +1,5 @@
+teams with LastSubmissionDate 00:00:00-00:20:59Z on 2026-10-10 in the 03:31Z CSV: 64
+monitor minutes_taken present for 64; under 60 min: 63; range 23 to 169
+all 64 rows were on the board by 03:31Z, i.e. within 3.5 h of the window start; a healthy run takes about 9 h [field.md]
+rows at or over 60 min: [('Alex Sehdeva', 169)]
+of the 64, with best score >= 20 (serious teams): 61

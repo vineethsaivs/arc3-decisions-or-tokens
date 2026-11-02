@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "declared_at": "2026-10-12T14:30Z, before the pairs dataset exists and before any replay",
+  "question": "Does slimming retained history at a trim (reasoning and images older than the last 3 turns replaced, the trim track's leantrim) change the model's next decision beyond its own sampling noise? docs/research/2026-10-12-next/PLAN.md 5.1 calls it the largest open question: about +3.5% tokens if behavior holds, sign unknown otherwise",
+  "instrument": "dev kernel 'trimtest' (build_franzen_arms.py): the pin's server, no games. For every post-trim state in l1a1y8sv2r3 v1's request logs (solution/analysis/trim_pairs.py, about 110 states), two replies with the logged history (full) and two with it slimmed (lean), live sampling (T 0.7, top_p 0.95, top_k 20, no seed), max 8,192 tokens. solution/analysis/trim_compare.py reads it with state-bootstrap 90% intervals",
+  "required_for_a_leantrim_replica": {
+    "coverage": "at least 90% of states have all 4 replies",
+    "acts": "share of replies that execute an action: lean minus full at least -0.05, interval lower bound at least -0.12",
+    "first_action": "agreement full-vs-lean minus full-vs-full at least -0.05, interval lower bound at least -0.15",
+    "reasoning": "median reasoning length lean over full between 0.80 and 1.25 (more is re-investigation, less is imitation of the markers)",
+    "blind_judge": "40 sampled states, full and lean replies shown in random order without labels: the share judged to re-derive mechanics the full history already holds is at most 0.10 higher for lean"
+  },
+  "if_pass": "build the leantrim replica (pin + franzen_overlays/leantrim.py, ARC3_LEAN_KEEP_TURNS=3) and gate it on: re-prefilled tokens per trim at least 30% lower; harness tok/s at least +2%; within-game after-first-trim vs before-first-trim contrasts of actions per opener and no-action share not worse than the control by more than 10%; levels at least 117 (family mean 124.3 minus 2 sd; stricter than the 105 floor because this changes what the model sees)",
+  "if_fail": "leantrim stays killed for the freeze; the pairs and replies go to the Paper Track",
+  "not_claimed": "A clean test excludes gross decision changes at the first reply after a trim only; a slow loss of earlier-level knowledge would not show here",
+  "blind_judge_tool": "solution/analysis/trimtest_judge.workflow.js (a Claude Code workflow; args = the replies of trim_compare.py --judge-sample 40 with hidden_order removed; labels re-joined after)"
+}

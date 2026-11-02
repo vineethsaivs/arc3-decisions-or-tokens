@@ -1,0 +1,38 @@
+== median clean step (ms) by running count, n in brackets (n >= 10)
+  franzen-l1a1y8-v1              8:29.5[26]  9:31.4[28]  10:32.1[63]  11:33.0[103]  12:34.3[144]  13:35.7[283]  14:36.8[679]
+  franzen-l1a1y8r-v1             8:29.1[21]  9:30.9[44]  10:32.1[72]  11:33.0[100]  12:34.5[173]  13:35.7[318]  14:36.8[621]
+  franzen-l1a1y8sv2-v1           8:29.2[35]  9:30.1[36]  10:31.7[73]  11:32.9[110]  12:34.1[192]  13:35.4[311]  14:36.5[718]
+  franzen-l1a1y8sv2r1-v1         11:32.8[16]  12:34.2[78]  13:35.5[271]  14:36.5[910]
+  franzen-l1a1y8sv2r2-v1         11:32.6[13]  12:34.2[59]  13:35.4[263]  14:36.5[916]
+  franzen-l1a1y8sv2r3-v1         11:32.7[13]  12:34.3[47]  13:35.5[266]  14:36.6[1028]
+  franzen-l1a1y8sv2r3s4-v1       11:36.2[11]  12:37.8[61]  13:40.1[249]  14:41.5[677]
+  franzen-l1a1y8sv2r3hm32-v1     11:32.3[17]  12:33.5[71]  13:35.2[261]  14:36.0[958]
+== pooled K=3 OLS, 8132 clean intervals, without context term
+  alpha (ms)                            20.916  95% [20.293, 21.453]
+  beta (ms per running request)          1.120  95% [1.082, 1.168]
+== pooled K=3 OLS, 8132 clean intervals, with context term
+  alpha (ms)                            18.206  95% [17.430, 18.855]
+  beta (ms per running request)          1.163  95% [1.123, 1.213]
+  gamma (ms per 10K context tokens)      0.280  95% [0.233, 0.307]
+== K=3 step at 14 running by mean context per request (pooled)
+  0-20K: 34.4 ms (n=96)
+  20-40K: 35.2 ms (n=163)
+  40-60K: 35.9 ms (n=324)
+  60-80K: 36.7 ms (n=2248)
+  80-100K: 36.8 ms (n=2016)
+  100-K: 36.8 ms (n=25)
+== SPEC_STEPS 4 minus 3 (ms): s4 vs the D3 pair r2+r3, by running count
+  11 running: 36.2 - 32.6 = 3.58 ms  (11.0%)  per running request 0.325 ms
+  12 running: 37.8 - 34.2 = 3.59 ms  (10.5%)  per running request 0.299 ms
+  13 running: 40.1 - 35.5 = 4.61 ms  (13.0%)  per running request 0.354 ms
+  14 running: 41.5 - 36.6 = 4.93 ms  (13.5%)  per running request 0.352 ms
+== break-even for the 4th draft position at 14 running
+  L(3) 2.814  L(4) 3.089  A_4 = L(4)-L(3) = 0.275  (+9.8% accept)
+  T(3) 36.60 ms  T(4) 41.53 ms  (+13.5% step)
+  break-even A_4* = L(3) * (T4/T3 - 1) = 0.379; at the K=4 step the same ratio needs L(4) >= 3.193
+  clean-step model throughput ratio (L4/T4)/(L3/T3) = 0.9674
+  measured gen14 ratio 933.5 / 975.3 = 0.9571   (r2 973.3)
+  franzen-l1a1y8sv2r3-v1         clean-model gen at 14 = 14 * L / T = 1075 tok/s vs measured gen14 975 (ratio 0.907)
+  franzen-l1a1y8sv2r3s4-v1       clean-model gen at 14 = 14 * L / T = 1041 tok/s vs measured gen14 933 (ratio 0.897)
+  franzen-l1a1y8sv2r3hm32-v1     clean-model gen at 14 = 14 * L / T = 1094 tok/s vs measured gen14 987 (ratio 0.902)
+  conditional form: a_4* = A_4*/A_3 = 0.838 with A_3 = 0.4521 (spec_hist.py); a_1..a_3 = 0.773, 0.765, 0.764

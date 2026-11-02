@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-02",
+  "plan": "docs/PLAN_2026-10-01.md",
+  "instrument": "25-game scored-run replica (7,200 s shared window)",
+  "control": {
+    "kernel": "vineethsaivs/arc3-franzen-p448-a",
+    "version": 1,
+    "readout": "kernel-outputs/franzen-p448-v1/readout.json"
+  },
+  "arm": {
+    "kernel": "vineethsaivs/arc3-franzen-p448lm-a",
+    "version": 1,
+    "change": "p448 plus B1 solved-level memory",
+    "readout": "kernel-outputs/franzen-p448lm-v1/readout.json"
+  },
+  "result": {
+    "levels": [
+      122,
+      111
+    ],
+    "zero_level_games": [
+      1,
+      0
+    ],
+    "harness_tok_s": [
+      618.9,
+      684.2
+    ],
+    "cache_hit_pct": [
+      93.08,
+      92.57
+    ],
+    "levels_at_75k_100k_150k": [
+      [
+        67,
+        81,
+        104
+      ],
+      [
+        63,
+        75,
+        96
+      ]
+    ]
+  },
+  "verdict": "AGENT FAIL: no gain at matched tokens (63 vs 67 at 75K, 75 vs 81 at 100K) and 111 levels against 122. Solved-level memory is not carried into v2.",
+  "promote": false,
+  "what_this_does_not_claim": "One run per arm; level differences of 5 to 10 are inside the spread seen between identical controls."
+}

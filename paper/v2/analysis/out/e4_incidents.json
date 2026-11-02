@@ -1,0 +1,354 @@
+{
+ "full_runs": [
+  {
+   "run": "franzen-a12-v1",
+   "secs": 7286.038786,
+   "levels": 90,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 9,
+   "min_free_gib": 0.68
+  },
+  {
+   "run": "franzen-l1a1tbfc-v1",
+   "secs": 7267.097824,
+   "levels": 109,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 24,
+   "min_free_gib": 0.84
+  },
+  {
+   "run": "franzen-l1a1y0sv2-v1",
+   "secs": 7212.874117,
+   "levels": 115,
+   "oom": 1,
+   "sched_exc": 1,
+   "low_mem_warnings": 3,
+   "min_free_gib": 0.55
+  },
+  {
+   "run": "franzen-l1a1y8-v1",
+   "secs": 7278.579802,
+   "levels": 128,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 7,
+   "min_free_gib": 0.49
+  },
+  {
+   "run": "franzen-l1a1y8r-v1",
+   "secs": 7303.009681,
+   "levels": 124,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 5,
+   "min_free_gib": 0.67
+  },
+  {
+   "run": "franzen-l1a1y8sv2-v1",
+   "secs": 7245.040749,
+   "levels": 119,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 10,
+   "min_free_gib": 0.15
+  },
+  {
+   "run": "franzen-l1a1y8sv2o16-v1",
+   "secs": 7237.387742,
+   "levels": 120,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 3,
+   "min_free_gib": 0.63
+  },
+  {
+   "run": "franzen-l1a1y8sv2r1-v1",
+   "secs": 7240.18294,
+   "levels": 128,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 0,
+   "min_free_gib": null
+  },
+  {
+   "run": "franzen-l1a1y8sv2r2-v1",
+   "secs": 7229.724798,
+   "levels": 122,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 0,
+   "min_free_gib": null
+  },
+  {
+   "run": "franzen-l1a1y8sv2r3-v1",
+   "secs": 7256.833086,
+   "levels": 129,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 0,
+   "min_free_gib": null
+  },
+  {
+   "run": "franzen-l1a1y8sv2r3hm32-v1",
+   "secs": 7255.273237,
+   "levels": 126,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 0,
+   "min_free_gib": null
+  },
+  {
+   "run": "franzen-l1a1y8sv2r3s4-v1",
+   "secs": 7280.200096,
+   "levels": 120,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 8,
+   "min_free_gib": 0.66
+  },
+  {
+   "run": "franzen-p448-v1",
+   "secs": 7262.872785,
+   "levels": 122,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 3,
+   "min_free_gib": 0.84
+  },
+  {
+   "run": "franzen-p448au-v1",
+   "secs": 7263.032035,
+   "levels": 110,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 0,
+   "min_free_gib": null
+  },
+  {
+   "run": "franzen-p448h14-v1",
+   "secs": 7247.668749,
+   "levels": 107,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 0,
+   "min_free_gib": null
+  },
+  {
+   "run": "franzen-p448h16-v1",
+   "secs": 7214.550563,
+   "levels": 115,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 0,
+   "min_free_gib": null
+  },
+  {
+   "run": "franzen-p448ho-v1",
+   "secs": 7288.714112,
+   "levels": 108,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 3,
+   "min_free_gib": 0.76
+  },
+  {
+   "run": "franzen-p448lm-v1",
+   "secs": 7284.486798,
+   "levels": 111,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 5,
+   "min_free_gib": 0.9
+  },
+  {
+   "run": "franzen-p448rep-v1",
+   "secs": 7279.320394,
+   "levels": 106,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 8,
+   "min_free_gib": 0.68
+  },
+  {
+   "run": "franzen-p448s14-v1",
+   "secs": 7249.997552,
+   "levels": 117,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 5,
+   "min_free_gib": 0.71
+  },
+  {
+   "run": "franzen-p448s14h71-v1",
+   "secs": 7252.237812,
+   "levels": 113,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 10,
+   "min_free_gib": 0.57
+  },
+  {
+   "run": "franzen-p448s14ra-v1",
+   "secs": 7258.697733,
+   "levels": 113,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 7,
+   "min_free_gib": 0.56
+  },
+  {
+   "run": "franzen-p448s14rep-v1",
+   "secs": 7266.830995,
+   "levels": 111,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 10,
+   "min_free_gib": 0.71
+  },
+  {
+   "run": "franzen-p448sb-v1",
+   "secs": 7280.895565,
+   "levels": 105,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 3,
+   "min_free_gib": 0.31
+  },
+  {
+   "run": "franzen-rep-v1",
+   "secs": 7318.719754,
+   "levels": 97,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 0,
+   "min_free_gib": null
+  },
+  {
+   "run": "franzen-start-v1",
+   "secs": 7329.26753,
+   "levels": 92,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 0,
+   "min_free_gib": null
+  },
+  {
+   "run": "gcp-dpctl-v1",
+   "secs": 7245.881449,
+   "levels": 123,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 8,
+   "min_free_gib": 0.7
+  },
+  {
+   "run": "gcp-dpctl-v2",
+   "secs": 7255.352966,
+   "levels": 101,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 11,
+   "min_free_gib": 0.62
+  },
+  {
+   "run": "gcp-h16dp-v1",
+   "secs": 7254.4909,
+   "levels": 104,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 0,
+   "min_free_gib": null
+  },
+  {
+   "run": "gcp-l1a1-v1",
+   "secs": 7240.043017,
+   "levels": 113,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 12,
+   "min_free_gib": 0.59
+  },
+  {
+   "run": "gcp-l1a1-v2",
+   "secs": 7253.481477,
+   "levels": 109,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 8,
+   "min_free_gib": 0.67
+  },
+  {
+   "run": "gcp-l1tb-v1",
+   "secs": 7245.16687,
+   "levels": 115,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 17,
+   "min_free_gib": 0.85
+  },
+  {
+   "run": "gcp-p448s14dpwfrc-v1",
+   "secs": 7271.024328,
+   "levels": 116,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 10,
+   "min_free_gib": 0.83
+  },
+  {
+   "run": "gcp-p448s14dpwfrc-v2",
+   "secs": 7259.796654,
+   "levels": 113,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 7,
+   "min_free_gib": 0.46
+  }
+ ],
+ "events": 1,
+ "n": 34,
+ "hours": 68.58743691555556,
+ "hazard_per_h": 0.014579929575604262,
+ "per_run_upper975": 0.15326766956031773,
+ "p9h_point": 0.1229746364165537,
+ "p9h_upper": 0.523961128199141,
+ "warn_pre": [
+  23,
+  29
+ ],
+ "warn_post": [
+  1,
+  5
+ ],
+ "excluded": [
+  {
+   "run": "franzen-l1a1y8sv2wdt-v1",
+   "secs": 1940.526409,
+   "levels": 7,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 21,
+   "min_free_gib": 0.89
+  },
+  {
+   "run": "franzen-l1a1y8sv2wdt2-v1",
+   "secs": 2744.065859,
+   "levels": 47,
+   "oom": 0,
+   "sched_exc": 0,
+   "low_mem_warnings": 23,
+   "min_free_gib": 0.81
+  },
+  {
+   "run": "franzen-l1a1y8sv3-v1",
+   "secs": 2340.535021,
+   "levels": 0,
+   "oom": 1,
+   "sched_exc": 1,
+   "low_mem_warnings": 6,
+   "min_free_gib": 0.83
+  }
+ ]
+}

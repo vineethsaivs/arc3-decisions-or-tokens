@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-21T22:25:57.285635+00:00",
+  "subject": "Gate results for the two follow-on arms: estimator fix on top of the winner, and the next dose step",
+  "METHODOLOGICAL_GAP_OWNED_UP_FRONT": "Arms D and E were pushed WITHOUT a predeclared gate. The predeclared file gate-predeclared-2026-08-21-context-window.json covers the context-window arm, the upscale arm and a standalone estimator arm, but not these two, which were built and pushed within minutes of arm A's result. That is the same class of error as calibrating a gate against the wrong control. It is recorded rather than papered over, and the conservative rule applied below is: a TIE is not a promotion, and the paired sign test against the incumbent is the deciding evidence, not the level total.",
+  "incumbent": {
+    "arm": "q38-context-window-v1 (window 49,152)",
+    "levels": 33,
+    "mean": 5.963,
+    "zero_level_games": 5,
+    "actions": 1979,
+    "peak_kv": 0.576,
+    "generation_tok_s": 431.2
+  },
+  "arms": {
+    "q38-ctxwin-imgtok-v1": {
+      "verdict": "NO PROMOTION. Ship the simpler config.",
+      "change": "image token estimator fix on top of the winning context-window arm",
+      "outcome": {
+        "levels": 33,
+        "mean": 5.06,
+        "zero_level_games": 4,
+        "actions": 2953,
+        "peak_kv": 0.695,
+        "generation_tok_s": 382.9
+      },
+      "vs_incumbent": {
+        "levels": "33 vs 33, a TIE",
+        "mean": "5.060 vs 5.963, WORSE",
+        "paired_sign_test": "7 gained, 9 lost, one-sided p = 0.402"
+      },
+      "reading": "No evidence of improvement over the incumbent on any axis. Levels tie, mean is lower, actions rise 49% (1,979 to 2,953) for the same completions, so per-level efficiency falls, and peak KV rises to 69.5% because correcting the image charge packs more REAL content into the same nominal budget. The estimator fix is still a genuine correctness fix; it simply does not pay once the window is already raised, because the window raise has ALREADY bought the history the fix would have freed.",
+      "keep_it_for": "The upscale-16 retest. That is the case where it matters most: it drops the upscale-16 image charge from 3,891 to 1,039 estimated tokens. Do not ship it on its own."
+    },
+    "q38-ctxwin-65536-v1": {
+      "verdict": "REJECT",
+      "change": "analyzer history budget 48,128 -> 64,512, max-model-len 81,920 -> 98,304",
+      "outcome": {
+        "levels": 30,
+        "mean": 5.277,
+        "zero_level_games": 6,
+        "actions": 2039,
+        "peak_kv": 0.76,
+        "generation_tok_s": 349.9
+      },
+      "vs_incumbent": {
+        "levels": "30 vs 33, WORSE",
+        "paired_sign_test": "3 gained, 7 lost, one-sided p = 0.172"
+      },
+      "vs_control": {
+        "levels": "30 vs 23",
+        "paired_sign_test": "9 gained, 4 lost, p = 0.133, NOT significant"
+      },
+      "reading": "The dose-response turns over. This is the most valuable thing the two follow-on arms bought: we now know 49,152 is near an optimum rather than merely better than the shipped 32,768. Generation throughput falls to 349.9 tok/s (a 34% drop from the control) and peak KV reaches 76.0%, right at the highest value we had ever run."
+    }
+  },
+  "dose_response_on_the_analyzer_history_budget": {
+    "31744": {
+      "levels": 23,
+      "note": "shipped config, scored 1.71 on the board"
+    },
+    "48128": {
+      "levels": 33,
+      "note": "PROMOTED, p = 0.029 against control"
+    },
+    "64512": {
+      "levels": 30,
+      "note": "turns over; p = 0.133 against control, not significant"
+    },
+    "interpretation": "Three points, one run each, on an instrument whose byte-identical rerun has differed by 6 levels. The PEAK location is weakly identified; what the curve does establish is that 'more context is always better' is false, so do not push the window further without new evidence."
+  },
+  "decision": {
+    "ship": "q38-context-window-v1 (window 49,152), unchanged",
+    "why": "It is the only arm with a significant paired result against the control (p = 0.029), it has the best mean of any arm, and neither follow-on beat it. Choosing it over arm D is also the simpler artifact: one fewer source overlay for no measured loss.",
+    "rollback": "vineethsaivs/arc3-q38-combined-v2-ordinary-commit v1, the config that actually scored 1.71"
+  }
+}

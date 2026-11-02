@@ -1,0 +1,161 @@
+\section{The harness program: changes, gates and runs}\label{app:harness}
+
+This appendix holds what Sec.~\ref{sec:harness} leaves out: each change as built, each predeclared gate, and every run read. The changes are overlays that the notebook builder applies as asserted string edits (\texttt{solution/kaggle/franzen\_overlays/}: \texttt{unstick2.py}, \texttt{seg8.py}, \texttt{scroll.py}, \texttt{tool2.py}, \texttt{verify.py}); the gates are the files \texttt{solution/kaggle/generated/gate-predeclared-2026-10-30-*}, \texttt{-2026-10-31-*} and \texttt{-2026-11-01-*}, each written before the first run of its build. The per-run tables are rebuilt by \texttt{paper/v3/analysis/harness\_read.py}, except the six rows of the tool-fix and replay builds, which come from the gate readers; the gate readers and record writers are in \texttt{solution/analysis/harness\_2026-10/gates/}. % V3-W19 V3-W20 V3-W22 V3-W23 V3-W28 V3-W29
+
+\subsection{The changes as built}
+
+\paragraph{Stall check, coverage and step checking.}
+Four parts. % V3-W20
+(1) A stall check at the third, fifth, seventh and later idle turn on a level asks the model to call \texttt{action()} before any long search, and says that a filler key press or a RESET wastes actions.
+(2) After a stall check, a game over or a model RESET on the level, the opener lists the object types (colour and bounding-box size, joined by corner contacts, dot textures left out) that no click on the level has touched, when a click is a valid action, and the valid actions unused on the level; engine action names (\texttt{ACTION1} to \texttt{ACTION7}) are mapped to the history's names first, and UNDO is dropped.
+(3) On the first opener of each level after the first, the opener lists the object types new on that level, same colour and box merged.
+(4) Tufa's step-verification addendum, off in Franzen's settings, is on: mechanics first and goal last, replay the level's recorded transitions through a simulator before a long plan, and retry a no-op from another state before ruling it out.
+On frames replayed through the real patched helpers, the coverage list costs about 6 ms per call and the new-type list about 175 ms per level start. % V3-W20
+The offline test feeds engine action names and fails on the first build.
+
+\paragraph{Corner-joined regions.}
+Every node of the segmentation gains \texttt{group}, the lowest node id among nodes of the same colour joined to it through corner contacts, one 8-connected object; ids, hashes, boundaries and adjacency are unchanged, the node line of the system prompt names the field, and the module is spliced into the sandbox so both views carry it. % V3-W22
+The offline test shows that groups equal the 8-connected objects on a synthetic board and on all 184 human level starts. % V3-W22
+A start holds such an object when a group of two or more nodes has a bounding box of at least 3 by 3 cells: 76 of the 184 starts, in 13 of the 22 replayed games, do (73 with sparse dot lattices, fill under 0.1, dropped). The gate record's earlier count, 71 starts in 13 of 21 games under a dot-texture rule it does not state, is not reproduced and is not used. % V3-W22
+
+\paragraph{Scroll.}
+The diff tool detects a whole-interior shift along one axis: a 4-cell edge band is left out, candidates come from whole-line matches, and a shift is accepted at a cell mismatch rate of at most 0.1 and at most 0.3 of the unshifted rate over at least 60 changed cells. % V3-W23
+It shifts the earlier frame and its objects by the shift, adds \texttt{scroll: [rows, cols]} to the output (unchanged when nothing scrolls), and the turn opener says when the last sequence of frames scrolled and by how much. % V3-W23
+The offline test covers a synthetic scroll, a plain move that stays unchanged, the sandbox copy, the opener line and every human-replay frame pair. % V3-W23
+In the 22 human-replay games it fires on 103 of 363 changed pairs in bp35, on 40 of 772 in lf52, and on none of the 5,178 in the other 20 games (6,170 silent pairs in all); a synthetic scroll leaves the player and the status bar as the only changes, where the unpatched diff reports 76 moved objects. % V3-W23
+
+\begin{figure}[!htb]
+\centering
+\figfile{fig_scroll}{4.8in}
+\caption{A camera scroll in the diff, before and after. (A, B) Two human-replay frame pairs, bp35 level 1 and lf52 level 3: before, after, the unpatched diff and the diff after undoing the detected shift. In bp35 the unpatched diff shows 1,343 changed cells and 89 moved objects; with the shift undone, 11 objects moved (the cell count rises because the rows that scrolled into view count as changed). (C) The detector fires on 103 of 363 changed pairs in bp35, 40 of 772 in lf52 and 0 of 5,178 in the other 20 games. The pairs are chosen examples, not a sample, and the figure does not show that the report helps the model play (Figure~\ref{fig:gates} says it did not).}\label{fig:scroll} % V3-W23
+\end{figure}
+
+\paragraph{Tool fixes.}
+In the sandbox child a timer on the snippet's own compute (time spent waiting on the host for an action or animation reply is not counted, and a timer that fires during such a wait is deferred, so a reply is never cut) raises \texttt{SnippetTimeout} at the compute limit minus 3 seconds; it derives from \texttt{BaseException} so an \texttt{except Exception} clause in model code does not swallow it (a bare \texttt{except} that does is stopped again a second later), and the child returns the printed output, the traceback line and the retained functions instead of the host's empty ``Tool timed out''. % V3-W28
+\texttt{inspect.getsource} is patched to return the stored source of a function retained from an earlier snippet or defined in the current one. The system prompt says both. % V3-W28
+The offline test runs the real child: a loop stops at 3.1 seconds of a 6-second limit with its output kept (unpatched: timed out at 6.0 seconds, empty output), a swallowed first stop is stopped by the second, and a 3-second host reply against a 1-second compute limit is never cut. A loop that swallows \texttt{BaseException} every time is not stoppable by the child; the host's hard deadline still applies. % V3-W28
+
+\paragraph{Replay check.}
+Two helpers in the sandbox. \texttt{check\_model(step, observe=None)} takes the model's own transition function and, when \texttt{observe} is given, a map from a recorded frame to the model's state (or \texttt{step} takes the frame itself and returns its board text or a dict of cells; \texttt{None} abstains). It replays the current level's recorded transitions newest first, skipping RESET, automatic RESET, death and level-change steps, and prints the first three mismatches with predicted and actual state (an exception raised by the model's code counts as a mismatch), plus a count of board and action pairs seen twice with different results (hidden state: a counter, timer or facing). % V3-W29
+\texttt{check\_goal(is\_goal)} runs a goal test on every recorded board of the level and returns the indices where it is true; the printed note says a hit means the test is wrong or incomplete, or that board needed one more action, since the winning board itself is never recorded. % V3-W29
+\texttt{action()} is disabled during both, model exceptions are caught and reported, output is capped at 1,400 characters, and each call checks its clock between transitions and stops after 8 seconds, or 2 seconds before the snippet's own tool-fix stop if that is sooner; a single slow step is not interrupted. The system prompt documents both with a one-line adapter, and the stall check and the turn opener name them. The overlay is applied after every other one so its prompt edits find their anchors. % V3-W29
+The offline test runs nine checks through the real child on both bases (with and without the tool fixes): a correct rule matches every level-2 transition with RESET and death skips counted, a wrong rule names the newest mismatch, a rule that calls \texttt{action()} is refused and no action runs, a slow rule stops at the limit before the snippet's own stop, and an ordinary snippet is unchanged. % V3-W29
+
+\subsection{Predeclared gates}
+
+Table~\ref{tab:harnessgate} gives the items. Every build faced the same control and the same no-harm bars; every item must pass for a build to ship, which is necessary and not sufficient, and no run is added after the first read. The control is the 15-stream build, which was itself pinned on 2026-10-28 on its own gate (125.5 levels against 124.0, no gain claimed). % V3-W19
+
+\begin{table}[!htb]
+\caption{Predeclared gate items by change. Control: seven runs, mean 123.4 levels (SD 7.8), mean score 54.85 (SD 3.17), 7,105 actions, median actions over human baseline 0.674 on cleared levels. All three gates read ``kill on any miss, no further runs after reading''. Written 2026-10-30 03:40Z, 2026-10-30 05:39Z and 2026-10-31 12:05Z.}\label{tab:harnessgate} % V3-W19 V3-W20 V3-W22 V3-W23
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.12\linewidth}>{\raggedright\arraybackslash}p{0.27\linewidth}>{\raggedright\arraybackslash}p{0.25\linewidth}>{\raggedright\arraybackslash}p{0.27\linewidth}@{}}
+\toprule
+Item & Stall check & Corner-joined regions & Scroll \\
+\midrule
+Mechanism fires & per run, at least 5 stall lines, 5 untested lists and 20 new-type lists; no unused-action line naming an engine action & model code blocks reading \texttt{group}: mean at least 15, every run at least 5 & scroll lines in bp35 and lf52: mean at least 3, every run at least 1; at most 2 per run elsewhere; the \texttt{group} item as before \\
+Model responds & of the third, fifth and seventh idle turns in a row, at least 0.70 act (0.54 before) & the stall check's item, pooled & the same \\
+Actions & actions per run at most 1.10 times the control (7,816); median ratio at most the control's plus 0.05 (0.724) & the same & the same \\
+No harm & mean levels at least 120.9 (control minus 2.5); mean score at least 53.35 (minus 1.5) & the same & the same \\
+Probe & installs and plays, no traceback & the same & at least 25 actions, no traceback \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The tool-fix gate (written 2026-10-31 18:09Z) and the replay-check gate (2026-11-01 19:33Z) kept the stall check's response item and the actions, no-harm and probe items. The tool-fix gate added: \texttt{getsource} failures at most 2.0 per run on average (7.8 before) and at least 2 \texttt{SnippetTimeout} results per run. The replay-check gate added: at least 10 helper calls per run on average, at least 5 in every run, in at least 4 games per run on average; the corner-joined and tool-fix items; and mean levels at least the replaced build's mean minus 5 (122.3 minus 5). % V3-W28 V3-W29
+
+\subsection{Every run read}
+
+Tables~\ref{tab:harnessplay} and~\ref{tab:harnesscount} give each run. Levels are of 183; score is the mean game score; ratio is the median of actions over the human baseline on cleared levels. Stall, untested and new are the number of openers carrying each list; idle acts counts the third, fifth and seventh idle turns that were followed by an action; streaks counts levels with five or more idle turns in a row. The first arm ran only two runs because its rule killed it.
+
+\begin{table}[!htb]
+\caption{Play in every run of the program (25 demonstration games). The two Kaggle controls ran on 2026-10-29; the five Vertex AI controls are the 15-stream build's own waves. The two Kaggle controls alone cleared 123 and 110 levels (mean 116.5).}\label{tab:harnessplay} % V3-W19 V3-W20 V3-W21 V3-W22 V3-W23 V3-W28 V3-W29
+\centering\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}llrrrr@{}}
+\toprule
+Build & Run & Levels & Score & Actions & Ratio \\
+\midrule
+Control & Vertex, run 1 (kva) & 129 & 57.66 & 7,050 & 0.694 \\
+Control & Vertex, run 2 & 120 & 52.42 & 7,008 & 0.645 \\
+Control & Vertex, run 3 & 125 & 55.98 & 6,766 & 0.696 \\
+Control & Vertex, run 4 & 122 & 52.89 & 7,519 & 0.705 \\
+Control & Vertex, run 5 & 135 & 59.71 & 8,639 & 0.639 \\
+Control & Kaggle, run 1 & 123 & 54.63 & 7,147 & 0.644 \\
+Control & Kaggle, run 2 & 110 & 50.66 & 5,608 & 0.698 \\
+Stall check, first build & Kaggle, run 1 & 131 & 58.55 & 7,797 & 0.636 \\
+Stall check, first build & Kaggle, run 2 & 127 & 58.58 & 6,643 & 0.615 \\
+Stall check and coverage & Kaggle, run 1 & 141 & 65.48 & 7,713 & 0.616 \\
+Stall check and coverage & Kaggle, run 2 & 126 & 55.11 & 6,753 & 0.660 \\
+Stall check and coverage & Kaggle, run 3 & 118 & 54.83 & 5,683 & 0.584 \\
+Plus corner-joined regions & Kaggle, run 1 & 132 & 63.16 & 6,338 & 0.618 \\
+Plus corner-joined regions & Kaggle, run 2 & 128 & 59.97 & 6,695 & 0.686 \\
+Plus corner-joined regions & Kaggle, run 3 & 127 & 58.86 & 6,260 & 0.667 \\
+Plus scroll detector & Kaggle, run 1 & 111 & 48.67 & 5,735 & 0.591 \\
+Plus scroll detector & Kaggle, run 2 & 122 & 53.31 & 7,335 & 0.725 \\
+Plus scroll detector & Kaggle, run 3 & 130 & 60.31 & 7,369 & 0.646 \\
+Groups plus tool fixes & Kaggle, run 1 & 123 & 55.69 & 6,585 & 0.659 \\
+Groups plus tool fixes & Kaggle, run 2 & 129 & 57.96 & 6,603 & 0.655 \\
+Groups plus tool fixes & Kaggle, run 3 & 115 & 50.25 & 8,108 & 0.667 \\
+Plus replay check & Kaggle, run 1 & 128 & 59.12 & 7,078 & 0.614 \\
+Plus replay check & Kaggle, run 2 & 124 & 55.67 & 6,863 & 0.729 \\
+Plus replay check & Kaggle, run 3 & 128 & 55.44 & 7,009 & 0.693 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[!htb]
+\caption{Mechanism counters in every run of the changes (none exists for the control). Idle acts: third, fifth and seventh idle turns followed by an action, of all such turns. Scroll lines count the openers saying that the view scrolled, in bp35 and lf52 (none appeared in any other game). Reference for streaks: 2.75 per run in the four runs diagnosed in Sec.~\ref{sec:harness}.}\label{tab:harnesscount} % V3-W18 V3-W20 V3-W21 V3-W22 V3-W23 V3-W28 V3-W29
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}llrrrrrrr@{}}
+\toprule
+Build & Run & Stall & Untested & New & Idle acts & Streaks & \texttt{group} blocks & Scroll lines \\
+\midrule
+Stall check, first build & 1 & 14 & 0 & 0 & 13 of 14 & 1 & 0 & 0 \\
+Stall check, first build & 2 & 23 & 0 & 0 & 14 of 23 & 2 & 0 & 0 \\
+Stall check and coverage & 1 & 20 & 46 & 107 & 16 of 20 & 0 & 0 & 0 \\
+Stall check and coverage & 2 & 17 & 45 & 96 & 15 of 17 & 1 & 0 & 0 \\
+Stall check and coverage & 3 & 10 & 38 & 88 & 10 of 10 & 0 & 0 & 0 \\
+Plus corner-joined regions & 1 & 13 & 39 & 97 & 9 of 13 & 0 & 39 & 0 \\
+Plus corner-joined regions & 2 & 18 & 50 & 98 & 16 of 18 & 1 & 64 & 0 \\
+Plus corner-joined regions & 3 & 8 & 33 & 93 & 8 of 8 & 0 & 33 & 0 \\
+Plus scroll detector & 1 & 19 & 57 & 86 & 15 of 19 & 1 & 49 & 21 \\
+Plus scroll detector & 2 & 24 & 66 & 90 & 18 of 24 & 1 & 41 & 29 \\
+Plus scroll detector & 3 & 15 & 61 & 101 & 9 of 15 & 1 & 49 & 21 \\
+Groups plus tool fixes & 1 & 22 & 78 & 91 & 18 of 22 & 2 & 46 & 0 \\
+Groups plus tool fixes & 2 & 25 & 60 & 101 & 20 of 25 & 3 & 53 & 0 \\
+Groups plus tool fixes & 3 & 21 & 62 & 90 & 16 of 21 & 4 & 47 & 0 \\
+Plus replay check & 1 & 12 & 51 & 96 & 11 of 12 & 1 & 59 & 0 \\
+Plus replay check & 2 & 26 & 63 & 94 & 17 of 26 & 2 & 39 & 0 \\
+Plus replay check & 3 & 20 & 57 & 98 & 17 of 20 & 1 & 59 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Pooled readings.}
+The stall check and coverage build: 41 of 47 idle turns act (0.87), 0.33 streaks per run, 6,716 actions per run, ratio 0.620, mean levels 128.3 and mean score 58.48, every item passed. % V3-W20
+With corner-joined regions: 33 of 39 act (0.85), 0.33 streaks, 6,431 actions, ratio 0.657, 129.0 levels and 60.66 points, every item passed. % V3-W22
+With the scroll detector: 42 of 58 act (0.72), 1.00 streaks, 6,813 actions, ratio 0.654, 121.0 levels and 54.10 points; every item passed, the no-harm items by 0.1 level and 0.75 points (bars 120.9 and 53.35). It was not promoted: its mean sits below the control (123.4) and below the build it would replace (129.0), with no gain in the games it targets (bp35 at one level in all three runs, lf52 at two, three and four). The gate text makes passing necessary and not sufficient; the record says promote false. % V3-W27
+Groups plus tool fixes: 54 of 68 act (0.79), 3.00 streaks, 7,099 actions, ratio 0.660, 122.3 levels and 54.63 points; \texttt{getsource} failures 0, 0 and 0 per run (7.8 before), \texttt{SnippetTimeout} results 6, 5 and 6, ``Tool timed out'' 0, 0 and 0 (6.0 before); every item passed; promoted 2026-11-01. % V3-W28
+Plus replay check: 45 of 58 act (0.78), 1.33 streaks, 6,983 actions, ratio 0.679, 126.7 levels and 56.74 points; helper calls 33, 50 and 18 per run in 6, 6 and 5 games; \texttt{check\_model} printed 85 reports, 33 matching every checked transition and 52 naming a mismatch (42 a wrong prediction, 10 only exceptions from the model's own code, such as a \texttt{NameError} in its adapter; 8 stopped at the time limit), and \texttt{check\_goal} printed 25, none with a counterexample; \texttt{getsource} failures 0 in every run, \texttt{SnippetTimeout} 6, 3 and 3; in its 300 seconds per game the probe called a helper in one game (tu93); every item passed, including the bar of 117.3 against the tool-fix build; promoted 2026-11-02 00:28Z for the final draw. % V3-W29
+The first stall build: 27 of 37 act (0.73), 1.50 streaks, 7,220 actions, 129.0 levels and 58.57 points; its untested-list counter read zero against a bar of 5, so its rule killed it. % V3-W21
+
+\paragraph{Readings declared and not computed.}
+The replay gate also listed readings to report but not gate on: levels on a window aligned to server readiness, and whether a mismatch was followed by a redefined rule within two turns. Neither was computed for this paper. % V3-W29
+
+\paragraph{A start-time confound.}
+Franzen's notebook starts play when the server reports ready, or at a deadline about 720 seconds after the notebook starts with the server still loading; games released at the deadline wait on a server that cannot answer while their clock runs. % V3-W32
+Of 23 Kaggle replica runs of the 15-stream family, 13 were released at the deadline and 6 started 12 to 21 minutes before the server was ready: one of the two Kaggle control runs, one of three stall check runs, two of three corner-joined runs, one of three scroll runs, one of three tool-fix runs and none of the three replay-check runs, whose latest start was one minute early; the five Vertex control runs were not read. % V3-W32
+The offset therefore sits unevenly in the arms; it could flatter the replay build against the others and understate the corner-joined build, and we did not estimate its size. % V3-W32
+
+\paragraph{Leads over the control, with their uncertainty.}
+Against the control's 123.4 levels the stall check build leads by 4.9, the corner-joined build by 5.6, the replay build by 3.2 and the first stall build by 5.6; the scroll build trails by 2.4, and by 8.0 the build it extends, and the tool-fix build trails by 1.1. At the identical-run SD of 8.25 and three runs against seven, a 95\% interval is the lead plus or minus 11.2, so every interval contains zero: stall check $-6.3$ to $+16.1$, corner-joined $-5.6$ to $+16.8$, replay $-8.0$ to $+14.4$, scroll $-13.6$ to $+8.8$, tool fixes $-12.3$ to $+10.1$; the first stall build, two runs against seven, $-7.4$ to $+18.6$. % V3-W19 V3-W20 V3-W22 V3-W28 V3-W29
+Against the two Kaggle controls alone (116.5 levels; both ran on Kaggle, as the arms did) the leads read $+11.8$ (stall check), $+12.5$ (corner-joined), $+10.2$ (replay) and $+5.8$ (tool fixes), and the scroll build $+4.5$; the five Vertex AI controls average 126.2, so the control sets differ by 9.7 levels, and two runs cannot say whether that is platform or noise. % V3-W41
+The same three-against-seven design resolves a shift of about 16 levels at 80\% power. % V3-W19
+On score the control's SD over seven runs is 3.17, and the stall check, corner-joined and replay builds lead by 3.6, 5.8 and 1.9 points; the scroll build trails by 0.8 and the tool-fix build by 0.2. % V3-W19 V3-W28 V3-W29
+
+\subsection{Earlier arms on the same agent}
+
+Two earlier arms ran on the 15-stream build in the same weeks and are not part of the program. A kept-variables overlay (plain data kept for the length of a level so the model does not rebuild it after each action) was built to halve NameErrors per python call; two versions read 0.51 and 0.52 against a bar of 0.50, were killed by their own rule and did not move levels (pooled 127.8 and 125.3 against 125.7 and 123.4). % V3-W26
+A shorter-thinking model (ThinkingCap) cleared 122 levels against 129 for the build beside it on Kaggle and took 70\% more actions, so its game score fell 15\%; it was killed, and its Vertex wave was cancelled. % V3-W26

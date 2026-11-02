@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-31T21:05:00+00:00",
+  "arm": "CC",
+  "kernel": "vineethsaivs/arc3-poly-ctxfix-ordinary-commit",
+  "bundle": "vineethsaivs/arc3-poly-ctxfix-v1",
+  "predeclared_gate": "solution/kaggle/generated/gate-predeclared-2026-08-31-arm-CC-polyphony-context-fix.json",
+  "HEADLINE": "The repair WORKED and the arm still scored 0. HTTP 400 context overflows went 11,331 of 11,680 to ZERO of 797, and the failure moved to a different, larger problem: at concurrency 25 the polyphony agent gets 1.6 generated tokens per second per stream, so a single request cannot finish one thinking block inside the 900-second read timeout. Every game times out forever after its bootstrap probe.",
+  "MECHANISM_GATE": {
+    "condition_1_context_overflow_under_1_percent": "PASS, decisively. 0 HTTP 400 responses against 11,331 in arm BB and 11,436 in arm BB2. Successful chat completions rose 349 -> 797. The hex grid rendering and the 60,000-character hard cap did exactly what they were built to do.",
+    "condition_2_hundreds_of_actions": "FAIL. 103 actions across 25 games, against 94 in BB and 99 in BB2. Essentially all of them are the bootstrap probe.",
+    "condition_3_polyphony_machinery_reached": "FAIL. No game certified a policy. One transcript (ka59) shows the model correctly reasoning about the method, verbatim: 'Now I'll submit ACTION1 with the no-op prediction to trigger the harness replay of the 5 observed transitions through my logging predict.' It never got to send it.",
+    "verdict": "INSTRUMENT FAILURE AGAIN, but a DIFFERENT one, and the arm is still informative because it isolated the previous cause completely."
+  },
+  "PRIMARY_VERDICT": {
+    "levels": 0,
+    "control": "35 levels",
+    "band": "REJECT",
+    "but_do_not_read_it_as_evidence_about_polyphony": "The architecture never ran. Three arms have now measured the harness around it, not it."
+  },
+  "THE_NEW_ROOT_CAUSE_measured_not_inferred": {
+    "evidence": "vllm-openai-server.log: 'Running: 25 reqs, Waiting: 0 reqs' on 734 of ~800 engine samples, with 'Avg generation throughput: 40.3 tokens/s' TOTAL. That is 1.6 tokens/s per stream.",
+    "consequence": "900 seconds of read timeout buys about 1,440 generated tokens. A single Qwen3.8 thinking block on this task is 5,779 characters, roughly 1,500 to 2,000 tokens. So the model cannot finish ONE reply before the client gives up.",
+    "the_transcripts_say_exactly_this": "every game's transcript after the probe is a wall of 'model error: ReadTimeout: HTTPConnectionPool(host=127.0.0.1, port=1234): Read timed out. (read timeout=900.0)'",
+    "why_the_throughput_is_10x_worse_than_ours": "KV oversubscription. The pool is 199,136 tokens (398,272 with fp8 KV). Twenty-five concurrent requests each holding a 60,000-character prompt is roughly 40,000 tokens apiece, so about 1,000,000 tokens of KV are demanded against 398,272 available, a 2.5x oversubscription that forces continuous preemption and recompute. Our own harness measures 16.3 tokens/s per stream because its real prompts are far smaller than its 48,128-token budget.",
+    "a_compounding_cause_verified_in_source": "solver.py:1463 sets `max_tokens=max_output if max_output > 0 else None`, and setup_commands.json ships `LOCAL_ANALYZER_MAX_OUTPUT='0'`. So generation is UNBOUNDED. Nothing stops a reply short of the context end.",
+    "and_it_explains_upstream_too": "the upstream polyphony repo runs `--parallel-nums 5`, `--per-game-deadline-s 14400` (4 hours) and `--max-model-len 262144`. We run 28-way at 7,920s on 81,920. Polyphony is designed for few games in flight with a huge window; our scheduler starves it by roughly an order of magnitude. That is a scheduler mismatch, not a defect in their idea."
+  },
+  "WHAT_ARM_CC2_WILL_SHOW_predicted_before_it_finished": "Arm CC2 (`arc3-poly-ctxfix2-ordinary-commit`) adds only the tool-call sizing fix, which lowers the character budget's blind spot but does not change generation length or concurrency. It should therefore return roughly 0 levels as well, for this same reason. Recording the prediction before reading it.",
+  "WHAT_A_FOURTH_ARM_WOULD_HAVE_TO_CHANGE": [
+    "POLY_HARD_CONTEXT_CHARS from 60,000 to about 20,000, so 25 concurrent prompts fit the 398,272-token fp8 KV pool instead of demanding 2.5x it. That is roughly four hex frames of history, which polyphony's own design says is acceptable because the trace log on disk is the real memory.",
+    "LOCAL_ANALYZER_MAX_OUTPUT from 0 to about 4,096, so one reply is bounded and cannot consume the whole read timeout.",
+    "Both are configuration, not source. Neither has been tried."
+  ],
+  "COST_SO_FAR_AND_THE_HONEST_ACCOUNTING": "Three arms, 7.2 GPU-hours, zero levels, and zero measurements of the architecture. What we did buy: the exact tokenization measurement (Qwen3 renders a 64x64 padded-decimal grid at 1.00 characters per token, 12,351 tokens per frame), a confirmed repair of the context overflow, and now a measured throughput floor. The next polyphony arm is worth ONE more run at the corrected settings and no more; if it times out again the architecture does not fit this scheduler and that is the publishable finding.",
+  "THE_TOKENIZATION_MEASUREMENT_IS_REUSABLE_AND_IS_THE_MOST_PORTABLE_THING_HERE": {
+    "method": "Qwen3 tokenizer over the exact renderings",
+    "padded_decimal_f_cell_3d": "12,351 chars, 12,351 tokens, 1.00 chars/token, because Qwen3 splits every digit and every space into its own token",
+    "hex_digit_per_cell": "4,159 chars, 4,144 tokens, a 3.0x reduction",
+    "our_own_ARC_COLOR_CHARS_letters": "4,159 chars, 1,791 to 2,672 tokens depending on the board, a 4.6x to 6.9x reduction",
+    "why_it_matters_beyond_polyphony": "any future text grid we send must use the letter alphabet, and any budget expressed in characters is only a token bound because tokens can never exceed characters. Never estimate at 3.3 to 3.7 chars/token for grid content again; that estimate is what made the arm-BB2 serving fix fail."
+  },
+  "ARM_CC2_RESULT_the_prediction_held": {
+    "kernel": "vineethsaivs/arc3-poly-ctxfix2-ordinary-commit",
+    "levels": 0,
+    "actions": 101,
+    "note": "Predicted in this file BEFORE the run finished: 'it should return roughly 0 levels as well, for this same reason'. It did. The tool-call sizing fix lowers the character budget's blind spot but cannot change generation length or concurrency, and the blocker is throughput."
+  },
+  "NEXT_ARM_IS_BUILT_AND_RUNNING": {
+    "arm": "CC3",
+    "kernel": "vineethsaivs/arc3-poly-ctxfix3-ordinary-commit",
+    "bundle": "vineethsaivs/arc3-poly-ctxfix-v3",
+    "changes": "POLY_HARD_CONTEXT_CHARS 60,000 -> 20,000 and LOCAL_ANALYZER_MAX_OUTPUT 0 -> 4,096. Configuration only, no source edit.",
+    "arithmetic": "25 concurrent requests at ~20,000 chars is roughly 330,000 tokens of KV against a 398,272-token fp8 pool, inside it instead of 2.5x over it.",
+    "and_it_is_the_last_one": "If this still times out, the finding is that polyphony does not fit a 28-way 2h12m scheduler, and that is the result to publish rather than a fourth arm."
+  }
+}

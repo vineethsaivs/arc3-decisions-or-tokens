@@ -1,0 +1,53 @@
+{
+ "schema_version": 1,
+ "date": "2026-11-01",
+ "gate": "solution/kaggle/generated/gate-predeclared-2026-11-01-franzen-l1a1y8sv2r3lf15ustv.json",
+ "instrument": "Kaggle replica, 25 public games, 15 streams, 7,200 s window; W = kaggle-lf15ustv-1101-1..3 (l1a1y8sv2r3lf15ustv, ustvb, ustvc); verify calls, tool2, seg8 and unstick counters; read by solution/analysis/harness_2026-10/gates/ustv_gate.py 122.3 (incumbent = ust W mean)",
+ "control": {
+  "runs": "A pooled, the kv2 gate's 7 runs: vertex-kva, vertex-s15w-1..4, kaggle-lf15-1029, -1029-2",
+  "summary": "A mean: levels 123.4 score 54.85 actions 7105 med 0.674"
+ },
+ "arm": {
+  "kernel": "vineethsaivs/arc3-franzen-l1a1y8sv2r3kp12lf15ustv-a",
+  "version": 1,
+  "change": "the pin l1a1y8sv2r3kp12lf15ust plus franzen_overlays/verify.py (check_model(step, observe) replays the level's recorded transitions through the model's own simulator and reports mismatches and hidden state; check_goal(is_goal) tests a goal guess on every recorded board), over tool2, seg8 and unstick2: a stall check at the 3rd, 5th, 7th idle analyzer turn on a level; the object types and actions not yet tried on the level after a stall check, game over or model RESET; new object types at each level start; step verification on with mechanics-first, replay-before-plan and retry-from-another-state lines"
+ },
+ "evidence": {
+  "checks": [
+   "PASS m1 verify calls per run: mean 33.7 >= 10, min 18 >= 5, games mean 5.7 >= 4",
+   "PASS m1 seg8 group reads per run: mean 52.3 >= 15",
+   "PASS incumbent: W mean levels 126.7 >= 122.3 - 5",
+   "PASS m1 could-not-get-source per run: mean 0.0 <= 2.0",
+   "PASS m1 SnippetTimeout results per run: mean 4.0 >= 2",
+   "PASS m2 at-stall turns that act 0.78 (45/58) >= 0.70",
+   "PASS m3 actions 6983 <= A x 1.10 (7816)",
+   "PASS m3 median actions/baseline 0.679 <= A + 0.05 (0.724)",
+   "PASS no harm levels 126.7 >= A - 2.5 (120.9)",
+   "PASS no harm score 56.74 >= A - 1.5 (53.35)"
+  ],
+  "runs": [
+   "W kaggle-lf15ustv-1101-1: levels 128 score 59.12 actions 7078 med 0.614",
+   "W kaggle-lf15ustv-1101-2: levels 124 score 55.67 actions 6863 med 0.729",
+   "W kaggle-lf15ustv-1101-3: levels 128 score 55.44 actions 7009 med 0.693",
+   "W mean: levels 126.7 score 56.74 actions 6983 med 0.679",
+   "A vertex-kva: levels 129 score 57.66 actions 7050 med 0.694",
+   "A vertex-s15w-1: levels 120 score 52.42 actions 7008 med 0.645",
+   "A vertex-s15w-2: levels 125 score 55.98 actions 6766 med 0.696",
+   "A vertex-s15w-3: levels 122 score 52.89 actions 7519 med 0.705",
+   "A vertex-s15w-4: levels 135 score 59.71 actions 8639 med 0.639",
+   "A kaggle-lf15-1029: levels 123 score 54.63 actions 7147 med 0.644",
+   "A kaggle-lf15-1029-2: levels 110 score 50.66 actions 5608 med 0.698",
+   "A mean: levels 123.4 score 54.85 actions 7105 med 0.674",
+   "W runs read: 3 of 3"
+  ],
+  "counters": [
+   "kaggle-lf15ustv-1101-1: levels 128 actions 7078 turns 1581 level-plays 142 streak>=4 1 streak>=5 1 at-stall turns 12 acted 0.92 stall lines 12 untested lines 51 newtype lines 96",
+   "kaggle-lf15ustv-1101-2: levels 124 actions 6863 turns 1595 level-plays 142 streak>=4 7 streak>=5 2 at-stall turns 26 acted 0.65 stall lines 26 untested lines 63 newtype lines 94",
+   "kaggle-lf15ustv-1101-3: levels 128 actions 7009 turns 1520 level-plays 144 streak>=4 3 streak>=5 1 at-stall turns 20 acted 0.85 stall lines 20 untested lines 57 newtype lines 98"
+  ],
+  "probe": "franzen-l1a1y8sv2r3kp12lf15ustv-v1: 0 tracebacks in kernel.log and serve.log; benchmark.json present, 8 levels and 247 actions in its 300 s per game"
+ },
+ "promote": true,
+ "verdict": "PROMOTE. Every predeclared item passes on 3 runs and the probe plays clean. W mean: levels 126.7 score 56.74 actions 6983 med 0.679; A mean: levels 123.4 score 54.85 actions 7105 med 0.674. Rollback: re-pin l1a1y8sv2r3kp12lf15ust v1 if the first live draw is 0.00 or a day errors twice.",
+ "what_this_does_not_claim": "A level gain on the hidden 110 games: three replica runs cannot resolve effects under about 25 levels, so the gate is the mechanism plus no harm; the level means are reported, not claimed."
+}

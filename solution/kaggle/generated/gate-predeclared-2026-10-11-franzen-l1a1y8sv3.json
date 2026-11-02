@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "declared_at": "2026-10-11T18:12Z, before any run of the arm",
+  "arm": "l1a1y8sv3 (vineethsaivs/arc3-franzen-l1a1y8sv3-a): l1a1y8sv2 plus --speculative-draft-kv-cache-dtype bf16 (target KV stays FP8)",
+  "why": "vLLM #60023 on Flash-Next: BF16 draft KV raised MTP accept length 3.215 to 3.473 and decode about 12%. Pennyroyal's server_args accepts bf16 for the draft pool only; the draft pool has one slot per target token, so it costs KV capacity",
+  "instrument": "25-game Kaggle replica, one run; franzen_readout.py on serve.log",
+  "control": "l1a1y8sv2 v1: 799.7 tok/s harness, decode 869.7 mean, accept 2.70, cache hit 94.6%, KV mean 0.610, p90 0.77, max 0.89; l1a1y8 runs: 780.7 and 758.4 tok/s, KV max 0.95 and 0.94",
+  "mechanism_required": [
+    "accept length at least 2.75 (control 2.70)",
+    "harness tok/s at least 3% above the control (823.7)",
+    "cache hit not down more than 2 points; KV max below 0.98 and no request retractions in serve.log",
+    "install lines for qsaring and asyncmrope; 0 tracebacks, scheduler exceptions or CUDA errors; failclosed summary printed"
+  ],
+  "promote": "mechanism holds AND at least 105 levels",
+  "hold": "accept up but tok/s gain under 3%, or KV max 0.95 to 0.98: keep the incumbent (the 110-game run parks more prefixes than the replica)",
+  "reject": "<= 104 levels, KV saturation (max >= 0.98 or retractions), accept not up, or a crash"
+}

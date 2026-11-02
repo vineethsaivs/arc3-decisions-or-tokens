@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-31T23:10:00+00:00",
+  "arm": "DD",
+  "kernel": "vineethsaivs/arc3-q38-avo-ordinary-commit",
+  "bundle": "vineethsaivs/arc3-q38-avo-v1",
+  "predeclared_gate": "solution/kaggle/generated/gate-predeclared-2026-08-31-arm-DD-avo-agent.json",
+  "control": "vineethsaivs/arc3-q38-undo-v1, benchmark pulled fresh for the paired comparison: 35 levels, 3 zero-level games, shipped-scorer mean 5.858",
+
+  "HEADLINE": "It ran, every one of the four mechanisms fired, and it did not help. 33 levels against 35, sign test 3 gained / 5 lost, and the +17.8% scorer mean is ENTIRELY one game. NOT PROMOTED.",
+
+  "MECHANISM_GATE": {
+    "condition_1_flag_reaches_the_kernel": "PASS. taaf_setup_env.json shows ARC3_AVO_AGENT = 1. This is the condition the overlay was built for: upstream gates on a pickled dataclass field our bundle does not have, and the overlay moved the read to analyzer-construction time inside the kernel. Without that this run would have been a silent no-op that looked like a null result.",
+    "condition_2_avo_turns": "PASS. avo_turns = 50 on ft09.",
+    "condition_3_exploit_deadline_fired": "PASS. avo_exploit_turns = 16, so the 60% deadline really did switch the agent to exploiting.",
+    "condition_4_supervisor_spoke": "PASS. avo_interventions = 5, avo_hard_redirects = 0, so the stagnation detector fired repeatedly without ever escalating to a hard redirect.",
+    "verdict": "FULL PASS. This is the first structural arm in three attempts today where the machinery is confirmed live end to end, which is what makes the null result worth something."
+  },
+
+  "PRIMARY_VERDICT": {
+    "levels": 33,
+    "control_levels": 35,
+    "band": "TIE (30 to 39)",
+    "paired_sign_test": "3 gained / 5 lost / 17 tied. Against the arm, and nowhere near separation.",
+    "zero_level_games": "5 against the control's 3",
+    "games_reaching_level_2_or_deeper": "8 against the control's 9. This was the predeclared SECOND reading and it agrees with the first.",
+    "total_environment_actions": "3,237 against 3,347, i.e. 0.97x. The result is NOT explained by spending more or fewer actions.",
+    "DECISION": "NOT PROMOTED. The predeclared gate says ties go to the incumbent and forbids promoting on a variance argument."
+  },
+
+  "THE_TRAP_THIS_RUN_WALKED_INTO_AND_THE_CHECK_THAT_CAUGHT_IT": {
+    "the_tempting_number": "shipped-scorer mean 6.899 against the control's 5.858, which is +17.8% on the metric the leaderboard actually reports. Read alone it looks like the best result this project has had in weeks.",
+    "the_check": "recompute the mean with the swing games dropped, because CLAUDE.md rule 11 records that game ft09 alone swings the 25-game mean by +/- 1.0",
+    "the_answer": "all 25: AVO 6.899 vs 5.858, delta +1.041. EXCLUDING ft09: AVO 5.202 vs 5.507, delta MINUS 0.305. Excluding ft09 and ar25: delta minus 0.277.",
+    "so": "100% of the apparent gain is ft09 going from 2 levels to 4 (its score alone moved 14.29 -> 47.62). On the other 24 games the arm is slightly worse. The scorer mean is the board's own metric, which makes it seductive, and it is also the noisiest statistic we have.",
+    "keep_this": "this is the second time in one day that a single-game swing nearly became a promotion. Report the ex-ft09 mean beside the mean in every future gate."
+  },
+
+  "WHAT_IS_STILL_UNMEASURED_and_why_this_is_not_the_final_word": {
+    "the_confound": "declared before the result was read: AvoMemory lives at runtime_dir/'avo_memory.json' and our solver puts every game's runtime state in ONE shared artifacts directory, so all 25 concurrent games shared a single memory file and each was handed the others' action effects under a preamble telling it not to rediscover them.",
+    "consequence": "this run is an INTEGRATION SMOKE TEST, as recorded in advance, not a measurement of AVO. It establishes that the subclass survives 2h12m on 25 games and that all four mechanisms fire.",
+    "arm_DD2": "vineethsaivs/arc3-q38-avo2-ordinary-commit, pushed 2026-08-31T23:00Z with the per-game memory path, is the real measurement.",
+    "but_lower_the_prior": "the predeclared prior was 0.30 for >= 40 levels. Three of the four mechanisms are memory-independent (the phase loop, the supervisor and the exploit deadline all fired here and are unaffected by the shared file), and together they produced a tie. Revise to about 0.15 for >= 40 on DD2."
+  },
+
+  "WHAT_THE_RUN_TEACHES_REGARDLESS_OF_DD2": [
+    "The exploit deadline is not free. avo_exploit_turns = 16 of 50 turns on ft09 means roughly a third of the game ran under 'stop refining the world model and play', and the level total did not rise. Our own data said 71 of 75 runs make no progress in their final 33 minutes; converting that time to play did not convert it to levels.",
+    "The supervisor fired 5 times and never escalated, so the stagnation threshold of 3 barren turns is reachable but the 3-intervention escalation is not, at least on a game that scores 4 levels. If DD2 is also a tie, the escalation ladder has never actually been exercised.",
+    "Action count is unchanged at 0.97x, which independently re-confirms that this family of change does not work by spending more actions.",
+    "ft09 reaching level 4 is the single most interesting event in the run and is worth one look at its transcript before DD2 is read, because if the phase loop is what did it, the same mechanism should show on other games in DD2."
+  ],
+
+  "cost": "2.4 GPU-h. Total for the day: 4 arms, 9.6 GPU-h."
+}

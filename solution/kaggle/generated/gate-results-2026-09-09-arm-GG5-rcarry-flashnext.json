@@ -1,0 +1,75 @@
+{
+  "MECHANISM_GATE_checked_first": {
+    "REASONING_CARRY_TURNS_in_the_analyzer_env": "PASS, VERIFIED DIRECTLY, not inferred. The run writes taaf_setup_env.json to /kaggle/working and it reads REASONING_CARRY_TURNS = 2, REASONING_CARRY_MAX_CHARS = 6000, and LOCAL_ANALYZER_CONTEXT_WINDOW = 48128 (unchanged, exactly as designed: the analyzer still budgets 48,128 while vLLM serves 56,320). My first pass recorded this as an inference because the analyzer env is not printed to the log. It is written to an ARTIFACT. The 2026-08-28 arm-Z entry in docs/PROGRESS.md names that file, which is how I found it. Corrected here rather than left as an inference.",
+    "http_400s_and_context_length_errors": "PASS, ZERO. This is what the 8,192-token headroom existed to prevent, and it is the exact failure mode that killed the polyphony arms (400s on 97% of requests).",
+    "max_model_len_56320": "PASS. VLLM_START_COMMAND shows --max-model-len 56320, exactly as predeclared. The constant SERVED_MODEL_LEN exists only in the patched serving_setup.py, and source_identity() aborts the run on a hash mismatch, so this line alone proves the patched file ran.",
+    "serving_otherwise_identical_to_GG2": "PASS. --max-num-seqs 5, --kv-cache-memory-bytes 5368709120, prefix caching off, MTP 3, cudagraph 32, 8192 batched tokens. Single variable held.",
+    "tracebacks_in_tool_agent_solver_sandbox": "PASS, 0. Three tracebacks exist, all in serving_teardown.py after the benchmark.",
+    "unknown_action_rejections": "PASS, 0",
+    "verdict": "CLEAN INSTRUMENT, and now fully verified with no inferred items. The carry was live and it changed nothing.",
+    "watchdog_restarts": "PASS, 0"
+  },
+  "PRIMARY_RESULT": {
+    "GG5": {
+      "actions": 2549,
+      "decisions": 546,
+      "ex_ft09": 8.053,
+      "levels": 42,
+      "mean25": 9.635,
+      "zeros": 2
+    },
+    "band_hit": "31 to 46 = UNDECIDED-BY-BENCH",
+    "control_GG2_run1": {
+      "ex_ft09": 9.413,
+      "levels": 44,
+      "mean25": 10.18,
+      "zeros": 3
+    },
+    "control_GG2_run2": {
+      "ex_ft09": 6.698,
+      "levels": 40,
+      "mean25": 9.287,
+      "zeros": 5
+    },
+    "control_pooled": {
+      "levels": 42.0,
+      "zeros": 4.0
+    },
+    "paired_vs_run1": "5 up / 6 down / 14 tied (up-dn = -1), levels -2",
+    "paired_vs_run2": "5 up / 5 down / 15 tied (up-dn = 0), levels +2",
+    "reading": "A DEAD TIE. 42 against a pooled control of exactly 42.0, and inside the measured null against both individual runs."
+  },
+  "ROTATION_DECISION": "UNCHANGED, all-in on G-flashnext48k. Rule 9b forbids firing a config we have evidence is worse, and forbids equally a config we have no evidence is better. GG5 is a measured tie with a mechanism that did not fire.",
+  "THE_MECHANISM_COUNTERS_WHICH_THE_GATE_CALLS_THE_REAL_TEST": {
+    "actions_per_game": "control 108.8 -> GG5 102.0, -6.3%. Should have risen with decisions. It fell.",
+    "decisions_per_game": "control 23.4 -> GG5 21.8, -6.6%. The gate says this should RISE. It fell.",
+    "tokens_per_decision": "control 3,198 -> GG5 3,373, +5.5%. The gate says this should FALL, with a +/-14% null. It rose, though inside the null, so the move itself is not significant.",
+    "verdict": "THE MECHANISM DID NOT FIRE. All three counters moved the wrong way, all within noise. Giving this model its own last two turns of thinking did not make its turns shorter, which is the entire causal claim behind the arm."
+  },
+  "THE_N1_FOLLOW_UP_built_but_NOT_recommended": {
+    "bundle": "solution/kaggle/generated/arc3-q38-flashnext-rcarry1-v1, REASONING_CARRY_TURNS 2 -> 1, SOURCE_IDENTITY rehashed, serving_setup compiles. One command from a push if wanted.",
+    "recommendation": "CLOSE the reasoning-carry family on GG5's evidence: clean instrument, dead tie on levels, no counter outside its null. Keep the N=1 bundle on the shelf. Reopen only if a later arm gives a reason to believe carried reasoning would behave differently, for example if GG8 makes the world model real and the thing worth carrying changes from prose to a certified artifact.",
+    "the_honest_summary_of_the_arm": "Not 'carrying reasoning hurts'. It is 'carrying two turns of reasoning changes nothing measurable on this model at this context budget', which is a null, and nulls are what the +/-14% band exists to identify.",
+    "why_I_am_NOT_recommending_it_anyway": [
+      "The trigger did not strictly fire. The gate qualifies the counter with 'its null is +/-14%, so only a move beyond +/-14% counts.' Tokens per decision moved +5.5%, which is INSIDE the null. So no counter moved significantly in either direction and the arm is a clean null, not a positive-cost reading.",
+      "Both sides shrink together. At N=1 the carried text halves, so any cost AND any benefit halve. Starting from a measured nothing, the expected information from halving it is close to zero.",
+      "It costs a full run. Corrected today: a bench is about 2.4 GPU-h regardless of game count, so the 2026-09-12 refresh buys about 12 runs. Spending one on a formality is a real cost against GG7, GG8, GG9 and their replicates."
+    ],
+    "why_the_gate_named_it": "Verbatim: 'Tokens/decision UP means the carried text is being re-read rather than reused, and N should go to 1 before the family is closed.'"
+  },
+  "THE_ONE_GENUINELY_POSITIVE_SIGNAL_and_why_it_is_not_promoted": {
+    "and": "n=1, inside the noise floor, and this is exactly the single-point trap recorded on 2026-08-31. Not promoted.",
+    "but": "L2 conversion among level-1 clearers fell to 48% from 59% and 50%. So the shape moved from depth toward breadth at an identical total, which is the WRONG direction for this metric: level 1 everywhere caps the board near 3.6, and rank 5 is 6.17.",
+    "games_clearing_at_least_level_1": "23 of 25, against 22 and 20 for the two control runs",
+    "zeros": "2, the FEWEST of any config this project has run. GG2 scored 3 and 5; the 27B control family averaged 3.5 to 4."
+  },
+  "WHAT_THE_GATE_SAYS_TO_DO_NEXT_written_before_the_run": "Verbatim: 'Tokens/decision UP means the carried text is being re-read rather than reused, and N should go to 1 before the family is closed.' So the predeclared follow-up is N=1, not the N=3 that would have been right had the mechanism fired. That is env-only (REASONING_CARRY_TURNS=1) and needs no source change.",
+  "arm": "GG5 (Flash-Next + reasoning carry, N=2, 6,000-char cap)",
+  "cost": "about 2.5 GPU-hours.",
+  "created_at": "2026-09-09T20:35:00+00:00",
+  "kernel": "vineethsaivs/arc3-gg5-flashnext-rcarry-a v1, status complete",
+  "predeclared_gate": "arc3-q38-flashnext-rcarry-v1/q38-flashnext-manifest.json, written before the push",
+  "schema_version": 1,
+  "subject": "The Astra reasoning-state lever does NOT transfer to an open-weight 176B MoE at N=2. First open-weight data point on it.",
+  "why_this_is_worth_publishing": "Every published instance of the reasoning-state lever runs a closed frontier model, and ARC Prize's own Astra numbers (62.7% to 99.9% on Semi-Private) are the headline case for it. This is the first open-weight measurement of that lever on this benchmark, and it is negative at N=2 with a clean instrument and a gate written in advance."
+}

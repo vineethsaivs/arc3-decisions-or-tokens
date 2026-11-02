@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "declared_at": "2026-10-10T04:30Z, before any run of the arm",
+  "arm": "l1a1qr (vineethsaivs/arc3-franzen-l1a1qr-a): l1a1 plus the QSA pending-ring stride fix (franzen_overlays/qsaring_serve.py) plus both fail-closed checks",
+  "why": "With the shipped ring stride, 4-token MTP verify windows that start mid-group overwrite the boundary group's pending index keys before compression: 192 of 256 completed groups in solution/sim/test_franzen_qsaring.py's replay through our wheel's own builders, 0 after the fix. A correctness fix to long-range sparse-attention recall of model-generated text; its quality gain cannot be resolved by the replica.",
+  "instrument": "25-game replica, one run (two if the first is ambiguous); franzen_readout.py on serve.log and benchmark.json",
+  "control": "l1a1 GCP runs 113 and 109 levels (pooled 111.0), 775.5 tok/s, cache hit 94.0%, accept length 2.69 to 2.70",
+  "mechanism_required": [
+    "the overlay's install line 'qsaring: QSA pending-ring stride is 2 * ratio' in the kernel log",
+    "server READY, no scheduler exception, no CUDA error, no analyzer give-up",
+    "harness tok/s within 3% of the control family and accept length within 0.05"
+  ],
+  "promote": "mechanism holds AND levels >= 105 (not a clear loser): a lossless correctness fix ships on a tie",
+  "reject": "levels <= 104, a crash, or a serving metric outside the bounds above"
+}

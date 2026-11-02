@@ -1,0 +1,6 @@
+ok  the overlay patches all four wheel files once; they compile; a rerun is a no-op; a half-patched tree raises
+ok  4-token verify windows after prefixes 1..256: shipped stride corrupts 192 of 256 completed groups, patched 0; one-token decode is clean; patched windows up to 5 tokens are clean and 6 wrap (64 of 384), so the guard is ratio + 1
+ok  the CUDA-graph row kernel stores and reads with STRIDE = 2 * ratio (replayed: clean), the ring buffer is doubled and the draft guard matches it
+ok  the GPU probe's summary counts only prompts whose decode-time keys were reused and reports agreement and divergence correctly on synthetic replies
+
+4 checks passed

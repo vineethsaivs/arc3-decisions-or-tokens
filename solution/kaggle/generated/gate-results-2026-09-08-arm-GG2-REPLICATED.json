@@ -1,0 +1,69 @@
+{
+ "schema_version": 1,
+ "created_at": "2026-09-08T21:45:00+00:00",
+ "arm": "GG2 (Qwen3.8-Flash-Next-NVFP4 on our agent tree, analyzer context 48,128, vLLM admission 5)",
+ "subject": "REPLICATED. The first result this project has produced that survived its own byte-identical replicate, and it is the largest capability gain on record.",
+ "runs": {
+  "run 1 (kernel v1)": {
+   "levels": 44,
+   "zeros": 3,
+   "mean25": 10.18,
+   "ex_ft09": 9.413,
+   "paired_vs_control_pass0": "9 up / 2 down / 14 tied (+7)"
+  },
+  "run 2 (kernel v2, byte-identical)": {
+   "levels": 40,
+   "zeros": 5,
+   "mean25": 9.287,
+   "ex_ft09": 6.698,
+   "paired_vs_control_pass0": "9 up / 3 down / 13 tied (+6)"
+  }
+ },
+ "pooled_n2": {
+  "levels": 42.0,
+  "zeros": 4.0,
+  "mean25": 9.733,
+  "ex_ft09": 8.056
+ },
+ "control_family_n2": {
+  "levels": 35.0,
+  "zeros": 3.5,
+  "mean25": 6.29,
+  "ex_ft09": 5.957
+ },
+ "delta": {
+  "levels": "+7.0 (+20%)",
+  "zeros": "+0.5, unchanged",
+  "mean25": "+3.443 (+55%)",
+  "ex_ft09": "+2.099 (+35%)"
+ },
+ "WHY_THIS_IS_THE_STRONGEST_EVIDENCE_WE_HAVE": [
+  "BOTH runs individually beat the control on levels (44 and 40 against 33 and 35), and both paired signs are positive (+7 and +6). No other arm has done that.",
+  "The within-arm spread is FOUR levels against a measured bench within-config sd of 8.21. Compare arm rcarry, whose three runs spanned 16 levels, and arm K, whose pair spanned 16. GG2 is unusually consistent, which is itself evidence the effect is real rather than a draw.",
+  "The magnitude was PRE-REGISTERED. generated/gate-predeclared-2026-09-02-arm-GG-flashnext.json, written before any GG run existed, says the context handicap is worth '-5 to -10 levels' so 'a GG tie would already imply the model is worth about +5 to +10'. GG tied at 33 under the handicap; removing it gave 44 and 40.",
+  "Five games are beaten by BOTH runs against the 27B control: ft09, lp85, su15, tr87, vc33. Only ONE is lost by both: tu93. tr87 is a game CLAUDE.md records as one of only two no config had ever solved.",
+  "Tokens per action is 619, the lowest of any config we have run (family 876 to 2,827). The gain is not bought with more compute."
+ ],
+ "MECHANISM_GATE_both_runs": {
+  "max_model_len": "48128 in both",
+  "max_num_seqs": "5 in both",
+  "served_model": "Qwen/Qwen3.8-Flash-Next-NVFP4 in both",
+  "model_loading": "81.8 GiB in both, inside the predeclared 78-86 band",
+  "ple_offload": "PRESENT in both",
+  "watchdog_restarts": "0 in both",
+  "unknown_action_rejections": "0 in both",
+  "tracebacks_in_our_three_files": "0 in both. Three tracebacks per run, all in serving_teardown.py AFTER the benchmark.",
+  "verdict": "CLEAN INSTRUMENT, twice"
+ },
+ "PREDECLARED_VERDICT": {
+  "rule_as_written": "'>= 41: PROMOTE to a bench replicate immediately, then the rotation.'",
+  "status": "SATISFIED. Run 1 was 44, the replicate was ordered and run the same evening, and it returned 40. Pooled 42.0.",
+  "action": "PROMOTED into the daily rotation, replacing K-topk100."
+ },
+ "why_K-topk100_is_the_one_retired": "Rule 9b forbids firing a config we have evidence is worse than an available one. K-topk100 has THREE board draws averaging 2.02, the lowest observed mean of any live config, and its bench pair is 44/28 (spread 16). GG2 is better evidenced on the bench by +7 pooled levels with a 4-level spread. D-undo keeps its slot on 4 board draws averaging 2.43; R-rcarry keeps its slot because it is not a measured regression and has the widest posterior we own.",
+ "confounds_that_remain": [
+  "GG2 vs the 27B control changes the model, the serving stack, temperature (0.9 -> 0.6), MULTIMODAL_UPSCALE (8 -> 4), prefix caching, KV dtype and MTP simultaneously. The +7 is a WHOLE-STACK result and is not an attribution to any one of them.",
+  "vLLM admission 8 -> 5 rides along with the context raise. Arm GG3 is specified to remove it (generated/stack-audit-gaps-2026-09-08.json): utilization 0.92 -> 0.95, KV 5 -> 7.5 GiB, context held at 48,128, admission restored to 8.",
+  "The fitted bench-to-board map is calibrated on 19-39 levels and mean25 2.67-7.15. Pooled GG2 is OUTSIDE both, so any board number derived from it is an extrapolation and must not be quoted as a forecast. The board will tell us."
+ ]
+}

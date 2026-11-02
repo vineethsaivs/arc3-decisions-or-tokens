@@ -1,0 +1,255 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-24T03:13:17.770328+00:00",
+  "subject": "Gate results for arms H (temperature 0.9) and I (byte-identical rerun). Gates predeclared 2026-08-23T00:44Z, before either was pushed.",
+  "predeclared_gate": "solution/kaggle/generated/gate-predeclared-2026-08-23-arms-H-I.json",
+  "predeclared_gate_sha256": "e8988b649576149edc2936dddcb262f115a43d31fc67eccdf55881f639592a77",
+  "incumbent_control": {
+    "arm": "q38-context-window-v1 (analyzer history budget 48,128)",
+    "kernel": "vineethsaivs/arc3-q38-ctxwin-ordinary-commit",
+    "benchmark": "solution/kaggle/generated/kernel-outputs/q38-ctxwin-v1/benchmark.json",
+    "benchmark_sha256": "3e9b312a5e55765df26e39df042b6e737bd9fe673f8945579ef3f928616224d3",
+    "total_levels": 33,
+    "zero_level_games": 5,
+    "mean_score": 5.963,
+    "total_actions": 1979,
+    "peak_kv_usage": 0.576,
+    "prefix_cache_hit_rate": 0.567,
+    "mean_generation_tok_s": 430.7,
+    "board_draws": [
+      1.87,
+      2.39
+    ]
+  },
+  "arm_I_instrument_calibration": {
+    "kernel": "vineethsaivs/arc3-q38-ctxwin-rerun-ordinary-commit",
+    "change": "NOTHING. Byte-identical rerun of the incumbent from the same source dataset.",
+    "benchmark_sha256": "0ac0b5a6247278b28962d92daf3baf64835077eadc2568ea8c6d389fbdfba715",
+    "total_levels": 29,
+    "zero_level_games": 7,
+    "mean_score": 4.868,
+    "total_actions": 2255,
+    "peak_kv_usage": 0.571,
+    "prefix_cache_hit_rate": 0.592,
+    "mean_generation_tok_s": 436.2,
+    "paired_vs_incumbent": {
+      "gained": 5,
+      "unchanged": 11,
+      "lost": 9
+    },
+    "RESULT": "29 levels against 33 on identical bytes. The 25-game benchmark's own one-sigma noise on the config we ship is about 4 levels in total and 2 in zero-level games.",
+    "consequences": [
+      "The shipped config's true 25-game level count is about 31, not 33. Its promotion evidence (33 against a 23 control, +10) is still 2.5x the noise floor and SURVIVES.",
+      "The +/-6 inconclusive band used in past gates was roughly right, slightly wide.",
+      "The context-window dose-response 31744 -> 23, 48128 -> 33, 64512 -> 30 does NOT establish 48128 as an optimum: 33 and 30 are one noise unit apart and are statistically tied. Only the 23 is clearly separated.",
+      "Arm F (upscale 16 + estimator fix, 25 levels) was rejected against 33. Against the pooled 31 it is -6, which is at the edge of the noise floor rather than clearly outside it. Its rejection is weaker than recorded, though upscale 16 has now failed twice and stays rejected."
+    ],
+    "cannot_be_promoted": true
+  },
+  "arm_H_temperature_09": {
+    "kernel": "vineethsaivs/arc3-q38-ctxwin-temp09-ordinary-commit",
+    "source_dataset": "vineethsaivs/arc3-q38-ctxwin-temp09-v1",
+    "change": "LOCAL_ANALYZER_TEMPERATURE 0.6 -> 0.9. Single variable. Nothing else differs.",
+    "benchmark_sha256": "964a6223385fa982f6b0135be9875d617417200d7ccbcc0adb3349bd8503046a",
+    "total_levels": 35,
+    "zero_level_games": 4,
+    "mean_score": 6.722,
+    "total_actions": 2872,
+    "peak_kv_usage": 0.566,
+    "prefix_cache_hit_rate": 0.6,
+    "mean_generation_tok_s": 418.6,
+    "paired_vs_incumbent": {
+      "gained": 6,
+      "unchanged": 14,
+      "lost": 5
+    },
+    "predeclared_checks": {
+      "total_levels_at_least_33": {
+        "value": 35,
+        "pass": true
+      },
+      "zero_level_games_at_most_5": {
+        "value": 4,
+        "pass": true
+      },
+      "paired_more_gained_than_lost": {
+        "value": {
+          "gained": 6,
+          "unchanged": 14,
+          "lost": 5
+        },
+        "pass": true
+      },
+      "all_25_games_ran": {
+        "value": true,
+        "pass": true
+      },
+      "peak_kv_below_0_90": {
+        "value": 0.566,
+        "pass": true
+      },
+      "kv_cache_size_398272": {
+        "value": 398272,
+        "pass": true
+      },
+      "zero_context_length_errors": {
+        "value": 0,
+        "pass": true
+      }
+    },
+    "status": "PROMOTE",
+    "honest_strength_of_evidence": "The capability signal is WEAK and must not be overstated: 35 against 33 is inside the +/-4 noise floor arm I just measured, and the paired sign test is 6 gained / 14 tied / 5 lost, which is p = 0.5, i.e. no signal at all. What the arm establishes is that temperature 0.9 is NOT WORSE on any measured axis: levels 35 vs 33, zero-level games 4 vs 5, mean score 6.722 vs 5.963, prefix cache 60.0% vs 56.7%, peak KV 56.6% vs 57.6%. Generation throughput fell 2.8% (430.7 to 418.6 tok/s), which is immaterial. It is promoted on the predeclared gate plus the VARIANCE argument, not on a demonstrated capability gain.",
+    "variance_rationale": "The public leaderboard keeps our MAXIMUM. About 37 daily draws remain before Milestone 2 (2026-09-30) and about 70 before the final (2026-11-02). At that N each +0.10 of per-draw sigma is worth roughly +0.22 board points, which is larger than any capability delta this arm could plausibly carry. Raising sampling temperature is the only lever we have that raises sigma directly. This argument INVERTS around 2026-10-20, when the private score (a mean over 2 auto-selected runs banked at run time) starts to matter and max-of-N inflation stops transferring.",
+    "cost_recorded": "Actions rose 1,979 to 2,872 (+45%) for +2 levels, so per-level efficiency fell. The shipped scorer already prices efficiency and its mean still rose 5.963 to 6.722, so the trade is priced and favourable.",
+    "rollback": "vineethsaivs/arc3-q38-ctxwin-ordinary-commit v1, the config that drew 1.87 and 2.39."
+  },
+  "dose_response_temperature": {
+    "0.3": {
+      "levels": 22,
+      "arm": "G",
+      "verdict": "REJECT, p = 0.038 in the wrong direction"
+    },
+    "0.6": {
+      "levels": [
+        33,
+        29
+      ],
+      "arm": "shipped / I",
+      "note": "two byte-identical measurements"
+    },
+    "0.9": {
+      "levels": 35,
+      "arm": "H",
+      "verdict": "PROMOTE"
+    },
+    "reading": "Monotone increasing across the range tested, but only the 0.3 point is separated from the others by more than the noise floor. The honest statement is: temperature 0.3 is clearly worse, and 0.6 vs 0.9 is a tie on capability. Next dose point to test is above 0.9."
+  },
+  "per_game_levels": {
+    "game": [
+      "ar25-0c556536",
+      "bp35-0a0ad940",
+      "cd82-fb555c5d",
+      "cn04-2fe56bfb",
+      "dc22-fdcac232",
+      "ft09-0d8bbf25",
+      "g50t-5849a774",
+      "ka59-38d34dbb",
+      "lf52-271a04aa",
+      "lp85-305b61c3",
+      "ls20-9607627b",
+      "m0r0-492f87ba",
+      "r11l-495a7899",
+      "re86-8af5384d",
+      "s5i5-18d95033",
+      "sb26-7fbdac44",
+      "sc25-635fd71a",
+      "sk48-d8078629",
+      "sp80-589a99af",
+      "su15-1944f8ab",
+      "tn36-ef4dde99",
+      "tr87-cd924810",
+      "tu93-0768757b",
+      "vc33-5430563c",
+      "wa30-ee6fef47"
+    ],
+    "incumbent": [
+      3,
+      0,
+      2,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      4,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      2,
+      0,
+      1,
+      2,
+      2,
+      0,
+      2,
+      3,
+      1
+    ],
+    "armH_temp09": [
+      4,
+      1,
+      1,
+      1,
+      0,
+      2,
+      0,
+      1,
+      1,
+      3,
+      1,
+      2,
+      1,
+      2,
+      1,
+      1,
+      2,
+      0,
+      1,
+      1,
+      2,
+      0,
+      2,
+      4,
+      1
+    ],
+    "armI_rerun": [
+      2,
+      0,
+      1,
+      0,
+      2,
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      3,
+      1,
+      4,
+      2,
+      0,
+      1,
+      1,
+      2,
+      0,
+      1,
+      3,
+      1
+    ]
+  },
+  "game_stability_across_three_matched_runs": {
+    "stable_zero": [
+      "sk48-d8078629",
+      "tr87-cd924810"
+    ],
+    "always_at_least_one": 15,
+    "bistable": [
+      "bp35-0a0ad940",
+      "cn04-2fe56bfb",
+      "dc22-fdcac232",
+      "ft09-0d8bbf25",
+      "g50t-5849a774",
+      "ka59-38d34dbb",
+      "ls20-9607627b",
+      "m0r0-492f87ba"
+    ],
+    "note": "Only 2 of 25 games are hard zeros. 8 flip between 0 and 1+ on identical or near-identical configs, which is where the per-draw variance lives."
+  }
+}

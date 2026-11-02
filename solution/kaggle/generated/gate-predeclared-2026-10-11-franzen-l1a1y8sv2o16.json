@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "declared_at": "2026-10-11T22:35Z, before any run of the arm (pushed 22:36Z)",
+  "arm": "l1a1y8sv2o16 (vineethsaivs/arc3-franzen-l1a1y8sv2o16-a): l1a1y8sv2 with LOCAL_ANALYZER_MAX_OUTPUT 12K -> 16K and LOCAL_ANALYZER_CONTEXT_WINDOW (116+12)K -> (116+16)K, so the trim budget stays 118,272",
+  "why": "about 40 replies per run hit the 12,288 output cap while still reasoning and end with no call; each is an interruption of the same kind y8 reduced (the model opens a new think block after a yield or nudge). Reply lengths halve about every 2K tokens past 4K, so about two thirds of today's cuts would finish under 16K (docs/research/2026-10-11-improve/yield-turns.md L3)",
+  "instrument": "25-game Kaggle replica, one run; franzen_readout.py; cut counts from transcripts",
+  "control": "l1a1y8sv2 v1: 119 levels, 799.7 tok/s, running mean 12.41, KV p90 0.77 max 0.89, finish_reason length 49 (46 replies without a call); l1a1y8 runs 128 and 124 (length 42 and 43)",
+  "mechanism_required": [
+    "replies with finish_reason length at most 20 (control 42 to 49)",
+    "serve.log running mean at least 12.2, KV p90 at most 0.80, KV max below 0.98, no retractions, no 'maximum context length' request errors",
+    "harness tok/s not below 97% of the control (775.7)",
+    "0 tracebacks, 0 analyzer give-ups, 0 scheduler exceptions; failclosed summary printed"
+  ],
+  "promote": "mechanism holds AND at least 105 levels",
+  "reject": "<= 104 levels, a crash, or a mechanism item failing"
+}

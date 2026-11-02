@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-12",
+  "gate": "gate-predeclared-2026-10-12-franzen-l1a1y8sv2r1.json and gate-predeclared-2026-10-12-franzen-l1a1y8sv2r2.json (declared 03:37Z to 03:59Z, before any run); the r2 gate's partial rule ('a group whose own counters fail is dropped and the rest ship after their own probe build')",
+  "instrument": "two 25-game Kaggle replicas (l1a1y8sv2r1 v1, l1a1y8sv2r2 v1), each rider on its own counters; plus a 300 s Kaggle probe of this build for install and liveness",
+  "control": "l1a1y8sv2 v1 (the previous pin's replica run): 119 levels, 799.7 tok/s, accept 2.704, stall 13.4 ms per 10K cached tokens, in-batch gap sum 3,410 s",
+  "arm": {
+    "kernel": "vineethsaivs/arc3-franzen-l1a1y8sv2r3p-a",
+    "version": 1,
+    "change": "l1a1y8sv2 + the server watchdog + MEMFRAC 0.955 + the sandbox memory cap + SGLANG_MM_PRECOMPUTE_HASH=1 + toolfast + the D3 drafter refit + promptobs lite. Identical to l1a1y8sv2r2p except that the keepdata overlay is absent; the probe build differs from a bench only in the replica runtime"
+  },
+  "evidence": {
+    "bench_l1a1y8sv2r1_v1": "128 levels, mean 59.35; every robustness and mechanism item passes (gate-results-2026-10-12-franzen-l1a1y8sv2r1.json): stall 1.7 ms per 10K cached, decode share 84.6%, in-batch gaps 563 s, 846 tok/s, 0 OOM, watchdog quiet",
+    "bench_l1a1y8sv2r2_v1": "122 levels, mean 56.00; D3 passes (accept 2.827 at 8+ running, 60-80K 2.838, 80-100K 2.834, step 36.5 ms at 14 running; 890 tok/s), promptobs lite passes (int_len 0, view_attr 0, unknown_udlr 0, new_attr 0), every r1 rider passes again; keepdata fails two of its counters and is dropped (gate-results-2026-10-12-franzen-l1a1y8sv2r2.json)",
+    "probe_l1a1y8sv2r3p_v1": "PASS (07:32Z push, complete 08:50Z): GPU_GATE PASS; READY after 493 s; 'watchdog: watching pid 481', 0 relaunches; 'd3draft: 29 mtp.* tensors spliced'; install lines for memcap, toolfast, promptobs-lite, wastefix, replycache, agentfix and no keepdata line; mem_fraction_static 0.955; SGLANG_MM_PRECOMPUTE_HASH in the notebook; '#OURS_FORM ok version=d_prime'; 0 tracebacks, 0 OOM, 0 CUDA errors; accept 2.707 at 8+ running on probe-length contexts (non-D3 probes 2.584 to 2.609, the D3 probe 2.718); failclosed summary {'games': 25, 'levels': 8, 'actions': 276}",
+    "offline": "test_franzen_promptobs.py passes in this build's overlay order (promptobs, toolfast, memcap, agentfix, replycache, wastefix); test_franzen_toolfast.py, test_franzen_d3draft.py, test_watchdog.py, test_franzen_memcap.py (Linux half on a CPU kernel) pass"
+  },
+  "verdict": "PROMOTE. Each shipped rider passed its own predeclared counters in r1, r2 or both, both runs clear the 105 floor, and the probe build installs every rider, plays, and stays clean. keepdata is dropped under the predeclared partial rule.",
+  "judgment_call": "The memcap band 'python calls 2,300 to 2,700' failed as written on the high side in both r1 (2,822) and r2 (2,837). The throughput riders raise responses per window (2,876 and 2,885 vs 2,522) and the share of responses with a python call is unchanged (98.1% and 98.4% vs 98.2%), with 0 MemoryErrors and 0 sandbox exits; treated as a confounded band, not a robustness failure (both gate files record this).",
+  "what_this_does_not_claim": "No level gain is claimed: 128 and 122 are inside the replica's run-to-run spread. The measured gains are serving and host time: +11.3% harness tokens over the previous pin in r2, accept 2.704 -> 2.827. The shipped set as a whole is being replicated (l1a1y8sv2r3 v1, gate-predeclared-2026-10-12-franzen-l1a1y8sv2r3.json).",
+  "promote": true
+}

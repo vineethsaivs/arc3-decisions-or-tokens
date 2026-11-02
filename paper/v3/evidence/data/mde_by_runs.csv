@@ -1,0 +1,8 @@
+sd_label,sd,scale,mde_n1,mde_n2,mde_n4,mde_n6,mde_n8,mde_n12,mde_n12_in_25game_units_at_bench_ratio_0.53
+"bench17, 16-run pin pool (run model)",2.61,bench17,10.34,7.31,5.17,4.22,3.66,2.99,5.63
+"bench17, game-independent stress model",3.5,bench17,13.87,9.81,6.93,5.66,4.9,4.0,7.55
+"25 games, nine y8-family runs",3.9,25,15.45,10.93,7.73,6.31,5.46,4.46,
+"25 games, 8 identical rq runs (10-20)",5.95,25,23.58,16.67,11.79,9.63,8.34,6.81,
+"25 games, 21 controls at 2,048",5.5,25,21.79,15.41,10.9,8.9,7.71,6.29,
+"25 games, six identical pairs (FRAMING B1)",8.25,25,32.69,23.12,16.35,13.35,11.56,9.44,
+"25 games, upper CI of six pairs",18.2,25,72.12,51.0,36.06,29.44,25.5,20.82,

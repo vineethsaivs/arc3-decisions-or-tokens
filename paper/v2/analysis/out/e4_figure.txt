@@ -1,0 +1,2 @@
+wrote <repo>/paper/v2/analysis/out/e4_fig_noise.svg and <repo>/paper/v2/analysis/out/e4_fig_data.csv (12943 bytes)
+panel c: levels effect/noise 0.15, tok/s 3.9 (5 pairs) / 1.5 (6 pairs) -> ratio 26x / 10x

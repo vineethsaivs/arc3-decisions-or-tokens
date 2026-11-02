@@ -1,0 +1,63 @@
+{
+  "what": "QSA NVFP4 KV cache patches for Qwen3.8 Flash-Next on Pennyroyal 2.5.3 SGLang, applied in cell 15 by franzen_overlays/nvfp4kv_serve.py",
+  "repo": "https://github.com/Lesilva/qwen38-flashnext-nvfp4-kv",
+  "host_note": "GitHub, not Hugging Face: https://huggingface.co/api/models/Lesilva/qwen38-flashnext-nvfp4-kv answers 401 (no such model) and the HF author listing is empty; revision 540722120a is this GitHub commit",
+  "revision": "540722120aa443224f2d4005fe5b44eef24fc97f",
+  "commit_date": "2026-09-29T02:05:39Z",
+  "license": "Apache-2.0 (LICENSE and NOTICE vendored unchanged beside the patches)",
+  "fetched": "2026-10-05",
+  "files": {
+    "0001-qsa-nvfp4-kv.patch": {
+      "url": "https://raw.githubusercontent.com/Lesilva/qwen38-flashnext-nvfp4-kv/540722120aa443224f2d4005fe5b44eef24fc97f/patches/pennyroyal-2.5.3/0001-qsa-nvfp4-kv.patch",
+      "sha256": "a31b03c136d8c6cfb37d0e708a7ca856c2212fa634b77e00d31383c9119f93cb",
+      "bytes": 22557
+    },
+    "0002-optional-mamba-pingpong-fix.patch": {
+      "url": "https://raw.githubusercontent.com/Lesilva/qwen38-flashnext-nvfp4-kv/540722120aa443224f2d4005fe5b44eef24fc97f/patches/pennyroyal-2.5.3/0002-optional-mamba-pingpong-fix.patch",
+      "sha256": "12a15462ebe5ad4ae7b6989a05bd0b03e3c4f878b21a94f1c971ee32f54d22bb",
+      "bytes": 5252
+    },
+    "LICENSE": {
+      "url": "https://raw.githubusercontent.com/Lesilva/qwen38-flashnext-nvfp4-kv/540722120aa443224f2d4005fe5b44eef24fc97f/LICENSE",
+      "sha256": "1495e1e757ef4d0925a2350563cf5754bb23c51701a8ec4fb3c5cdcbedae6747",
+      "bytes": 11346
+    },
+    "NOTICE": {
+      "url": "https://raw.githubusercontent.com/Lesilva/qwen38-flashnext-nvfp4-kv/540722120aa443224f2d4005fe5b44eef24fc97f/NOTICE",
+      "sha256": "b343c1e83a434f131b0bcc4f198f34fbacd978fac81cfa15a667b66578f7a656",
+      "bytes": 605
+    }
+  },
+  "same_bytes_as": "docs/research/2026-10-04-climb/evidence/github/lesilva_0001-qsa-nvfp4-kv.patch and lesilva_0002-optional-mamba-pingpong-fix.patch (the 10-04 dry run)",
+  "not_vendored": {
+    "0003-optional-recoverssm-budget.patch": "dead code on Franzen's wheel: its kv_cache_configurator.py already skips the intermediate SSM charge in gdn_mtp_cache_mode none, the same change"
+  },
+  "target_wheel": {
+    "name": "sglang-0.5.19+gd00d88efc8d6-cp312-cp312-linux_x86_64.whl",
+    "sha256": "d0620216732b82b6efd4f8a78cc9b5f55343a4d3837fdfa3bcbb841b7718a225",
+    "source": "Kaggle dataset dfranzen/pennyroyal-v253 (Pennyroyal v2.5.3 plus Franzen's patches)",
+    "fit": "all 24 hunks apply as exact-text edits (old text found exactly once) and the result equals git apply -p2 byte for byte (solution/sim/test_franzen_nvfp4kv.py). Patched, four of the six 0001 files and scheduler.py equal Lesilva's overlay copies (stock 2.5.3 plus the patch) byte for byte; kv_cache_configurator.py and server_args.py differ from them only outside the hunks (Franzen's RecoverSSM budget change, a help string); 0002's unified_radix_cache.py hunk sits 42 lines lower, under Franzen's Mamba sparse-prefill code."
+  },
+  "parity_prompts.json": {
+    "sha256": "f0c28ab73b3bc08c90d2c29b61160ca0302e73b56a85bb42241b011243dd5d80",
+    "source": "solution/kaggle/generated/kernel-outputs/franzen-p448s14-v1/transcripts-dl (each prompt names its file and analysis_step)",
+    "rule": "see the file's own rule field; the shared system prompt is the one every game in that run used (18,619 chars); JSON written with ensure_ascii, so non-ASCII text such as dashes and arrows is stored as escapes"
+  },
+  "checkpoint_kv_scales": {
+    "checked": "2026-10-05",
+    "question": "does dfranzen/intel-qwen3.8-flash-next-w4a16-autoround (the target cell 15 serves) carry calibrated k and v scales?",
+    "answer": "no",
+    "kaggle_copy": "models/dfranzen/intel-qwen3.8-flash-next-w4a16-autoround/transformers/default/1: 50 files, no scale or kv file; config.json 266,426 B and quantization_config.json 94,026 B, the same sizes as the source below; model.safetensors.index.json is 513 B larger from Franzen's PLE reshard (ple_reshard_manifest.json). Kaggle model downloads ignore path= and stream the whole 181 GB archive, so the copy's own index was not read.",
+    "source_checkpoint": "Intel/Qwen3.8-Flash-Next-W4A16-AutoRound @ 4c67bf686b7f7fd386bae6b07ab59e8ff1d5b897",
+    "config_json_sha256": "0fabfa21fab8bfe69f02234f7ae8df4ed91b785fca2e22011c1230f6a07e5329",
+    "quantization_config_json_sha256": "2371a9d0bed1ff619622ac57aa0e6e5b39688bb834b48d761e90d5834f4cab4b",
+    "index_sha256": "35e503b758cf5441886042d315c48dfba70f947611816cbb90e02d4d5c5e58ff",
+    "quantization": "auto-round 0.15.0, int4 group 128 sym, packing auto_round:auto_gptq; no act_bits and no static_kv_dtype (static_kv_granularity 'tensor' is an AutoRound default key with nothing behind it)",
+    "tensors": 224280,
+    "kv_scale_tensors": 0,
+    "full_attention_layer_tensors": "q_proj, k_proj, v_proj, o_proj (BF16), q_norm, k_norm and the QSA indexer; nothing named k_scale, v_scale, kv_scale or output_scale",
+    "loader": "SGLang's auto-round config gives quant methods only to linear and MoE layers (layers/quantization/auto_round.py get_quant_method), so attention never gets k_scale or v_scale parameters (radix_attention.py:127-128 leaves them None) whatever the checkpoint holds",
+    "consequence": "every QSA layer's NVFP4 global scale stays 1.0 (fp4_kv_cache_quant_method.py:346 and 357), so a 16-value block's E4M3 scale is just its amax/6: full scale precision for blocks whose largest magnitude is 0.094 to 2,688, coarser subnormal scales below that, and no per-layer calibration. The FP8 cache runs uncalibrated at scale 1.0 today too. Lesilva measured +0.004 to +0.013 nats tail NLL in this same uncalibrated mode on another Flash-Next checkpoint; nvfp4kv_serve.parity measures our weights before any bench run.",
+    "recheck": "python3 solution/sim/test_franzen_nvfp4kv.py --kv-scales (network: HF metadata files and the Kaggle file listing, about 24 MB)"
+  }
+}

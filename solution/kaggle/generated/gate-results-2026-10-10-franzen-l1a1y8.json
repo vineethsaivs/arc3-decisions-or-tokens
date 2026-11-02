@@ -1,0 +1,22 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-11",
+ "gate": "gate-predeclared-2026-10-10-franzen-l1a1y8.json (declared 2026-10-10T04:05Z, before any run)",
+ "instrument": "25-game Kaggle replica (14 streams, 7,200 s window), two runs, franzen_readout.py; plus a 300 s Kaggle probe of the probe build for install and liveness",
+ "control": "l1a1 (pinned config's gameplay): GCP runs 113 and 109, pooled 111.0, mean game score 51.51; dpctl 123 and 101; L1 116 and 113",
+ "arm": {
+  "kernel": "vineethsaivs/arc3-franzen-l1a1y8p-a",
+  "version": 1,
+  "change": "l1a1fc2p (l1a1 plus both fail-closed checks) with LOCAL_ANALYZER_YIELD_TOKENS 2048 -> 8192: the analyzer hands the turn back after 8,192 generated tokens instead of 2,048, so a turn re-sends the opener and image four times less often. The probe build differs from l1a1y8 only in the replica runtime (cell 19)."
+ },
+ "evidence": {
+  "bench_l1a1y8_v1": "128 levels, mean game score 61.18, 0 games at 0; 780.7 tok/s, accept 2.70, cache hit 95.3%; openers 1,340 (4.64 actions each), 41 replies without a tool call; 0 tracebacks",
+  "bench_l1a1y8r_v1": "124 levels, mean game score 56.99, 0 games at 0; 758.4 tok/s, accept 2.69, cache hit 94.7%; openers 1,296 (4.71 actions each), 39 replies without a tool call; 0 tracebacks",
+  "pooled": "126.0 levels vs control 111.0 (gate threshold 111.0); per game, the y8 mean beats the mean of the four control runs on 14 games, loses on 2, ties on 9",
+  "mechanism": "openers down 24% and 27% against the p448s14-family transcripts (about 1,770); actions per opener 4.64 and 4.71 vs 3.3 to 3.5; replies without a call 41 and 39 vs 36 to 39; new prefill tokens 8.9M vs 12.7M",
+  "probe_l1a1y8p_v1": "RTX PRO 6000; READY after 510 s; all install lines present; failclosed summary {'games': 25, 'levels': 8, 'actions': 231}; 0 tracebacks"
+ },
+ "verdict": "PROMOTE. The predeclared mechanism holds in both runs (openers down 24% and 27%, actions per opener up, no rise in replies without a call) and pooled levels are 126.0 against the 111.0 threshold. The gain is spread over 14 games, not one. The probe build installs and plays cleanly.",
+ "what_this_does_not_claim": "The replica cannot resolve effects under about 25 levels, so the size of the gain is not established; the mechanism (fewer re-sent openers, more actions per turn) is.",
+ "promote": true
+}

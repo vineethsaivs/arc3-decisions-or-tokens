@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "declared_at": "2026-10-11T17:57Z, before any run of the arm (pushed 17:59Z)",
+  "arm": "l1a1y0sv2 (vineethsaivs/arc3-franzen-l1a1y0sv2-a): l1a1y8sv2 with LOCAL_ANALYZER_YIELD_TOKENS 8192 -> 0 (no token yield)",
+  "why": "y8 (2,048 -> 8,192) cut openers 24 to 27% and pooled 126 levels vs 111; y8 still ends 196 of 1,317 turns (15%) by token yield, each re-sending a full opener (about 2 to 3K tokens) and the board image with nothing executed in between. The priority gate is held per game and handed over on context trims, never at a yield, so the schedule is unchanged.",
+  "instrument": "25-game Kaggle replica (14 streams, 7,200 s window), one run; franzen_readout.py; turn lengths from transcripts",
+  "control": "l1a1y8sv2 v1: 119 levels, mean 54.23, 799.7 tok/s, cache hit 94.6%, accept 2.70, openers 1,317 (4.72 actions each), 46 replies without a tool call, 196 turn_token_budget yields; l1a1y8 runs 128 and 124",
+  "mechanism_required": [
+    "0 turn_token_budget yields in the transcripts",
+    "openers at most 1,250 and actions per opener at least 4.8",
+    "replies without a tool call at most 70 (control 46)",
+    "serving within bounds: tok/s not below 97% of the control, cache hit within 2 points, accept within 0.05",
+    "0 tracebacks, 0 analyzer give-ups, 0 scheduler exceptions; failclosed summary printed"
+  ],
+  "report_also": "turns longer than 16K and 32K generated tokens, and what those turns did (to see whether removing the yield lets analysis run on without acting)",
+  "promote": "mechanism holds AND at least 105 levels (ties with a verified mechanism ship under the standing rule)",
+  "reject": "<= 104 levels, a crash, or a mechanism item failing"
+}

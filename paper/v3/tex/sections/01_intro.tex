@@ -1,0 +1,68 @@
+\section{Introduction}\label{sec:intro}
+
+ARC-AGI-3 is a benchmark of interactive games \citep{arcprize2026arcagi3}.
+Each game is a grid of coloured cells with several levels (six to ten in the public games) and no instructions: the agent sees the board as an image, sends actions such as a move or a click, and has to work out the goal from what changes.
+A level scores higher the fewer actions the agent needs compared with a human who played it, and later levels weigh more (Sec.~\ref{sec:setting}).
+The competition plays 110 hidden games offline, on one 96 GB GPU, in nine hours; each team gets one scored run a day, which we call a \emph{draw}, and a draw returns a score and no log \citep{arcprize2026competitions}. % G7 A3 V3-W3
+
+We ran the same program twice on the 25 public games, which the organisers call the \emph{demonstration set}, and it cleared 123 and then 101 levels. % A3 B1
+Nothing in the code differed.
+Almost every change we tried was smaller than that gap, so this paper is first about telling a change from noise, and then about what the instruments showed.
+
+We asked whether, on one offline GPU with a fixed clock, the agent was limited by its decisions or by its tokens.
+The answer so far is partial: serving gains were too small to see, the one level gain we found across days did not reproduce when its arms were interleaved, four changes to what the model is shown, when it must act and what it can check fired as designed on runs too few to resolve a level gain, and teaching the model from its own wins lowered levels.
+
+The problem is hard for a plain reason: a run's score sums nearly two hundred all-or-nothing level outcomes, and one run per arm cannot tell a real gain from their spread.
+Published ARC-AGI-3 agents use hosted models on the demonstration set \citep{lehmann2026tycho,skoutnev2026twin}, and the open-weight write-ups we read report no measurement protocol \citep{bessis2026duck,franzen2026writeup}.
+One public repository, ``Before Tuning the Harness'', repeats identical submissions before tuning and accounts cost per request \citep{guoyi2026repeat}; we read its page and README only and did not check its model, and we price tokens in levels. % V3-W39
+Our entry forks Daniel Franzen's public notebook \citep{franzen2026milestone2}; Sec.~\ref{sec:setting} separates what we inherited, borrowed and built.
+We make five contributions.
+
+\begin{enumerate}\setlength{\itemsep}{2pt}
+\item \textbf{A measurement kit for a noisy fixed-budget agent (Sec.~\ref{sec:measure}).}
+Six identical pairs give a run-to-run SD of 8.25 levels, so two runs per arm resolve about 23 levels; a wave of twelve runs per arm made side by side would resolve about 9. % B1 B4 V3-X12
+We also used concurrent replication on rented copies of the scoring GPU, which match Kaggle within 1\% on serving counters, and once a paired decision test, which replays single decisions with and without a change against the model's own sampling noise and is not yet validated against a lever with a known level effect. % V3-T3 V3-T4 V3-X1
+
+\item \textbf{A token-budget curve that prices throughput (Sec.~\ref{sec:curve}).}
+Built from recorded level attempts, it puts the agent at about 90\% of its ceiling, the score that unlimited tokens would give at the depths we recorded. % C2 N2
+Our serving speed-ups are then worth about 4 levels (2 to 10 across our estimates), below what two runs per arm can see; the price is a simulator's and is itself uncertain. % C4 N1.3
+Read from the clock, the last tenth of the window earns 7\% of the points, about three times the curve's price on score. % V3-W13 V3-W14
+
+\item \textbf{A context lever that failed an interleaved test (Sec.~\ref{sec:yield}).}
+Yielding a turn after 8,192 generated tokens, four times Franzen's threshold, re-sends the turn's opening message and board image about 70\% less often. % D14 D5
+Across days it coincided with 12.5 more levels. % D1 D8
+Interleaved on builds that differ in one line, six runs per arm, it scored 2.5 fewer ($p$ 0.42), which excludes the earlier gain but not small gains: drift between days and extra tokens are the candidate causes, and only the interleaved design could show that the gain did not reproduce (Sec.~\ref{sec:yield}). % YN6 V3-W36 V3-W38
+
+\item \textbf{A diagnosis-first harness program with kill rules (Sec.~\ref{sec:harness}).}
+Stuck plays stop acting, write off object types untested and misread what the harness shows; 27\% of never-cleared levels hold three or more idle turns in a row, against 8\% of cleared ones. % V3-W18
+Five changes, each gated by a rule in a dated file written before its runs, fired as designed: a stall check, a corner-joined view of objects, a scroll detector, tool fixes that keep a timed-out snippet's output, and a replay check that tests the model's simulator and goal guesses against the level's history at no cost in actions. % V3-W20 V3-W22 V3-W23 V3-W28 V3-W29 V3-W38
+The first two led a pooled control by about five levels and the replay check by about three (over twice as much against the two Kaggle controls alone), which three runs cannot resolve; the scroll detector gave no gain and was not shipped; the replay check caught a wrong prediction in 42 of 85 replays. % V3-W19 V3-W23 V3-W29 V3-W41
+None adds tokens, so this is evidence about decisions, not budget.
+A research pass reads why such changes are the place to look: on long levels most of the clock goes to finding the rule or the goal, not to carrying out a plan. % V3-W31 V3-W34
+
+\item \textbf{Two fine-tuning results and what came with them (Sec.~\ref{sec:finetune}).}
+(a) Rejection-sampling fine-tuning on the agent's own cleared levels lowered validation loss by 13.9\% and lowered levels. % V3-L6 V3-L9 V3-L10
+Its three runs sit at or below the two lowest of 18 runs without it (rank $p$ 0.004), though they ran on another platform and on other days. % V3-W9
+The agent already clears 91\% of the training games' levels, so the filter kept nearly everything, slow wins included; the adapter's reasoning per action fell toward the training games' level, and its resets and deaths rose. % V3-L1 V3-L2 V3-L13 V3-L18
+This chain is our best reading of why; two alternatives are untested.
+
+(b) In reinforcement learning on this stack the training forward pass is not deterministic: two identical passes agree exactly on about 12\% of tokens and differ by 0.37 nats per token (RMS). % V3-G5
+A drift guard must therefore be read net of the stack's own floor; read raw, our predeclared guard would have discarded the run on noise. % V3-G4 V3-G7
+Round A shipped no adapter: a first-wave lead did not replicate (Sec.~\ref{sec:rl}). % V3-G13 V3-G14
+\end{enumerate}
+
+\begin{figure}[t]
+\centering
+\figfile{fig_loop}{3.4in}
+\caption{One turn of the agent, and where each lever acts. A turn ends when the model acts. A yield ends a request after a set number of tokens generated without an action and resumes the turn with the opener (the turn's opening message) and the board image sent again. Accent: the three key decisions of Sec.~\ref{sec:setting} (the 8,192-token yield; expert pruning that frees memory for 14 concurrent games; the fail-closed checks, which have not yet fired on a scored run); gray: inherited parts. Schematic.}\label{fig:loop} % A4 D5
+\end{figure}
+
+\paragraph{What we do not claim.}
+We attribute no board draw to any lever, and no level gain to the yield or to the harness changes.
+Numbers from the demonstration set are development numbers, not held out.
+Our 40.98 is the best of 28 live draws; the agent's seventeen valid draws average 34.59. % V3-W16 V3-W30
+We make no claim about whether the model's licence is eligible for a prize. % H7
+
+% count:off  (the Accuracy line is a data line, not prose)
+\notebox{\textbf{Result.} Public score \textbf{40.98} on half of the 110 hidden games: Kaggle submission \subid{57417773}, drawn 2026-10-20\pubonly{, \rankof{23}{5,048} teams on 2026-11-02 before the deadline}. It is the best of 28 live draws since the fork; the agent's seventeen valid draws (errors, zeros, adapter draws and field-wide failure days excluded) span 28.97 to 40.98 (mean 34.59). The final private score is not known until after 2026-11-02.} % V3-B1 V3-B2 V3-B9 V3-W30 BOARD-REFRESH: once posted, lead this line with the private score of the linked Final Submission.
+% count:on

@@ -1,0 +1,15 @@
+{
+  "arm": "arc3-r20-w7-a v4: rank 20's harnesses/minimal-w7 bundle on their own runtime, 7 lanes, 1,900 s per game",
+  "gate": "generated/gate-predeclared-2026-09-27-rank20-arms.json",
+  "result": {"levels": 45, "zero_level_games": 3, "mean_final_score": 10.04, "actions_total": 2441, "kv": "fp8 (served in their runtime)"},
+  "controls": {"GG7": {"levels": 47, "mean_final_score": 10.54}, "fork-scottc16": {"levels": 49, "mean_final_score": 13.15}},
+  "per_game_levels": {"ar25": 2, "bp35": 1, "cd82": 2, "cn04": 1, "dc22": 1, "ft09": 4, "g50t": 0, "ka59": 2, "lf52": 1, "lp85": 5, "ls20": 0, "m0r0": 2, "r11l": 1, "re86": 4, "s5i5": 1, "sb26": 4, "sc25": 2, "sk48": 0, "sp80": 1, "su15": 2, "tn36": 1, "tr87": 1, "tu93": 2, "vc33": 3, "wa30": 2},
+  "what_it_took_to_run": [
+    "v1: their setup hid the server error behind a 120-line tail",
+    "v2: PLE offload IPC died on pidfd_getfd EPERM under expandable_segments:True; set False",
+    "v3: FlashInfer JIT found no SM12x arch for cutlass_fused_moe_sm120; set FLASHINFER_CUDA_ARCH_LIST=12.0a",
+    "v4: ran clean"
+  ],
+  "note": "Their reported 54 to 60 levels were GCP runs with native FP8 PLE; on the Kaggle card with preconverted BF16 PLE and our fixes it benches 45. The outputs were not saved (their notebook keeps only the zip); levels are read from the kernel log's final PUBLIC25 summary.",
+  "verdict": "TIE with GG7, below the Scott fork. Does not ship tonight. Worth keeping: it is a second working serving stack with fp8 KV and 7 lanes of 103k context on this card."
+}

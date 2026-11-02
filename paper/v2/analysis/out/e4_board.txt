@@ -1,0 +1,35 @@
+== A. Board draw vs replica mean game score
+config                   board draws (date, score)                                        replica runs replica mean  ratio
+franzen-p448s14          [('2026-10-04', 28.97)]                                           53.51 52.15        52.83  0.548
+franzen-p448s14dp        [('2026-10-05', 31.9), ('2026-10-06', 29.44), ('2026-10-07', 30.56), ('2026-10-08', 28.19)]        57.82 44.59        51.21  0.586
+franzen-l1a1p            [('2026-10-09', 27.15)]                                           53.80 49.21        51.51  0.527
+franzen-l1a1fc2p         [('2026-10-11', 28.51)]                                           53.80 49.21        51.51  0.554
+franzen-l1a1y8sv2p       [('2026-10-12', 34.34)]                                                 54.23        54.23  0.633
+franzen-l1a1y8sv2r3p     [('2026-10-13', 40.09)]                                                 58.46        58.46  0.686
+
+ratio by config: 0.548, 0.586, 0.527, 0.554, 0.633, 0.686
+  mean 0.589, SD 0.060, range 0.527 to 0.686
+  first four configs (p448s14 .. l1a1fc2p): mean 0.554, SD 0.024; last two (y8sv2p, r3p, the rarer-yield family): 0.633, 0.686
+  per draw (n=9): mean 0.588, SD 0.051
+
+  public Franzen copies: board mean 25.77 (SD 3.93) [docs/research/2026-10-04-climb/forum-and-notebooks.md, Son Pham topic 745062]; skarin's 4-replicate replica mean 46.49 -> ratio 0.554 [same file]
+  marginal: franzen-l1a1y8sv2p minus l1a1fc2p: board +5.83, replica +2.72 -> ratio of changes 2.15 (average ratio 0.59)
+  marginal: franzen-l1a1y8sv2r3p minus l1a1fc2p: board +11.58, replica +6.96 -> ratio of changes 1.66 (average ratio 0.59)
+
+  p448s14dp board draws [31.9, 29.44, 30.56, 28.19]: mean 30.02, SD 1.58, 95% CI of SD [0.90, 5.90] (3 df)
+  predicted SD of a 55-game board mean, per-game noise only, scale 0.55: 1.51 (6 byte-identical pairs); with the fitted run-level shift 2.21
+  predicted SD of a 55-game board mean, per-game noise only, scale 0.55: 1.08 (y8 family); with the fitted run-level shift 1.08
+
+== B. Midnight-wave early endings (submitted 00:00 to 00:20Z, ended inside 60 min), 29 days 2026-09-12 to 2026-10-10
+  non-event days (27): 140/1880 = 7.4% (daily range 3% to 16%, median 6.8%)
+  2026-10-03 (Sat): 48/61 = 79%; P(>= that many | base rate 7.4%) = 1.8e-42
+  2026-10-10 (Sat): 63/64 = 98%; P(>= that many | base rate 7.4%) = 5.1e-70
+  Saturdays: 09-12 6/55, 09-19 3/57, 09-26 5/56, 10-03 48/61, 10-10 63/64  -> 2 of 5 Saturdays, so the weekday alone is not the trigger [inference]
+  2026-10-09 (Fri): 13/100, P = 3.5e-02 (a smaller bump the day before the second event)
+  teams at 20+, non-event days 10-01..10-09 (excluding 10-03): short/n by window: 00:00-00:20 7/557; 00:21-00:59 3/177; 01:00-05:59 7/994; 06:00+ 22/1340
+  teams at 20+, 10-03: 00:00-00:20 34/46; 00:21-00:59 3/23; 01:00-05:59 1/143; 06:00+ 1/161
+
+  our submissions by UTC fire time (Kaggle submissions API):
+  00:00 to 00:20Z fires: 11, banked 0.00: 2 (['2026-10-03', '2026-10-10']); fires at or after 00:21Z: 9, banked 0.00: 0
+  fires since the 01:00Z rule: 2026-10-11 02:06Z 28.51, 2026-10-12 02:06Z 34.34, 2026-10-13 02:06Z 40.09
+wrote <repo>/paper/v2/analysis/out/e4_board.json

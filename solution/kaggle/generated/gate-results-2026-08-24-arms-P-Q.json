@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-24T21:11:40.418075+00:00",
+  "subject": "Gate results for arms P (byte-identical replicate of arm K) and Q (top_k -1). The predeclared falsifier for arm K FIRED.",
+  "predeclared_gate": "solution/kaggle/generated/gate-predeclared-2026-08-24-arms-P-Q.json",
+  "predeclared_gate_sha256": "656cb5831e2d757650b73302d5b66670cc74cf88d360d3b0a14a374fc3157318",
+  "THE_HEADLINE": "Arm P is a BYTE-IDENTICAL replicate of arm K and it returned 28 levels where arm K returned 44. The predeclared falsifier said verbatim: 'If it returns at or below 35, arm K's 44 was substantially luck.' It returned 28. **Arm K's 44 was substantially luck, and its promotion this morning is RETRACTED.**",
+  "arm_P_replicate": {
+    "kernel": "vineethsaivs/arc3-q38-topk100-rerun-ordinary-commit",
+    "change": "NOTHING, byte-identical to arm K",
+    "benchmark_sha256": "6d11e89c2166821cd5c3cffb07c2e6c2c91feb450003a3cdb403fceae0c289c5",
+    "total_levels": 28,
+    "zero_level_games": 6,
+    "mean": 4.348,
+    "paired_vs_arm_K": {
+      "gained": 1,
+      "unchanged": 13,
+      "lost": 11,
+      "one_sided_p": 0.9998
+    },
+    "cannot_be_promoted": true
+  },
+  "arm_Q_top_k_unclamped": {
+    "kernel": "vineethsaivs/arc3-q38-topk-unclamped-ordinary-commit",
+    "change": "LOCAL_ANALYZER_TOP_K 100 -> -1 (truncation disabled) at temperature 0.9",
+    "benchmark_sha256": "0904a97f27f6fa504e4b57580504ca35d54396fd49db8deb2ff2d0418111e799",
+    "total_levels": 36,
+    "zero_level_games": 3,
+    "mean": 5.713,
+    "paired_vs_arm_K": {
+      "gained": 3,
+      "unchanged": 15,
+      "lost": 7,
+      "one_sided_p": 0.9453
+    },
+    "status": "INCONCLUSIVE, ties go to the incumbent",
+    "reading": "36 levels lands exactly on the pooled top_k-100 mean of 36.0, so -1 and 100 are indistinguishable. My predeclared prediction was 'I expect 36 to 44, because top_p = 0.95 probably already truncates below 100 candidates on most steps, which would make 100 and -1 nearly the same sampler.' It returned exactly 36. That prediction is CONFIRMED."
+  },
+  "pooled_verdict_on_top_k": {
+    "top_k_100_two_runs": [
+      44,
+      28
+    ],
+    "mean": 36.0,
+    "control_family_three_runs": [
+      33,
+      29,
+      35
+    ],
+    "mean_control": 32.3,
+    "pooled_delta_levels": 3.7,
+    "status": "TIE. NOT PROMOTED.",
+    "consequence": "THE ENTIRE SAMPLING AXIS IS NOW CLOSED AS A TIE. Temperature: 0.3 -> 22, 0.6 -> 33 and 29, 0.9 -> 35, 1.2 -> 31. top_k: 20 -> 32.3 pooled, 100 -> 36.0 pooled, -1 -> 36. Every point is inside the noise except temperature 0.3, which is clearly bad. Ship temperature 0.9 with top_k 20 and stop spending commits here."
+  },
+  "THE_INSTRUMENT_IS_FAR_WORSE_THAN_WE_MEASURED": {
+    "byte_identical_pairs_now_on_record": {
+      "temp_0.6_config": [
+        33,
+        29
+      ],
+      "top_k_100_config": [
+        44,
+        28
+      ]
+    },
+    "previous_estimate": "sigma of one run's 25-game level total 3.6 to 4.3, arm-minus-control difference 5.1 to 6.1, 80%-power MDE about 12.6 levels. That rested on ONE pair (33 vs 29, a 4-level swing).",
+    "new_estimate": {
+      "pooled_sigma_run_levels": 8.25,
+      "implied_sigma_of_a_difference": 11.66,
+      "implied_80pct_power_MDE_at_n1_vs_n1": 29.0
+    },
+    "caveat": "This rests on TWO pairs (swings of 4 and 16), so the estimate itself is barely identified. But the DIRECTION is unambiguous and the 4-level swing was the optimistic one.",
+    "what_it_means": "A single 25-game ordinary commit may be close to worthless for anything short of a structural change. Every promote/reject on record, including today's, is weaker than its write-up claims.",
+    "the_fix": "solution/kaggle/generated/re-arc-3-verification-2026-08-24.json. A 190-game offline suite (MIT, verified today) cuts sigma by about 2.8x for zero Kaggle GPU and zero submission slots. This is now the highest-priority work item, ahead of any capability arm."
+  },
+  "decision": {
+    "arm_K_shipping_status": "RETRACTED. The submission kit reverts to arm H (temperature 0.9, top_k 20), the config whose first board draw scored 2.63.",
+    "why_arm_H_and_not_arm_K": "Under the 2026-08-24 amendment a tie goes to the incumbent, and pooled top_k-100 (36.0) against the control family (32.3) is a tie. Arm H additionally has a real board draw of 2.63 while arm K has none, and the variance research established that CONCENTRATING draws on one config beats rotating (rotation is worth -0.01 to -0.07).",
+    "what_is_NOT_claimed": "That top_k is harmful. Pooled it is +3.7 levels, leaning positive but well inside noise. It is unproven, not refuted.",
+    "process_note": "I promoted arm K this morning on n=1 and said so in the record at the time ('n = 1', 'a confirmation run is already pushed'). The confirmation is why we know. The submission it produced cost nothing, because the board keeps our maximum and the 2.63 draw was arm H's."
+  }
+}

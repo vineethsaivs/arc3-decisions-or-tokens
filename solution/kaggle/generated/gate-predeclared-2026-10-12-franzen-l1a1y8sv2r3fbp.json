@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "declared_at": "2026-10-12T08:55Z, after the push and before the kernel left the queue; no output read",
+  "arm": "l1a1y8sv2r3fbp (vineethsaivs/arc3-franzen-l1a1y8sv2r3fbp-a): the pinned recipe l1a1y8sv2r3p on our own inputs (fallback_inputs): wheelhouse, drafter and TAAF bundle from our kernel vineethsaivs/arc3-input-copy-a v1, the model from the public mirror jamalsaeedi/intel-qwen3-8-flash-next-w4a16-autoround (Transformers/default/1 and /ple/1 joined by a symlink view), D3 from vineethsaivs/flashnext-mtp-d3",
+  "why": "the pin mounts four of Franzen's inputs; if one goes private every submission errors (michaeltgao's datasets did on 09-30). A verified fallback version lets a re-pin take minutes instead of a day",
+  "instrument": "300 s per game Kaggle probe; kernel.log and serve.log",
+  "control": "l1a1y8sv2r3p v1 probe: READY 493 s, accept 2.707 at 8+ running, every install line, 0 tracebacks",
+  "mechanism_required": [
+    "every mount resolves (no fallback-path error); the 50 model files match Franzen's names and sizes (the size check runs on every path)",
+    "wheelhouse and drafter sha256 match input-copy-manifest-2026-10-11.json (the sha256 check runs off the scored path, so in this probe)",
+    "GPU_GATE PASS; READY within 720 s",
+    "the pin's install lines: watchdog 'watching pid', 'd3draft: 29 mtp.* tensors spliced', arm overlays memcap, toolfast, promptobs-lite, wastefix, replycache, agentfix; mem_fraction_static 0.955; '#OURS_FORM ok version=d_prime'",
+    "accept at 8+ running within 0.03 of the pin's probe (2.677 to 2.737)",
+    "0 tracebacks, 0 OOM, failclosed summary printed"
+  ],
+  "pass": "record kernel version 1 as the fallback in STATE.md; keep it unpinned. Re-pin to it only if a Franzen input becomes unreadable",
+  "fail": "fix the fallback build and re-probe before 10-23; the pin is unaffected"
+}

@@ -1,0 +1,43 @@
+{
+ "schema_version": 1,
+ "created_at": "2026-09-08T07:40:00+00:00",
+ "arm": "AE",
+ "subject": "REVERTED. The byte-identical replicate (v3) shows arm AE is a measured TIE, not a gain. The 2026-09-07 promotion rested on a single run and is withdrawn.",
+ "the_three_reads": {
+  "control pass 0": {
+   "levels": 33,
+   "deaths_per_run": 0.806,
+   "stops": 0
+  },
+  "AE v1": {
+   "levels": 30,
+   "deaths_per_run": 1.08,
+   "stops": 4,
+   "note": "mechanism provably could not fire"
+  },
+  "AE v2": {
+   "levels": 37,
+   "deaths_per_run": 0.6,
+   "stops": 10,
+   "stop_games": "tn36 6, lp85 3, re86 1"
+  },
+  "AE v3": {
+   "levels": 28,
+   "deaths_per_run": 0.96,
+   "stops": 3,
+   "stop_games": "ar25 1, tu93 1, vc33 1",
+   "note": "byte-identical to v2"
+  }
+ },
+ "pooled_verdict": {
+  "AE mean of v2+v3": 32.5,
+  "control pass 0": 33,
+  "paired (AE mean-of-2 vs control pass 0)": "5 up / 6 down / 14 tied, up-dn = -1",
+  "reading": "DEAD EVEN. Not a regression, and not a gain."
+ },
+ "the_mechanism_is_unstable_too": "v2 fired 10 stops, v3 fired 3, and the sets of games have ZERO overlap (tn36/lp85/re86 vs ar25/tu93/vc33). The band detector does not find the same bars on the same 25 games across byte-identical runs, so 'the mechanism fires and is correctly targeted' is true per-run but not reproducible per-game.",
+ "what_I_got_wrong": "I promoted AE into the daily rotation on 2026-09-07 on the strength of v2 alone, one 25-game pass, while the same session's writeup told the owner 'never promote on a single 25-game run'. v2 was the high end of a noisy pair. The four outcome numbers I cited as 'all moving the right way' (levels +4, deaths -26%, strip share -11pp, blind-batch -23pp) do not survive averaging with v3: levels -0.5, deaths/run 0.78 vs 0.806, and the strip share went UP to 87.5%.",
+ "action": "AE-noimpact REMOVED from the ROTATION in solution/kaggle/daily_submit.sh; rotation returns to D-undo + K-topk100, both of which preflight clean and carry real board draws. The code, tests and candidate stay in the repo; nothing is deleted.",
+ "what_survives": "The DEFECT is still real and still unfixed: board_changed (solver.py:850) and the no-op guard (noop_guard.py:88-100) hash the whole grid, so a press that only ticks a HUD bar reads as a real change; 84% of control deaths show a consumed edge strip. The port of rank 4's band detector is not a good enough fix, on our stack, to beat the noise. If revisited, the thing to fix first is the detector's stability: a rolling 20-press / 0.9 window finds different bars on the same game run to run.",
+ "cost": "3 Kaggle ordinary commits, ~7.2 GPU-h, zero submission slots. The 4th (v3) was the run an adversarial reviewer told me not to buy; it is the run that produced the correction, so the criticism was right about the counter and wrong about the value."
+}

@@ -1,0 +1,22 @@
+== 1. P(promote) by true change D (levels). sigma pooled 8.25, robust 5.24
+    D   N10 (s=8.3)   N10 (s=5.2)   FLOOR2 (s=8.3)   FLOOR2 (s=5.2)
+  -30         0.000         0.000            0.000            0.000
+  -25         0.001         0.000            0.001            0.000
+  -15         0.016         0.000            0.055            0.016
+   -9         0.052         0.005            0.250            0.250
+   -5         0.099         0.022            0.471            0.604
+   +0         0.196         0.089            0.744            0.916
+   +5         0.334         0.250            0.912            0.992
+  +10         0.500         0.500            0.979            1.000
+  +15         0.666         0.750            0.996            1.000
+  +25         0.901         0.978            1.000            1.000
+
+Reading: N10 promotes a change that does nothing (D=0) with prob 0.20 (pooled sigma), and misses a real +15 with prob 0.33; FLOOR2 vetoes a true -25 with prob 0.999 but passes a true -9 with prob 0.25.
+
+== 2. Yield-family board draws [34.34, 40.09] vs 7 earlier non-outage draws [27.15, 28.19, 28.51, 28.97, 29.44, 30.56, 31.9] (mean 29.25, SD 1.58)
+  both exceed every earlier draw: permutation p = 1/36 = 0.028; z against the earlier draws: [3.2, 6.9]
+
+== 3. Board draws needed to separate two configs (two-sided .05, power .80, z)
+  per-draw SD 1.58 (p448s14dp 4 draws): n=1: 6.3, n=2: 4.4, n=4: 3.1, n=8: 2.2 points
+  per-draw SD 3.93 (Franzen copies (other teams)): n=1: 15.6, n=2: 11.0, n=4: 7.8, n=8: 5.5 points
+wrote <repo>/paper/v2/analysis/out/e4_protocol.json

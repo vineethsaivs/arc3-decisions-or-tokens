@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "declared_at": "2026-10-12T08:15Z, before any run of the arm",
+  "arm": "l1a1y8sv2r3 (vineethsaivs/arc3-franzen-l1a1y8sv2r3-a): the shipped set l1a1y8sv2r3p as a 25-game replica: l1a1y8sv2r1 (watchdog, MEMFRAC 0.955, memcap, MMHASH, toolfast) + the D3 drafter refit + promptobs lite",
+  "why": "freeze audit, replicate 1 (research plan Q9, pulled forward because this week's quota expires 10-17 00:00Z): the shipped set was never benched as a whole (r2 also carried keepdata), and the 105 floor catches only clear losers",
+  "instrument": "25-game Kaggle replica, one run; franzen_readout.py, servelog.py, stall_servelog.py, toolfast_counters.py, accept_by_context.py, promptobs_counters.py, the session health and RAM scripts",
+  "control": "l1a1y8sv2r2 v1 (122 levels, accept 2.827 at 8+ running, 890 tok/s) and l1a1y8sv2r1 v1 (128 levels); the y8 family's earlier runs 128, 124, 119",
+  "mechanism_required": {
+    "levels": "pooled with r2 (122), mean at least 112, so this run at least 102",
+    "health": "0 OutOfMemoryError, 0 watchdog relaunches, 0 tracebacks in kernel.log, 0 give-ups, failclosed summary printed, at most 2 'KV cache pool is full' lines",
+    "install": "'watchdog: watching pid', 'd3draft: 29 mtp.* tensors spliced', 'arm overlay memcap', 'arm overlay toolfast', 'arm overlay promptobs-lite', no 'arm overlay keepdata', mem_fraction_static 0.955, SGLANG_MM_PRECOMPUTE_HASH set",
+    "serving": "accept at 8+ running at least 2.76; stall at most 10 ms per 10K cached tokens; decode share at least 82.5%; cache hit at least 93.5%",
+    "toolfast": "in-batch gap sum at most 1,200 s; p10 gap at history 300-499 at most 0.10 s; running over minutes 60-105 at least 12.7",
+    "memcap": "MemoryError at most 3; 'Tool timed out' at most 13; python calls per response 0.96 to 0.995 (r1 0.981, r2 0.984, control 0.982); 0 'Sandbox process exited unexpectedly'",
+    "promptobs": "int_len at most 2, view_attr 0, unknown_udlr 0, new_attr at most 5"
+  },
+  "pass": "every item holds: the pin stands",
+  "fail": "levels item fails with health green: run replicate 2 next week before acting (research plan Q9); a health or install item fails: investigate at once and re-pin to l1a1y8sv2r1p if the failure is in D3 or promptobs"
+}

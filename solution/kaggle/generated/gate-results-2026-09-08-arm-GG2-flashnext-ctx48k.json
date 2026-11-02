@@ -1,0 +1,54 @@
+{
+ "schema_version": 1,
+ "created_at": "2026-09-08T19:20:00+00:00",
+ "arm": "GG2 (Qwen3.8-Flash-Next-NVFP4 on our agent tree, analyzer context 48,128)",
+ "kernel": "vineethsaivs/arc3-gg2-flashnext-ctx48k-a v1",
+ "subject": "The best single bench result this project has recorded, and the prediction that produced it was written down BEFORE either run.",
+
+ "MECHANISM_GATE_all_predeclared_conditions": {
+  "max_model_len": "48128, exactly as specified",
+  "max_num_seqs": "5, exactly as specified",
+  "served_model": "Qwen/Qwen3.8-Flash-Next-NVFP4",
+  "model_loading": "81.8 GiB, inside the predeclared 78-86 band",
+  "ple_offload": "PRESENT",
+  "watchdog_restarts": 0,
+  "unknown_action_rejections": 0,
+  "tracebacks_in_our_three_files": "0. Three tracebacks exist in the log and ALL are in serving_teardown.py AFTER the benchmark finished (vllm_gpu_survivors 1, an unclean shutdown). Not tool_agent.py, solver.py or python_tool_sandbox.py, so the predeclared condition passes and the measurement is unaffected.",
+  "verdict": "CLEAN INSTRUMENT"
+ },
+
+ "RESULT_pass_matched": {
+  "GG2":            {"levels": 44, "zeros": 3, "mean25": 10.180, "ex_ft09": 9.413, "actions": 2967, "tok_per_action": 619, "actions_per_game": 118.7},
+  "control pass 0": {"levels": 33, "zeros": 4, "mean25": 5.082,  "ex_ft09": 4.103},
+  "paired": "9 up / 2 down / 14 tied, up - dn = +7, levels +11",
+  "GG (same model, context 32,768)": {"levels": 33, "zeros": 3, "mean25": 6.115, "ex_ft09": 4.385, "tok_per_action": 724, "actions_per_game": 104.9}
+ },
+
+ "WHY_THIS_IS_STRONGER_THAN_A_BARE_44": "Arm K (top_k 100) also scored 44 once and its byte-identical replicate returned 28, which is the clearest example this project has of the blind bench fooling us. GG2 is different in kind because it is a CONTROLLED SINGLE-VARIABLE PAIR against GG: same model, same serving stack, same agent tree, only analyzer context 32,768 -> 48,128 and vLLM admission 8 -> 5. And the magnitude was PREDICTED IN WRITING BEFORE EITHER RUN. generated/gate-predeclared-2026-09-02-arm-GG-flashnext.json says verbatim: 'the context step is worth about -5 to -10 levels on the 27B, so a GG tie would already imply the model is worth about +5 to +10.' GG tied at 33 under the handicap; removing the handicap returned +11. That is the predicted number, from a prediction made before the data.",
+
+ "single_point_trap_check": "PASSES. GG -> GG2 moved 15 games: 10 up, 5 down, net +11, largest single game +3 = 27% of the net. mean25 and ex-ft09 move together (+66% and +115% over control pass 0), so ft09 is not carrying it. Notably tr87 went 1 -> 4; CLAUDE.md records tr87 as one of only two games no config had ever solved.",
+
+ "secondary_readings": {
+  "tokens_per_action": "619, the LOWEST of any config we have run (family range 876 to 2,827; GG 724; our 27B controls 950 to 1,138). A 176B MoE with 6B active is far cheaper per environment action than our 27B dense.",
+  "actions_per_game": "118.7, up from GG's 104.9, still below the 27B control's 133.9",
+  "zero_level_games": "3, against 4 in the control"
+ },
+
+ "PREDECLARED_VERDICT": {
+  "band_hit": ">= 41",
+  "rule_as_written": "PROMOTE to a bench replicate immediately, then the rotation",
+  "action_taken": "byte-identical replicate pushed the same hour as kernel version 2. NOT promoted to the rotation on one run: that is the 2026-09-07 arm-AE mistake and the arm-K 44-then-28 mistake, and the gate says replicate first."
+ },
+
+ "confounds_still_present_and_NOT_resolved_by_this_run": [
+  "vLLM admission 8 -> 5 rides along with the context change. It was chosen to hold oversubscription at 2.29x, BELOW the 2.49x that ran clean in GG, so it is a safety measure rather than a free variable. But it is a second change and a GG2-vs-GG comparison cannot separate them.",
+  "GG2 vs the 27B CONTROL still changes the model, the serving stack, temperature (0.9 -> 0.6), MULTIMODAL_UPSCALE (8 -> 4), prefix caching, KV dtype and MTP all at once. The +11 over control is a whole-stack result, not an attribution.",
+  "The fitted bench-to-board map is calibrated on 19-39 levels and mean25 2.67-7.15. GG2 is OUTSIDE both ranges, so any board projection from it is an extrapolation and should not be quoted as a forecast."
+ ],
+
+ "what_happens_next": [
+  "The replicate decides. If it lands >= 41 again, this is the largest capability change this project has found and it goes into the rotation.",
+  "If it lands <= 33, GG2 joins arm K as a single-run illusion and the model lever needs a third run before any claim.",
+  "Either way the CONTEXT finding stands on the GG-vs-GG2 pair and is worth carrying: on the Flash-Next stack, analyzer context 32,768 -> 48,128 moved 33 -> 44."
+ ]
+}

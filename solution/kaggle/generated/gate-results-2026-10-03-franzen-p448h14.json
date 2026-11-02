@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-03",
+  "plan": "docs/PLAN_2026-10-01.md",
+  "instrument": "25-game scored-run replica (7,200 s shared window)",
+  "control": "pooled p448s14: 114 levels, mean game score 52.8, 730 tok/s",
+  "arm": {
+    "kernel": "vineethsaivs/arc3-franzen-p448h14-a",
+    "version": 1,
+    "change": "p448s14 plus the 32 GB host-RAM KV tier"
+  },
+  "result": {
+    "levels": 107,
+    "mean_game_score": 43.84,
+    "harness_tok_s": 725.2,
+    "cache_hit_pct": 94.0,
+    "kv_p90": 0.77,
+    "prefills_over_20k": 105
+  },
+  "verdict": "No gain: at 14 streams the GPU KV pool is not binding (p90 0.77), so the host tier lifts cache hits only 0.7 points while levels (107) and game score (43.8) are below the pinned config. Keep the host tier for 16 streams, where the pool would bind.",
+  "promote": false
+}

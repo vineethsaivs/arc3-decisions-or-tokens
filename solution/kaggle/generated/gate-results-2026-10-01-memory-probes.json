@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-01",
+  "kind": "probe (boot and short load, 300 s per game); not a bench",
+  "probe_kvlite": {
+    "kernel": "vineethsaivs/arc3-franzen-probe-kvlite-a", "version": 1,
+    "change": "memory fraction 0.97 and 48 Mamba slots",
+    "kv_tokens": 1132800, "kv_tokens_baseline": 1011264,
+    "finding": "Boots and holds, but SGLang capped max_running_requests at 9 with 48 Mamba slots. The kvlite arm now keeps 60 slots and raises only the memory fraction."
+  },
+  "probe_hic12": {
+    "kernel": "vineethsaivs/arc3-franzen-probe-hic12-a", "version": 1,
+    "change": "32 GB host-RAM KV tier (--enable-hierarchical-cache, write_through, kernel io), chunk 4096, 12 streams",
+    "host_tier": "1,796,032 KV tokens (23.91 GB) plus 6.61 GB hierarchical Mamba plus 1.49 GB QSA index; hicache_attached=True",
+    "max_running_requests": 12,
+    "ready_s": 526,
+    "finding": "Boots, attaches the host tier and runs 12 streams without errors over the probe window. Ready for the full replica arm."
+  }
+}

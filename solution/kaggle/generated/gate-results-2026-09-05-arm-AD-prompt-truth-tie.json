@@ -1,0 +1,50 @@
+{
+ "schema_version": 1,
+ "created_at": "2026-09-05T07:45:00+00:00",
+ "arm": "AD",
+ "subject": "Prompt truth + batch integrity: TIE on the 2-pass GCP bench.",
+ "change": "cell8/prompt_truth.py (world-model delimiter fix, game-over-after-reset sentence) + cell8/batch_integrity.py (report short/blocked action batches). Byte-identical D-undo bundle otherwise.",
+ "run": {
+  "label": "gcp-armAD-p2",
+  "wall": "15894 s",
+  "games": 25,
+  "passes": 2,
+  "file": "~/results/armAD-p2-50play.json",
+  "patches_confirmed_in_log": true,
+  "kaggle_quota_spent": 0,
+  "kaggle_slots_spent": 0
+ },
+ "result": {
+  "arm_pass0": {
+   "levels": 35,
+   "zeros": 4,
+   "mean25": 6.683,
+   "ex_ft09": 6.475
+  },
+  "arm_pass1": {
+   "levels": 34,
+   "zeros": 4,
+   "mean25": 4.811,
+   "ex_ft09": 4.416
+  },
+  "arm_pooled": {
+   "levels": 69,
+   "mean25": 5.747,
+   "ex_ft09": 5.446
+  },
+  "control_pooled": {
+   "levels": 76,
+   "mean25": 6.798,
+   "ex_ft09": 5.897
+  },
+  "pass_matched": {
+   "pass0": "3 up / 2 down / 20 tied, levels +2",
+   "pass1": "5 up / 9 down / 11 tied, levels -9"
+  },
+  "paired_pooled": "7 up / 10 down / 8 tied, up-dn = -3",
+  "delta_levels": -7
+ },
+ "verdict": "TIE. Inside the within-config null (|up-dn|=3 <= 8). Pass 0 slightly up, pass 1 down; no consistent sign.",
+ "reading": "Both repairs are real defects (independently re-measured) and both are now proven harmless on this instrument, which cannot see effects under ~27 levels. Keep them as truth repairs if a bundle is rebuilt for other reasons; do not spend a slot on them alone. This is the third prompt-level arm today with no measurable level effect (wipe fix WORSE, animation ~0, AD tie): the bench is telling us that what the prompt says is not where the levels are.",
+ "reproduce": "python3 solution/analysis/adjudicate_bench.py <armAD.json> solution/analysis/fixtures/control-p2-50play.slim.json --label armAD"
+}

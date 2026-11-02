@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-21T01:54:31.161167+00:00",
+  "subject": "Gate results 2026-08-21: combined PROMOTED, reasoning-effort REJECTED despite passing its written gate",
+  "shipped_config_for_comparison": {
+    "name": "q38-context-hysteresis-v1",
+    "levels": 23,
+    "mean_score": 4.428,
+    "actions": 1273,
+    "scored": 1.68
+  },
+  "results": [
+    {
+      "arm": "q38 context hysteresis + fp8 KV (combined v2)",
+      "kernel": "vineethsaivs/arc3-q38-combined-v2-ordinary-commit",
+      "version": 1,
+      "benchmark": "solution/kaggle/generated/kernel-outputs/q38-combined-v2/benchmark.json",
+      "predeclared_gate": "levels at least 23, fp8 KV active with increased KV capacity and maximum concurrency, prefix-cache hit rate above the exact q38 control's 31.9 percent",
+      "measured": {
+        "levels": 23,
+        "mean_score": 4.248,
+        "actions": 1520,
+        "action_bearing_tokens": 3424491,
+        "tok_per_action_action_bearing": 2253,
+        "frozen_games_over_30min": 7,
+        "kv_cache_dtype_fp8": true,
+        "kv_cache_tokens": 398272,
+        "max_concurrency": 21.23,
+        "mean_prefix_cache_hit_rate_pct": 63.3,
+        "mean_generation_throughput": 533.3,
+        "prefill_to_decode_token_ratio": 2.7
+      },
+      "gate_checks": {
+        "levels_at_least_23": true,
+        "fp8_kv_active": true,
+        "kv_capacity_increased": "199,136 -> 398,272",
+        "max_concurrency_increased": "11.32x -> 21.23x",
+        "prefix_cache_above_31.9": "63.3%"
+      },
+      "verdict": "PROMOTE",
+      "finding": "The two mechanisms COMPOSE rather than interfere, which was the open question. Prefix-cache hit rate goes 31.9 (control) to 45.8 (context alone) to 63.3 (combined); generation throughput 349.8 to 411.5 to 533.3; prefill:decode 6.7:1 to 3.9:1 to 2.7:1. Every serving metric is the best we have recorded.",
+      "honest_caveat": "Completed levels are unchanged at 23 and the public-25 mean is marginally lower than the context arm alone (4.248 against 4.428), well inside the +/-1.0 that game ft09 alone can swing. So this is promoted on mechanism, not on a demonstrated outcome gain. Submitting it cannot lower our displayed best, because the leaderboard keeps the maximum."
+    },
+    {
+      "arm": "q38 reasoning_effort xhigh -> medium",
+      "kernel": "vineethsaivs/arc3-q38-reasoning-medium-ordinary-commit",
+      "version": 1,
+      "benchmark": "solution/kaggle/generated/kernel-outputs/q38-reasoning-medium-v1/benchmark.json",
+      "predeclared_gate": "tokens per environment action below 1100 (control 1395, action-bearing basis) AND total levels at least 14",
+      "measured": {
+        "levels": 16,
+        "mean_score": 2.099,
+        "actions": 2534,
+        "action_bearing_tokens": 2198841,
+        "tok_per_action_action_bearing": 868,
+        "session_total_tokens": 2539090,
+        "tok_per_action_session_total": 1002,
+        "frozen_games_over_30min": 5
+      },
+      "gate_checks_as_written": {
+        "tokens_per_action_below_1100": "868, PASS",
+        "levels_at_least_14": "16, PASS"
+      },
+      "verdict": "REJECT",
+      "why_reject_despite_passing": "THE GATE WAS MIS-SPECIFIED AND I WROTE IT. Its level floor of 14 was set as 'the control's 19 minus the clustered bootstrap's own -5 lower bound', i.e. against the CONTROL. But we do not ship the control; we ship the context-hysteresis arm at 23 levels. Against the config actually deployed, 16 levels is a 30 percent regression and the public-25 mean halves from 4.428 to 2.099. A floor calibrated to the control made the outcome side of the gate nearly unfalsifiable. Promoting on it would have shipped a large regression.",
+      "the_mechanism_worked_exactly_as_intended": "Tokens per environment action fell 1395 to 868, a 38 percent cut, and frozen games fell to 5, the lowest of any run. Deleting the xhigh 'think carefully, validate key assumptions, consider plausible alternatives' sentence really does make the model think less per action.",
+      "and_that_is_precisely_why_it_failed": "Actions nearly doubled, 1273 to 2534, while levels fell 23 to 16. This is the failure mode an adversarial verifier predicted in advance: more, shallower actions is a pure loss on the 64 percent of runs that already clear level 1 faster than a human. Thinking per action is not overhead on this task, it is the product.",
+      "do_not_retry": "Do not try reasoning_effort=low. It is the same axis, further in the direction that just failed, and it additionally injects a 'keep your thinking brief' instruction."
+    }
+  ],
+  "method_lesson": "Gate against the config you actually ship, not against the historical control. Both gates here compared to the exact q38 control because that is the matched-benchmark convention, but the deployed config has moved on. A gate whose floor sits below the shipped config's performance cannot reject a regression."
+}

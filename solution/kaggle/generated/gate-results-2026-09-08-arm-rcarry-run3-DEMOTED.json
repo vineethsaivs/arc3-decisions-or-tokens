@@ -1,0 +1,38 @@
+{
+ "schema_version": 1,
+ "created_at": "2026-09-08T19:40:00+00:00",
+ "arm": "rcarry (reasoning carry), third byte-identical run",
+ "adjudicated_against": "solution/kaggle/generated/gate-predeclared-2026-09-08-rcarry-run3.json, written while the run was still in status=running and before any benchmark.json was fetched",
+
+ "runs": {
+  "run 1 (2026-08-29)": {"levels": 31, "zeros": 4, "mean25": 5.149, "ex_ft09": 4.768},
+  "run 2 (2026-09-08a)": {"levels": 46, "zeros": 4, "mean25": 10.452, "ex_ft09": 9.001},
+  "run 3 (2026-09-08b)": {"levels": 30, "zeros": 7, "mean25": 4.618, "ex_ft09": 4.385}
+ },
+ "pooled_n3": {"levels": 35.67, "zeros": 5.00, "mean25": 6.740, "ex_ft09": 6.051},
+ "control_family": {"levels": 35.00, "zeros": 3.50, "mean25": 6.290, "ex_ft09": 5.957},
+ "delta": {"levels": "+0.67", "zeros": "+1.50 (WORSE)", "mean25": "+0.450", "ex_ft09": "+0.094"},
+
+ "VERDICT": {
+  "band_hit": "35.0 to 38.9 = HOLD IN THE ROTATION, and state plainly that three runs have NOT separated it from the control family",
+  "override_fired": "YES. The predeclared override reads: 'If zero-level games rise above 6 (family 3 to 4), that is a breadth regression and downgrades a HOLD to a demoted claim regardless of the level total.' Run 3 returned 7 zeros.",
+  "final": "HOLD in the rotation, CLAIM DEMOTED. rcarry is NOT established as better than control. It is the control."
+ },
+
+ "WHAT_I_GOT_WRONG_THIS_MORNING": "On n=2 (31 and 46) I promoted this arm into the daily rotation and wrote that it was 'above the control family on all three outcome statistics'. With the third run that reads +0.67 levels, +0.45 mean25 and +0.09 ex-ft09, with 1.5 MORE zero-level games. The two-run picture was carried entirely by run 2. The promotion itself is defensible under rule 15(b), which needs only a ~21% prior and a config that is not a measured regression, and the arm still is not one. The LANGUAGE was not defensible and is retracted.",
+
+ "THE_NUMBER_THAT_MATTERS_MOST_TODAY": {
+  "single_run_sd_of_this_arm": "9.0 levels across 31 / 46 / 30",
+  "why_it_matters_beyond_this_arm": "This bench can return 46 from a config whose three-run mean is 35.7. That is a larger spread than the 6.8 we had been using, and it is the direct reason arm GG2's single 44 was NOT promoted today. A 44 is inside the range this instrument produces from an unchanged config.",
+  "consequence": "raise the assumed single-run sd from 6.8 to about 9 levels when sizing any future gate, and treat every unreplicated single run above 40 as unproven."
+ },
+
+ "what_survives_unchanged": [
+  "The DEFECT is real and proven against the model's own chat template: thinking was stored under `reasoning` while the template reads `reasoning_content`, so 96% of model output was discarded before the next decision. That does not depend on any level count.",
+  "The repair is live in the shipped bytes and costs nothing.",
+  "rcarry stays in the rotation: pooled it is not a measured regression, it has zero board draws so its posterior is the widest we own, and on a max-keeping board that is worth draws. Rule 15(c) is not triggered.",
+  "The PHANTOM STRIP arm (built today, generated/gate-predeclared-2026-09-08-arm-PS-phantom-strip.json) is unaffected: it attacks the ESTIMATOR side of the same defect, not the rendering side, and its case never rested on rcarry's level count."
+ ],
+
+ "rotation_action_taken": "R-rcarry stays at index 2. Its note in config_registry.json and daily_submit.sh is rewritten to say 'three runs, pooled 35.67 vs 35.0, NOT separated from control'. The kernel version is moved 2 -> 3 because run 3 completed on version 3 and submit_candidate.py reads the CURRENT kernel status through a version-suffixed ref."
+}

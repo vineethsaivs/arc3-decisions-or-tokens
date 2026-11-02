@@ -1,0 +1,50 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-31",
+ "gate": "solution/kaggle/generated/gate-predeclared-2026-10-30-franzen-l1a1y8sv2r3lf15uns2.json",
+ "instrument": "Kaggle replica, 25 public games, 15 streams, 7,200 s window; W = kaggle-lf15uns2-1030-1..3 (l1a1y8sv2r3lf15uns2, uns2b, uns2c); counters from solution/analysis/unstick_counters.py; read by scratchpad unst/uns2_gate.py",
+ "control": {
+  "runs": "A pooled, the kv2 gate's 7 runs: vertex-kva, vertex-s15w-1..4, kaggle-lf15-1029, -1029-2",
+  "summary": "A mean: levels 123.4 score 54.85 actions 7105 med 0.674"
+ },
+ "arm": {
+  "kernel": "vineethsaivs/arc3-franzen-l1a1y8sv2r3kp12lf15uns2-a",
+  "version": 2,
+  "change": "the pin l1a1y8sv2r3kp12lf15 with franzen_overlays/unstick2.py: a stall check at the 3rd, 5th, 7th idle analyzer turn on a level; the object types and actions not yet tried on the level after a stall check, game over or model RESET; new object types at each level start; step verification on with mechanics-first, replay-before-plan and retry-from-another-state lines"
+ },
+ "evidence": {
+  "checks": [
+   "PASS m1 stall-check openers per run 15.7 >= 5, untested-list openers 43.0 >= 5, new-types openers 97.0 >= 20",
+   "PASS m1 unused-action lines naming an engine action 0 == 0",
+   "PASS m2 at-stall turns that act 0.87 (41/47) >= 0.70",
+   "PASS m3 actions 6716 <= A x 1.10 (7816)",
+   "PASS m3 median actions/baseline 0.620 <= A + 0.05 (0.724)",
+   "PASS no harm levels 128.3 >= A - 2.5 (120.9)",
+   "PASS no harm score 58.48 >= A - 1.5 (53.35)"
+  ],
+  "runs": [
+   "W kaggle-lf15uns2-1030-1: levels 141 score 65.48 actions 7713 med 0.616",
+   "W kaggle-lf15uns2-1030-2: levels 126 score 55.11 actions 6753 med 0.660",
+   "W kaggle-lf15uns2-1030-3: levels 118 score 54.83 actions 5683 med 0.584",
+   "W mean: levels 128.3 score 58.48 actions 6716 med 0.620",
+   "A vertex-kva: levels 129 score 57.66 actions 7050 med 0.694",
+   "A vertex-s15w-1: levels 120 score 52.42 actions 7008 med 0.645",
+   "A vertex-s15w-2: levels 125 score 55.98 actions 6766 med 0.696",
+   "A vertex-s15w-3: levels 122 score 52.89 actions 7519 med 0.705",
+   "A vertex-s15w-4: levels 135 score 59.71 actions 8639 med 0.639",
+   "A kaggle-lf15-1029: levels 123 score 54.63 actions 7147 med 0.644",
+   "A kaggle-lf15-1029-2: levels 110 score 50.66 actions 5608 med 0.698",
+   "A mean: levels 123.4 score 54.85 actions 7105 med 0.674",
+   "W runs read: 3 of 3"
+  ],
+  "counters": [
+   "kaggle-lf15uns2-1030-1: levels 141 actions 7713 turns 1668 level-plays 154 streak>=4 4 streak>=5 0 at-stall turns 20 acted 0.80 stall lines 20 untested lines 46 newtype lines 107",
+   "kaggle-lf15uns2-1030-2: levels 126 actions 6753 turns 1619 level-plays 143 streak>=4 2 streak>=5 1 at-stall turns 17 acted 0.88 stall lines 17 untested lines 45 newtype lines 96",
+   "kaggle-lf15uns2-1030-3: levels 118 actions 5683 turns 1366 level-plays 135 streak>=4 0 streak>=5 0 at-stall turns 10 acted 1.00 stall lines 10 untested lines 38 newtype lines 88"
+  ],
+  "probe": "franzen-l1a1y8sv2r3kp12lf15uns2-v2: 0 tracebacks in kernel.log and serve.log; benchmark.json present, 7 levels and 254 actions in its 300 s per game; v1 was invalid (the server took 19.7 min to boot, every game gave up)"
+ },
+ "promote": true,
+ "verdict": "PROMOTE. Every predeclared item passes on 3 runs and the probe plays clean. W mean: levels 128.3 score 58.48 actions 6716 med 0.620; A mean: levels 123.4 score 54.85 actions 7105 med 0.674. Rollback: re-pin l1a1y8sv2r3kp12lf15 v1 if the first live draw is 0.00 or a day errors twice.",
+ "what_this_does_not_claim": "A level gain on the hidden 110 games: three replica runs cannot resolve effects under about 25 levels, so the gate is the mechanism plus no harm; the level means are reported, not claimed."
+}

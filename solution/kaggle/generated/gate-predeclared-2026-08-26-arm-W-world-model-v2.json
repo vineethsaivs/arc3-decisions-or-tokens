@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-26T23:30:00+00:00",
+  "subject": "Predeclared gate for arm W: the world-model loop with the three prompt defects from arm V fixed, benched on the 12 modellable games only.",
+  "written_before_any_result": true,
+  "supersedes_nothing": "Arm V was an INSTRUMENT FAILURE (gate-results-2026-08-26-arm-V-world-model.json). It did not test world models and this is the first real test.",
+
+  "what_changed_since_arm_V": {
+    "1_worked_example": "The addendum showed the SHAPE of predict() but never an instance. It now carries a runnable 9-line example. Arm V wrote a predict() in 1 of 25 games.",
+    "2_memory_is_preloaded": "Arm V's one real attempt tried `import memory`, which the sandbox refuses. The prompt now says explicitly that memory is preloaded and must not be imported.",
+    "3_start_early": "Arm V's six validate calls all landed at 90 to 93 percent of the clock, far too late to repay themselves. The loop is now instructed to start on the FIRST turn of every level.",
+    "4_new_contradictions_primitive": "wm_contradictions() reports whether the observed log contradicts ITSELF, keyed only on the agent's own transition log with no game knowledge. Offline, 13 of 25 games contradict within one episode, so exact validation is unsatisfiable there and the agent must be able to see that rather than repair forever.",
+    "addendum_cost": "1,713 -> 3,021 chars, about 1,007 tokens on the trimmer's len/3 estimator, 2.1 percent of the 48,128-token history budget. The size guardrail in test_world_model_prompt.py was raised 2,000 -> 3,200 deliberately, not deleted."
+  },
+
+  "bench_is_restricted_and_why_that_is_not_game_conditioning": {
+    "games": ["ar25","ft09","lf52","lp85","ls20","r11l","sb26","sp80","su15","tn36","tr87","tu93"],
+    "selection_rule": "zero within-episode contradictions over the 500-play corpus (solution/analysis/world_model_feasibility.py)",
+    "where_the_filter_lives": "the ordinary-commit branch of the candidate notebook ONLY, inside `else:` of `if true_submission`, so it cannot reach a scored rerun; it also raises rather than run a partial subset",
+    "shipped_code_is_game_agnostic": "No overlay, prompt line or heuristic keys off a game id. The agent discovers an unmodellable game at runtime through contradictions(). This is the standing project rule (CLAUDE.md 14) and it is not bent here.",
+    "consequence_for_reading_the_result": "A win here does NOT imply a win on all 25. It establishes whether the loop works where it CAN work. Generalisation is a separate, later question."
+  },
+
+  "control": {
+    "name": "arm V, the same overlay without the prompt fixes, subset to the same 12 games",
+    "runs_clean12": [18, 19],
+    "pooled_clean12": 18.5,
+    "zero_games_clean12": [1, 1],
+    "per_game_arm_V": {"ar25": 2, "ft09": 3, "lf52": 1, "lp85": 2, "ls20": 1, "r11l": 1, "sb26": 2, "sp80": 1, "su15": 1, "tn36": 2, "tr87": 0, "tu93": 2},
+    "per_game_arm_V_rep": {"ar25": 2, "ft09": 4, "lf52": 0, "lp85": 1, "ls20": 1, "r11l": 2, "sb26": 1, "sp80": 1, "su15": 1, "tn36": 2, "tr87": 1, "tu93": 3}
+  },
+
+  "MECHANISM_GATE_CHECKED_FIRST": {
+    "note": "Arm V failed here and its level total was therefore never read. The same discipline applies. These thresholds are the whole point of the arm: it exists to find out whether the model will run the loop at all.",
+    "ADOPTION_thresholds_pooled_over_both_runs": {
+      "model_writes_a_predict_function": ">= 4 of 12 games (arm V: 1 of 25)",
+      "model_calls_validate": ">= 3 of 12 games (arm V: 1 of 25)",
+      "first_validate_call_median_position": "< 50 percent of the game clock (arm V: 90 to 93 percent)"
+    },
+    "instrument_failure_if": "adoption stays below ALL three thresholds. Then the prompt fixes did not take and the level total is again NOT evaluated.",
+    "hard_reject_if": "any traceback originating in world_model_tools.py, python_tool_sandbox.py or prompts.py, or total environment actions below 50 percent of arm V's on the same 12 games"
+  },
+
+  "PRIMARY_VERDICT_on_pooled_levels_over_the_12_games": {
+    "PROMOTE_TO_DEFAULT": "pooled >= 26 AND the paired per-game sign test versus arm V gives p < 0.10",
+    "ROTATION_ELIGIBLE_ONLY": "22 <= pooled < 26",
+    "INCONCLUSIVE": "19 <= pooled <= 21",
+    "REJECT": "pooled <= 18.5, i.e. at or below the arm V control",
+    "noise_note": "Sigma of a 12-game level total is roughly 2.5 to 3.0, scaled from the measured 3.6 to 4.3 on 25 games. A pooled pair therefore has SE about 1.8 to 2.1, so the PROMOTE bar of +7.5 is roughly 3.5 SE. Deliberately high: on a max-keeping board a false reject is far more expensive than a false promote, but this arm's whole value is a clear yes or no on a big structural change."
+  },
+
+  "binding_commitments": [
+    "No threshold in this file may be changed after either run reads out.",
+    "Ties go to the incumbent.",
+    "Variance is not a promotion argument.",
+    "If the mechanism gate reports instrument failure, the primary verdict is not evaluated at all.",
+    "A result on these 12 games may NOT be reported as a result on the 25-game bench or extrapolated to the hidden set without saying so."
+  ],
+  "telemetry_to_record_either_way": [
+    "per game: whether a predict() was written, whether validate() was called, and at what fraction of the clock the first call landed",
+    "contradictions() calls and what they reported",
+    "validate reports: records, checked, matched, and whether matched improved across calls within a game",
+    "prelude assignments and any prelude_error",
+    "environment actions per game versus arm V"
+  ]
+}

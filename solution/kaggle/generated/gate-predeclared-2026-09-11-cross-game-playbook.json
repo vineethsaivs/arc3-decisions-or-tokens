@@ -1,0 +1,56 @@
+{
+ "schema_version": 1,
+ "created_at": "2026-09-11T19:05:00+00:00",
+ "arm": "PLAYBOOK",
+ "name": "Cross-game playbook: one game-agnostic lesson carried forward from every finished game",
+ "predeclared_before_any_result": true,
+ "kernel": "vineethsaivs/arc3-fourwave-playbook-a",
+ "bundle": "vineethsaivs/arc3-q38-flashnext-playbook-v1 (v2; the shipping config plus two patched files)",
+ "null_it_must_beat": "vineethsaivs/arc3-fourwave-bench-a, the SAME four-wave schedule with no memory change. RUN THAT FIRST. Reading this arm without it is unattributable forever (rule 15(d)).",
+ "the_mechanism_and_its_provenance": {
+  "AVO": "NVIDIA's AVO scored 100.00 RHAE on all 183 levels of the public 25 and keeps PERSISTENT MEMORY ACROSS RUNS: prior implementations, evaluation results and accumulated reasoning, so a later run resumes from state rather than reconstructing the search. Its own summary is that long-horizon capability comes from the agent system, not the model.",
+  "Sensi": "arXiv 2603.17683 accumulates discovered rules ACROSS TASKS in context, one concept at a time, for LLM game agents. No weight updates.",
+  "our_own_near_miss": "Arm DD v1 shared one memory file across all 25 games: 33 levels, 5 zeros, 8 at level 2+. Arm DD2 'fixed' it to per-game memory: 27, 7, 7. The fix moved every reading the wrong way and CLAUDE.md records it as 'the fix made it WORSE'. Both are inside the noise floor, so that is a direction, not a result."
+ },
+ "WHY_NEITHER_DD_ARM_TESTED_IT": "25 games at concurrency 28 all play SIMULTANEOUSLY. 'Shared' there is cross-talk between 25 games at the same phase of play, which is the worst case, and 'per-game' is simply the control. There is no earlier game to learn from. Sequential accumulation, which is what both published systems describe, has never been run in this project. It needs a second wave, and this is the first instrument that has one.",
+ "why_a_distilled_lesson_and_not_DD_s_shared_file": "DD shared raw ACTION EFFECTS, and its own record flags the problem: ACTION1..5 mean different things per game, so an action effect from one game is noise or poison in another. Convention 14 forbids conditioning on a game's identity. What transfers is PROBING STRATEGY, which is also where our deficit is measured: 49 of 50 runs end mid-hypothesis-cycle with a live, coherent, partially-correct world model and a queued next probe, and the difference between a game we clear and a game we zero is the SIZE OF THE HYPOTHESIS SPACE, not reasoning quality. The agent runs out of CYCLES at about 3 act-and-observe cycles per level.",
+ "the_change": {
+  "harvest": "after session.play() returns, the harness asks the analyzer for ONE sentence of transferable probing advice, with no tools, a 90 s timeout and a 220-char cap",
+  "filter": "rejects NOTHING, anything under 20 chars, a game id (4 alnum + 8 hex), an explicit ACTION1..7 meaning, or a coordinate pair. Convention 14 is enforced at WRITE time, not merely requested in the prompt.",
+  "store": "a JSON list in the artifacts dir shared by all games, under a lock, deduped, capped at 12 entries",
+  "inject": "prepended to the SYSTEM PROMPT of every later game, capped at 1,800 chars, under a header that says these came from DIFFERENT games and are tactics to try, never facts about this board",
+  "host_enforced": "the harness asks and the harness injects. The model never opts in. That is the rule that killed arms V and W.",
+  "action_cost": "ZERO. The debrief runs after the game's own clock has ended."
+ },
+ "INSTRUMENT_GATE_check_this_FIRST": {
+  "condition_1": "the log carries PLAYBOOK entry lines. If there are none, nothing was ever harvested and the level total means nothing.",
+  "condition_2": "at least 6 accepted entries by the end of wave 2. Fewer means the filter or the model is refusing and waves 3-4 ran near-untreated.",
+  "condition_3": "PLAYBOOK rejected lines should be a MINORITY. If most replies are rejected, the prompt is not landing and this is an instrument failure, not a negative result.",
+  "condition_4": "per-game final_wallclock_seconds still about 1950 and about equal, so the debrief did not distort the wave blocks."
+ },
+ "PRIMARY_VERDICT": {
+  "measure": "the paired GAP from wave_position_readout.py (mean paired delta of waves 2-4 minus wave 1, each game against its own one-wave history), compared against the SAME number from the FOURWAVE null.",
+  "PROMOTE_TO_A_REPLICATE": "PLAYBOOK gap exceeds FOURWAVE gap by >= 1 pooled sd. The mechanism is live. Replicate before anything reaches the daily slot; arm K went 44 then 28 and arm AE 37 then 28 from exactly this position.",
+  "TIE": "difference under 1 sd. Undecided by this bench. Do not promote, and do not build a second variant on the strength of it.",
+  "REJECT": "PLAYBOOK gap is below FOURWAVE's by >= 1 sd. Carried advice is actively harmful, most likely because game-agnostic advice is not actually game-agnostic. Record it and close the family.",
+  "note": "wave 1 is untreated in BOTH runs, so it doubles as an internal null: if wave 1 differs materially between the two runs, something other than the mechanism moved and the comparison is void."
+ },
+ "DO_NOT_COMPARE_THE_TOTAL_TO_44_40_47": "different schedule, not comparable.",
+ "known_confounds_declared_before_the_run": [
+  "The playbook is written BY the model being tested, so a confidently wrong lesson propagates to 18 later games. That is a real failure mode of the mechanism, not a bug, and REJECT is the correct verdict if it happens.",
+  "Game order is the fixed public-25 list order, not randomised, so wave membership is confounded with that ordering. The paired-against-own-baseline reading controls for it; raw per-wave totals do not.",
+  "n is 7 games untreated against 18 treated, in one run. Small.",
+  "The system prompt grows by up to 1,800 chars, and CLAUDE.md holds that retained history is already at its optimum. This spends a little of that budget.",
+  "The debrief adds one chat call per game after the clock, which lengthens each wave slightly. Condition 4 catches it if it matters."
+ ],
+ "cost": "~2.3 GPU-h, one ordinary commit, zero submission slots, and it needs FOURWAVE's ~2.3 GPU-h first",
+ "offline_validation": [
+  "solution/kaggle/anim_overlay/apply_cross_game_playbook.py --self-check: 9 checks, including that the playbook path is published BEFORE the analyzer is constructed, that the debrief runs AFTER session.play(), and the real filter driven against leaked game ids, action meanings and coordinates",
+  "solution/sim/test_cross_game_playbook.py: 9 checks driving the REAL harvest method, including a failing analyzer, a torn-down run, a corrupt store, the entry cap, and 7 concurrent debriefs with no lost writes",
+  "end-to-end injection confirmed on the patched bundle: system prompt 12,866 chars empty, 13,288 with one entry",
+  "solution/sim/test_playbook_end_to_end.py: 4 checks through the REAL solver loop on a localhost COMPETITION arcade, 14 games at concurrency 7 (two waves), only the model stubbed. Confirms exactly ONE shared playbook store (more than one is the per-game defect arm DD2 shipped), that all 7 wave-1 games saw an EMPTY playbook so wave 1 really is the untreated control, that all 7 wave-2 games saw the carried lesson, and that the injected block is bounded at 497 chars for one lesson."
+ ],
+ "WHY_THE_END_TO_END_TEST_MATTERS": "The mechanism is INVISIBLE unless there is a second wave, so a broken wiring returns a clean NULL rather than an error: every game would behave as it does today and the arm would look like an honest negative. taaf deep-copies the solver twice, runs games in a thread pool, and builds one analyzer per game, and each of those is a place the harvest and the injection can silently fail to meet.",
+ "THRESHOLD_IS_NOW_EMPIRICALLY_CALIBRATED": "The 1 sd threshold was assumed. It is now MEASURED: partitioning all 42 recorded one-wave runs into fake waves of 7 samples the GAP under the null, giving mean +0.07 sd, sd 0.39, and |gap| >= 1.0 sd in only 1 of 42 runs (about 2%). The 95th percentile is 0.68 sd, so 1.0 sd is CONSERVATIVE and the gate stands. Caveat: those runs played every game concurrently, so the null contains game-ordering and per-game variance but no real time-ordering effect; it is a lower bound on the noise. Record: generated/wave-gap-null-calibration-2026-09-11.json",
+ "RUN_ORDER_DEPENDENCY_added_2026-09-11": "This arm's value lives ENTIRELY in waves 2-4, because wave 1 plays with an empty playbook by construction. If the wave-expiry finding holds and is not fixed first, waves 2-4 never play in the scored run, so a good bench result here could not reach the board. Do NOT spend the 2.3 GPU-h until generated/wave-expiry-REOPENED-2026-09-11.json is resolved: either the expiry is not real, or the fix is in. The same caveat applies to its null, FOURWAVE. It does NOT apply to BOOTSTRAP, NOISEFLOOR or UNSEEN28, which act within a single game or measure the instrument."
+}

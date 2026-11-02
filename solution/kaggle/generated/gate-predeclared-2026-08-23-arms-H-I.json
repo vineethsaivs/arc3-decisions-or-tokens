@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-23T00:44:23.453094+00:00",
+  "subject": "Predeclared gates for arms H and I, written BEFORE either was pushed",
+  "incumbent_control": {
+    "arm": "q38-context-window-v1 (history budget 48,128)",
+    "levels": 33,
+    "mean": 5.963,
+    "zero_level_games": 5,
+    "actions": 1979,
+    "peak_kv": 0.576,
+    "generation_tok_s": 431.2,
+    "board_draws": [
+      1.87
+    ],
+    "note": "first draw 1.87 = best score and best rank (136) this project has had"
+  },
+  "shared_preconditions": [
+    "All 25 games run and hold their full 7,920s slot.",
+    "Peak GPU KV cache usage strictly below 0.90.",
+    "KV cache size 398,272 (confirms fp8 is live, not a silent relaunch to stock).",
+    "Zero 'maximum context length' errors."
+  ],
+  "arms": {
+    "q38-ctxwin-temp09-v1": {
+      "kernel": "vineethsaivs/arc3-q38-ctxwin-temp09-ordinary-commit",
+      "change": "LOCAL_ANALYZER_TEMPERATURE 0.6 -> 0.9 on the winning window",
+      "control": "the incumbent (33 levels)",
+      "hypothesis_and_why_the_direction_flipped": "Arm G took temperature DOWN to 0.3 on the argument that failing runs show higher action entropy. That prediction was FALSIFIED: 22 levels against 33, 4 gained / 12 lost, p = 0.038 in the WRONG direction. So the entropy correlation was a consequence of failing, not a cause, and 0.6 is not obviously optimal from below. Testing the other side of the dose-response. A second reason this arm is attractive even if level-neutral: higher temperature should RAISE per-draw sigma, and on a max-of-N public board each +0.10 of sigma is worth about +0.22 board points at N=48.",
+      "PROMOTE_requires_all_of": [
+        "total_levels >= 33",
+        "zero_level_games <= 5",
+        "paired sign test against the incumbent shows more games gained than lost"
+      ],
+      "REJECT_if_any_of": [
+        "total_levels <= 29",
+        "any shared precondition fails"
+      ],
+      "INCONCLUSIVE_band": "30 to 32 levels. A tie is not a promotion.",
+      "special_case": "If levels land in 30-32 (statistically a wash) this arm may STILL be worth shipping for its variance alone, because the public board scores a maximum. That is a judgement call and must be recorded as a variance bet, not as a capability promotion."
+    },
+    "q38-ctxwin-rerun-v1": {
+      "kernel": "vineethsaivs/arc3-q38-ctxwin-rerun-ordinary-commit",
+      "change": "NOTHING. Byte-identical rerun of the incumbent, same source dataset.",
+      "control": "the incumbent (33 levels)",
+      "purpose": "Instrument calibration, not capability. Every gate threshold we write leans on 'a byte-identical rerun differs by about 6 levels', which was measured on a DIFFERENT config months of arms ago. Nobody has measured the benchmark's own noise on the config we actually ship. This run is that measurement, and it makes every future gate decision better calibrated.",
+      "no_promote_condition": "This arm cannot be promoted; it is the same bytes. It is read only for |levels - 33| and for the spread of per-game outcomes.",
+      "what_it_would_falsify": "If this rerun returns 33 +/- 1, the instrument is far tighter than we assumed and our +/-6 inconclusive bands are far too wide, which means we have been discarding real effects. If it returns 25 or 40, the 33 that justified shipping this config was substantially luck and the promotion evidence weakens retroactively."
+    }
+  },
+  "overlay_sha256": {
+    "apply_sampling.py": "1bcc61f6c8a5971a5c79efe1e1b29bad343ac855327b8ba5d84398484c10fd78"
+  }
+}

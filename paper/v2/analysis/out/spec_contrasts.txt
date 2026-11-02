@@ -1,0 +1,85 @@
+== D3 refit vs original drafter: r1 vs r3
+   control ['sv2r1-v1']: steps=3 map=hot_tokens_64k.pt draft_kv=fp8_e4m3 d3=False max_total=None
+   arm     ['sv2r3-v1']: steps=3 map=hot_tokens_64k.pt draft_kv=fp8_e4m3 d3=True max_total=None
+   acc8       2.699 ->    2.830  diff +0.130 [+0.108, +0.151] (+4.8%), n 4338/4318
+   acc14      2.683 ->    2.814  diff +0.132 [+0.104, +0.157] (+4.9%), n 1878/2006
+   step14    36.459 ->   36.640  diff +0.181 [-0.036, +0.357] (+0.5%), n 910/1028
+   gen14    924.799 ->  975.336  diff +50.537 [+39.677, +61.162] (+5.5%), n 1878/2006
+   r1 -> r3: accept len at 8+ running by mean context per request (control -> arm, n)
+     0-20K: 2.578 -> 2.701 (+0.124) n 87/82
+     20-40K: 2.639 -> 2.727 (+0.087) n 110/113
+     40-60K: 2.667 -> 2.770 (+0.103) n 222/188
+     60-80K: 2.706 -> 2.837 (+0.132) n 1923/2093
+     80-100K: 2.705 -> 2.840 (+0.135) n 1976/1820
+== D3 refit vs original drafter: (r1, y8sv2, y8, y8r) vs (r2, r3)
+   control ['sv2r1-v1', 'sv2-v1', '-v1', 'r-v1']: steps=3 map=hot_tokens_64k.pt draft_kv=fp8_e4m3 d3=False max_total=None
+   arm     ['sv2r2-v1', 'sv2r3-v1']: steps=3 map=hot_tokens_64k.pt draft_kv=fp8_e4m3 d3=True max_total=None
+   acc8       2.700 ->    2.828  diff +0.129 [+0.115, +0.142] (+4.8%), n 16709/8650
+   acc14      2.680 ->    2.813  diff +0.133 [+0.116, +0.150] (+5.0%), n 6094/3948
+   step14    36.614 ->   36.605  diff -0.009 [-0.174, +0.130] (-0.0%), n 2928/1944
+   gen14    898.441 ->  974.352  diff +75.911 [+67.354, +84.333] (+8.4%), n 6094/3948
+== identical stacks: r2 vs r3 (what a null contrast looks like)
+   control ['sv2r2-v1']: steps=3 map=hot_tokens_64k.pt draft_kv=fp8_e4m3 d3=True max_total=None
+   arm     ['sv2r3-v1']: steps=3 map=hot_tokens_64k.pt draft_kv=fp8_e4m3 d3=True max_total=None
+   acc8       2.827 ->    2.830  diff +0.003 [-0.019, +0.025] (+0.1%), n 4332/4318
+   acc14      2.812 ->    2.814  diff +0.002 [-0.026, +0.030] (+0.1%), n 1942/2006
+   step14    36.549 ->   36.640  diff +0.091 [-0.133, +0.310] (+0.2%), n 916/1028
+   gen14    973.336 ->  975.336  diff +2.001 [-7.997, +11.218] (+0.2%), n 1942/2006
+== identical stacks: y8 vs y8r (null, original drafter)
+   control ['-v1']: steps=3 map=hot_tokens_64k.pt draft_kv=fp8_e4m3 d3=False max_total=None
+   arm     ['r-v1']: steps=3 map=hot_tokens_64k.pt draft_kv=fp8_e4m3 d3=False max_total=None
+   acc8       2.697 ->    2.698  diff +0.001 [-0.021, +0.021] (+0.0%), n 4106/4053
+   acc14      2.678 ->    2.673  diff -0.005 [-0.036, +0.026] (-0.2%), n 1433/1334
+   step14    36.830 ->   36.785  diff -0.046 [-0.399, +0.280] (-0.1%), n 679/621
+   gen14    880.089 ->  872.842  diff -7.247 [-20.656, +7.122] (-0.8%), n 1433/1334
+== SPEC_STEPS 4 vs 3 (both D3): (r2, r3) vs s4
+   control ['sv2r2-v1', 'sv2r3-v1']: steps=3 map=hot_tokens_64k.pt draft_kv=fp8_e4m3 d3=True max_total=None
+   arm     ['sv2r3s4-v1']: steps=4 map=hot_tokens_64k.pt draft_kv=fp8_e4m3 d3=True max_total=None
+   acc8       2.828 ->    3.114  diff +0.285 [+0.261, +0.308] (+10.1%), n 8650/3854
+   acc14      2.813 ->    3.089  diff +0.276 [+0.246, +0.303] (+9.8%), n 3948/1595
+   step14    36.605 ->   41.532  diff +4.928 [+4.764, +5.116] (+13.5%), n 1944/677
+   gen14    974.352 ->  933.465  diff -40.887 [-49.146, -32.326] (-4.2%), n 3948/1595
+   (r2, r3) -> s4: accept len at 8+ running by mean context per request (control -> arm, n)
+     0-20K: 2.704 -> 2.948 (+0.244) n 167/78
+     20-40K: 2.709 -> 2.982 (+0.273) n 225/102
+     40-60K: 2.764 -> 3.053 (+0.288) n 326/170
+     60-80K: 2.838 -> 3.113 (+0.275) n 4020/1757
+     80-100K: 2.837 -> 3.135 (+0.298) n 3889/1743
+== UNADJUDICATED (owner has not read the gate): 32K traffic map hm32 vs (r2, r3)
+   control ['sv2r2-v1', 'sv2r3-v1']: steps=3 map=hot_tokens_64k.pt draft_kv=fp8_e4m3 d3=True max_total=None
+   arm     ['sv2r3hm32-v1']: steps=3 map=arc-traffic-32768.pt draft_kv=fp8_e4m3 d3=True max_total=None
+   acc8       2.828 ->    2.838  diff +0.010 [-0.012, +0.031] (+0.4%), n 8650/4367
+   acc14      2.813 ->    2.818  diff +0.005 [-0.022, +0.031] (+0.2%), n 3948/1959
+   step14    36.605 ->   36.046  diff -0.558 [-0.772, -0.351] (-1.5%), n 1944/958
+   gen14    974.352 ->  987.070  diff +12.718 [+3.081, +22.100] (+1.3%), n 3948/1959
+   (r2, r3) -> hm32: accept len at 8+ running by mean context per request (control -> arm, n)
+     0-20K: 2.704 -> 2.695 (-0.009) n 167/85
+     20-40K: 2.709 -> 2.747 (+0.038) n 225/101
+     40-60K: 2.764 -> 2.804 (+0.040) n 326/185
+     60-80K: 2.838 -> 2.833 (-0.005) n 4020/1885
+     80-100K: 2.837 -> 2.856 (+0.020) n 3889/2098
+== probes: D3 vs original drafter, (y8sv2p, r1p) vs (d3p, r3p)
+   control ['sv2p-v1', 'sv2r1p-v1']: steps=3 map=hot_tokens_64k.pt draft_kv=fp8_e4m3 d3=False max_total=None
+   arm     ['sv2d3p-v1', 'sv2r3p-v1']: steps=3 map=hot_tokens_64k.pt draft_kv=fp8_e4m3 d3=True max_total=None
+   acc8       2.574 ->    2.712  diff +0.137 [+0.106, +0.167] (+5.3%), n 374/367
+   acc14      2.559 ->    2.692  diff +0.132 [+0.094, +0.166] (+5.2%), n 275/225
+== probes, cleanest D3 pair: y8sv2p vs d3p (d3p = y8sv2p + D3 only)
+   control ['sv2p-v1']: steps=3 map=hot_tokens_64k.pt draft_kv=fp8_e4m3 d3=False max_total=None
+   arm     ['sv2d3p-v1']: steps=3 map=hot_tokens_64k.pt draft_kv=fp8_e4m3 d3=True max_total=None
+   acc8       2.584 ->    2.718  diff +0.133 [+0.076, +0.181] (+5.1%), n 186/181
+   acc14      2.573 ->    2.698  diff +0.125 [+0.061, +0.174] (+4.9%), n 138/104
+== probes (UNADJUDICATED map): D3 64K-map probes (d3p, r3p) vs hm32p
+   control ['sv2d3p-v1', 'sv2r3p-v1']: steps=3 map=hot_tokens_64k.pt draft_kv=fp8_e4m3 d3=True max_total=None
+   arm     ['sv2r3hm32p-v1']: steps=3 map=arc-traffic-32768.pt draft_kv=fp8_e4m3 d3=True max_total=None
+   acc8       2.712 ->    2.721  diff +0.009 [-0.026, +0.060] (+0.3%), n 367/189
+   acc14      2.692 ->    2.698  diff +0.006 [-0.027, +0.045] (+0.2%), n 225/126
+== probes: BF16 draft KV (capped pool) vs FP8, hm32p vs hm32bfp
+   control ['sv2r3hm32p-v1']: steps=3 map=arc-traffic-32768.pt draft_kv=fp8_e4m3 d3=True max_total=None
+   arm     ['sv2r3hm32bfp-v1']: steps=3 map=arc-traffic-32768.pt draft_kv=bf16 d3=True max_total=1375552
+   acc8       2.721 ->    2.731  diff +0.010 [-0.040, +0.062] (+0.4%), n 189/186
+   acc14      2.698 ->    2.726  diff +0.027 [-0.010, +0.069] (+1.0%), n 126/138
+== probes: identical D3 probes, d3p vs r3p (null at probe scale)
+   control ['sv2d3p-v1']: steps=3 map=hot_tokens_64k.pt draft_kv=fp8_e4m3 d3=True max_total=None
+   arm     ['sv2r3p-v1']: steps=3 map=hot_tokens_64k.pt draft_kv=fp8_e4m3 d3=True max_total=None
+   acc8       2.718 ->    2.706  diff -0.012 [-0.053, +0.040] (-0.4%), n 181/186
+   acc14      2.698 ->    2.686  diff -0.012 [-0.065, +0.044] (-0.4%), n 104/121

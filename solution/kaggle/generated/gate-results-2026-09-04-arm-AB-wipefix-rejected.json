@@ -1,0 +1,62 @@
+{
+ "schema_version": 1,
+ "created_at": "2026-09-04T18:00:00+00:00",
+ "arm": "AB",
+ "subject": "World-model wipe fix: REJECTED as a measured regression.",
+ "change": "cell-8 monkeypatch of ToolAgent._update_summarized_knowledge_from_step_summary: keep action_model across a level change, wipe nothing on game_over. Everything else byte-identical to the D-undo control.",
+ "run": {
+  "label": "gcp-wipefix-p2",
+  "where": "arc3-bench-1 (GCP, Kaggle-identical)",
+  "games": 25,
+  "passes": 2,
+  "seconds_per_game": 7920,
+  "wall": "15882 s",
+  "file": "~/results/wipefix-p2-50play.json",
+  "kaggle_gpu_quota_spent": 0,
+  "kaggle_submission_slots_spent": 0
+ },
+ "result": {
+  "arm_pass0": {
+   "levels": 28,
+   "zeros": 9,
+   "mean25": 5.13,
+   "ex_ft09": 4.749
+  },
+  "arm_pass1": {
+   "levels": 27,
+   "zeros": 7,
+   "mean25": 5.295,
+   "ex_ft09": 3.531
+  },
+  "arm_pooled": {
+   "levels": 55,
+   "mean25": 5.213,
+   "ex_ft09": 4.14
+  },
+  "control_pooled": {
+   "levels": 76,
+   "mean25": 6.798,
+   "ex_ft09": 5.897
+  },
+  "paired_pooled": "2 up / 14 down / 9 tied, up-dn = -12",
+  "pass_matched": {
+   "pass0": "4 up / 9 down / 12 tied, levels -5",
+   "pass1": "1 up / 10 down / 14 tied, levels -16"
+  },
+  "delta_levels": -21,
+  "delta_ex_ft09_mean25": -1.757
+ },
+ "verdict": "REJECT. Do not ship, do not add to the rotation.",
+ "why_this_is_not_noise": [
+  "BOTH pass-matched rows agree in sign (-5 and -9). The within-config null was 10 up / 2 down in the SAME direction; this arm reverses it to 2 up / 14 down.",
+  "The arm's WORSE pass (27) and BETTER pass (28) both fall below the control's WORSE pass (33).",
+  "The gap of -21 pooled levels is more than 2x the control's own internal pass spread of 10.",
+  "The single-point trap is checked: the ex-ft09 mean moves the same way (-1.757), so this is not one game carrying the result."
+ ],
+ "rule_applied": "CLAUDE.md rule 15(c): NEVER ship a MEASURED REGRESSION. This is the one hard exclusion. Note the literal rule-15 reject threshold ('level total <= 18') is written for a SINGLE-pass run; on a 2-pass run the comparable figure is <= 36 and this arm is 55, so the reject rests on the paired split and the sign agreement across both passes, not on the level total.",
+ "what_it_teaches": "The wipe was doing useful work. Carrying action_model and the world model across a level transition made the agent WORSE, which is the opposite of the mechanism argument. Most plausible reading: a stale model from level N actively misleads on level N+1, and the blanket wipe was cheap insurance against that. This is the 8th overlay-class arm on this harness and the 8th not to win.",
+ "still_true_and_still_free": "The ACTION7 batch-rejection repair in the same bundle is unaffected and stays. The animation() prompt repair was NOT in this arm.",
+ "reproduce": [
+  "python3 solution/analysis/adjudicate_bench.py <arm>.json solution/analysis/fixtures/control-p2-50play.slim.json --label wipefix"
+ ]
+}

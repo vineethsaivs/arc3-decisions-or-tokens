@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-04",
+  "plan": "docs/PLAN_2026-10-01.md",
+  "instrument": "25-game scored-run replica (7,200 s shared window)",
+  "control": "pooled p448s14 (two runs): 114 levels, mean game score 52.8, 730 tok/s; its scored draw was 28.97",
+  "arm": {"kernel": "vineethsaivs/arc3-franzen-p448h16-a", "version": 1, "change": "keep-448 experts, 16 streams, 80 Mamba slots, 32 GB host-RAM KV tier"},
+  "result": {"levels": 115, "mean_game_score": 50.69, "harness_tok_s": 784.6, "decode_tok_s": 870.0, "running_mean": 14.19, "cache_hit_pct": 93.9, "kv_p90": 0.90, "kv_max": 0.99, "levels_at_75k_100k_150k": [54, 65, 91]},
+  "verdict": "HOLD. 16 streams add 7% harness throughput over 14 (diminishing: 12 to 14 gave about 12%), the host tier keeps cache hits at 93.9% with the GPU pool at p90 0.90, but levels tie (115 against 114) and game score is lower (50.7 against 52.8). Not enough to swap the pin that scored 28.97; the GPU pool is nearly full here, so the hidden run's longer games would lean on the host tier.",
+  "promote": false
+}

@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-21T17:25:45.390828+00:00",
+  "subject": "Predeclared promotion gates for the context-window and multimodal-upscale arms",
+  "written_before": "either arm was pushed to Kaggle. No result existed when this file was written.",
+  "why_this_file_exists": "The reasoning-effort arm on 2026-08-20 PASSED its written gate and still had to be rejected, because the gate's level floor was calibrated against the 19-level historical control instead of the 23-level config we actually ship. A floor below what you deploy cannot catch a regression. Both gates below are calibrated against combined-v2, the shipped config.",
+  "control": {
+    "name": "combined-v2 (q38 + context hysteresis 0.70 + fp8 KV)",
+    "kernel": "vineethsaivs/arc3-q38-combined-v2-ordinary-commit",
+    "benchmark": "solution/kaggle/generated/kernel-outputs/q38-combined-v2/benchmark.json",
+    "total_levels": 23,
+    "mean_score": 4.248,
+    "total_actions": 1520,
+    "zero_level_games": 9,
+    "prefix_cache_hit_rate": 0.633,
+    "generation_throughput_tok_s": 533.3,
+    "peak_gpu_kv_cache_usage": 0.414,
+    "median_gpu_kv_cache_usage": 0.367,
+    "public_leaderboard_draw": 1.71
+  },
+  "shared_preconditions": [
+    "All 25 games must run. Any game that fails to start voids the arm.",
+    "Zero vLLM server relaunch-to-stock events. The serving overlay falls back on launch failure; if it fires, the arm did not test what it claims to test.",
+    "Peak GPU KV cache usage strictly below 0.90. Above that vLLM preempts and the comparison is confounded by scheduling, not by the change.",
+    "Context-overflow retries must not exceed 2 percent of analyzer requests. This is the specific way a larger history budget can backfire: a prompt that no longer leaves room for the thinking trace."
+  ],
+  "arms": {
+    "q38-context-window-v1": {
+      "kernel": "vineethsaivs/arc3-q38-ctxwin-ordinary-commit",
+      "source_dataset": "vineethsaivs/arc3-q38-context-window-v1",
+      "independent_variable": "analyzer history budget 31744 -> 48128, vLLM max-model-len 65536 -> 81920",
+      "control": "combined-v2",
+      "mechanism_claim": "The agent retains a median of 6 of its own prior decisions at the shipped budget while a median game needs about 102 actions to reach level 2. Raising the budget to 48128 raises retained turns to a median of 9 and cuts the history-drop rate from 28.1 to 19.8 percent, measured by replaying the shipped trim policy over the 25 combined-v2 transcripts.",
+      "PROMOTE_requires_all_of": [
+        "total_levels >= 23, i.e. at least ties the shipped config",
+        "zero_level_games <= 9",
+        "median retained assistant turns per request strictly greater than the control's",
+        "generation throughput within 20 percent of the control's 533.3 tok/s"
+      ],
+      "REJECT_if_any_of": [
+        "total_levels <= 20",
+        "peak KV cache usage >= 0.90",
+        "context-overflow retries above 2 percent of analyzer requests",
+        "any shared precondition fails"
+      ],
+      "INCONCLUSIVE_band": "total_levels 21 or 22: inside the +/-6-level noise of a byte-identical rerun. Do not ship on it; rerun or drop."
+    },
+    "q38-ctxwin-upscale16-v1": {
+      "kernel": "vineethsaivs/arc3-q38-ctxwin-up16-ordinary-commit",
+      "source_dataset": "vineethsaivs/arc3-q38-ctxwin-upscale16-v1",
+      "independent_variable": "MULTIMODAL_UPSCALE 8 -> 16, on top of the context-window arm",
+      "control": "q38-context-window-v1 (the other arm), NOT combined-v2",
+      "mechanism_claim": "patch_size 16 and spatial_merge_size 2 mean one vision token covers 32x32 pixels. At upscale 8 a 64x64 frame renders to 512x512, so one vision token spans a 4x4 block of 16 ARC cells and the image channel cannot resolve a single cell. Upscale 16 makes it 2x2 cells at 1024 vision tokens per frame. The processor will not resize it away: max pixels 16777216, min 65536, and 1024x1024 is 1048576.",
+      "honest_status": "MECHANISM BET. There is no offline measurement behind this arm, unlike the context-window arm. Upstream deliberately set 8 where the code default is 16, which is weak evidence against it.",
+      "PROMOTE_requires_all_of": [
+        "total_levels >= the context-window arm's, and >= 23",
+        "zero_level_games <= the context-window arm's"
+      ],
+      "REJECT_if_any_of": [
+        "total_levels <= 20",
+        "generation throughput below 400 tok/s (the image tokens have made each request too expensive)",
+        "any shared precondition fails"
+      ]
+    },
+    "q38-image-token-estimate-v1": {
+      "kernel": "vineethsaivs/arc3-q38-imgtok-ordinary-commit",
+      "source_dataset": "vineethsaivs/arc3-q38-image-token-estimate-v1",
+      "independent_variable": "history-trimmer image accounting only. setup_commands.json is byte-identical to combined-v2; the only changed file in the whole bundle is tool_agent.py (+58/-3 lines).",
+      "control": "combined-v2",
+      "added_after_the_other_two_were_already_running": true,
+      "mechanism_claim": "_estimate_tokens is len(json.dumps(payload))/3 over the whole request, and the grid PNG is embedded as a base64 data URL, so the trimmer prices an image by its base64 length. Measured through the shipped renderer on a 64x64 frame: 1,585 estimated tokens against a true 256, a 6.2x over-charge. Images persist one per retained user message, so at the shipped 31,744 budget roughly 30 percent of the history budget is phantom. Correcting it is worth about +29 percent retained turns on its own and composes with the window arm to about +96 percent.",
+      "why_it_is_lower_risk_than_the_other_two": "It changes no real token, no prompt, no sampling and no serving flag. It only makes the trimmer's arithmetic true. Text is still over-estimated at len/3 against roughly 3.5 real characters per token, so the corrected estimate stays conservative and cannot push a request past max-model-len.",
+      "PROMOTE_requires_all_of": [
+        "total_levels >= 23",
+        "zero_level_games <= 9",
+        "median retained assistant turns per request strictly greater than the control's"
+      ],
+      "REJECT_if_any_of": [
+        "total_levels <= 20",
+        "context-overflow retries above 2 percent of analyzer requests",
+        "any shared precondition fails"
+      ],
+      "INCONCLUSIVE_band": "total_levels 21 or 22.",
+      "overlay_sha256": "e1ee22ab4f69ebb13563b0c63b96a039993c668a748b52f46b341e845541d5fb"
+    }
+  },
+  "what_neither_gate_can_establish": "That either arm raises the hidden-set mean. A byte-identical rerun of one bundle differed by 6 levels and 2.04 mean score, and byte-identical submissions of the same bundle scored 1.68 and 1.05. A single 25-game commit cannot resolve anything smaller than that. These gates exist to catch REGRESSIONS and to confirm the MECHANISM moved, which is the standard that promoted context hysteresis.",
+  "overlay_sha256": {
+    "apply_context_window.py": "c378b4fb2770e8d0d9d73b2d0dfe01c141c45af0d66e9a648937d2ca46535d4a",
+    "apply_multimodal_upscale.py": "ff261ba94f597c3cd9e738155fe8a1225eb4f5c0f2389cbb7770b27d3c8ccb56"
+  },
+  "retained_turn_model": {
+    "method": "marginal text tokens per retained turn = 4,230, fitted from three replay points of the shipped trim policy over the 25 combined-v2 transcripts; image charge measured through the shipped renderer on one synthetic 64x64 frame. An ordering, not a forecast.",
+    "estimated_retained_turns": {
+      "shipped combined-v2": 5.5,
+      "arm A window 49152": 8.3,
+      "arm B window 49152 + upscale 16": 5.9,
+      "arm C estimator fix alone": 7.1,
+      "A+C window + estimator fix": 10.7,
+      "A+B+C": 9.1
+    },
+    "consequence_for_arm_B": "Arm B is roughly history-NEUTRAL against the shipped config (1.09x), not a regression, because the raised window very nearly pays for upscale 16's larger phantom charge. That was not the intent when arm B was built and it is recorded here as a lucky accident: it makes arm B a fairer test of the vision channel than it was designed to be. Kaggle exposes no kernel-cancel endpoint, so arm B could not be replaced once this was understood."
+  }
+}

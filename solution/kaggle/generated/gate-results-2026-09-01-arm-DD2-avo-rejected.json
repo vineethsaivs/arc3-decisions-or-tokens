@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-09-01T01:30:00+00:00",
+  "arm": "DD2",
+  "kernel": "vineethsaivs/arc3-q38-avo2-ordinary-commit",
+  "bundle": "vineethsaivs/arc3-q38-avo-v2",
+  "subject": "AVO is REJECTED. The version with the memory defect FIXED scored worse than the version with it, and both are at or below the control. Two runs, no promotion.",
+  "RESULT": {
+    "levels": 27,
+    "control_levels": 35,
+    "band": "REJECT (<= 29)",
+    "zero_level_games": 7,
+    "control_zeros": 3,
+    "games_at_level_2_or_deeper": 7,
+    "control_deep": 9,
+    "paired_sign_test": "1 gained / 8 lost / 16 tied, which is real separation AGAINST the arm",
+    "shipped_scorer_mean": 4.294,
+    "control_mean": 5.858,
+    "shipped_scorer_mean_excluding_ft09": 3.955,
+    "control_mean_excluding_ft09": 5.507,
+    "note_on_the_ex_ft09_column": "reported beside the raw mean per the rule adopted after arm DD. Here both columns agree, which is what a real effect looks like and is exactly what arm DD did not have."
+  },
+  "THE_TWO_AVO_RUNS_TOGETHER": {
+    "DD_v1_shared_memory": "33 levels, 5 zeros, 8 deep",
+    "DD2_per_game_memory": "27 levels, 7 zeros, 7 deep",
+    "control": "35 levels, 3 zeros, 9 deep",
+    "reading": "The FIX made it worse, by 6 levels. That gap is inside the instrument's noise (byte-identical reruns span 29 to 33), so the honest statement is not 'per-game memory hurts' but 'neither AVO configuration beats the control, and the pair averages 30 against 35'.",
+    "and_the_confound_is_now_irrelevant": "the shared-memory defect was the stated reason DD v1 could not be trusted. DD2 removes it and the result does not improve, so the defect was never what was holding AVO back."
+  },
+  "WHY_IT_FAILED, consistent with what fired": {
+    "all_four_mechanisms_were_live_in_DD": "ARC3_AVO_AGENT=1, avo_turns 50, avo_exploit_turns 16, avo_interventions 5. This was never an integration failure.",
+    "the_likely_cause_was_predeclared": "the gate said the main way this arm loses is the phase-1 directive, 'do not act this turn unless the situation is already unambiguous', against a harness where 46-47 percent of analyzer turns already execute zero actions because one q38 round trip costs 113-130s against a 60s yield budget. Zeros went 3 -> 5 -> 7 across control, v1 and v2, which is the signature of an agent acting less.",
+    "and_the_exploit_deadline_did_not_compensate": "a third of DD v1's turns ran under 'stop refining the world model and play' and the level total still did not rise."
+  },
+  "DECISION": "REJECT. Not promoted, and INELIGIBLE for the 2026-09-02 slot under the predeclared selection rule, which requires >= 30 levels precisely to stop a measured regression from shipping.",
+  "CLOSED": "the AVO lineage. Do not build a third variant. What remains untested from it is the stagnation supervisor in isolation, which fired 5 times and escalated 0 times, but that is a component of a design that has now lost twice.",
+  "cost": "2.4 GPU-h. AVO total: 2 arms, 4.8 GPU-h."
+}

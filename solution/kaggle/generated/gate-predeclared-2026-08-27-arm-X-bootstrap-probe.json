@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-27T18:30:00+00:00",
+  "arm": "X",
+  "name": "bootstrap action-class probe (gap-filling)",
+  "predeclared_before_any_run": true,
+
+  "what_changes": {
+    "base": "vineethsaivs/arc3-q38-ctxwin-temp09-v1, the EXACT bundle that drew our banked 2.65 on 2026-08-25",
+    "single_variable": "at each level start the harness plays, itself, every action class in `valid_actions` that has never been tried on this game. RESET is never probed. MOUSE gets a deterministic centre click at (32,32). Capped at 6.",
+    "diff_from_base": "exactly two files: tool_agent.py (the probe) and setup_commands.json (BOOTSTRAP_PROBE=1, BOOTSTRAP_PROBE_CAP=6). Verified by directory diff.",
+    "overlay": "solution/kaggle/anim_overlay/apply_bootstrap_probe.py",
+    "offline_tests": "solution/sim/test_bootstrap_probe.py, 11 checks, driven against the PATCHED shipped tool_agent"
+  },
+
+  "MECHANISM_GATE_CHECKED_FIRST": {
+    "why_first": "Arm V shipped a correct overlay and the model declined to use it, which made its level count meaningless. That gate fired first and saved us from recording a false refutation. This arm is STRUCTURAL, so the model cannot decline it, but we still verify it fired before reading any outcome.",
+    "conditions_all_required": [
+      "PROBE FIRED: the transcript shows 'bootstrap probe played N actions' on at least 20 of 25 games.",
+      "COVERAGE ROSE: the share of runs trying every action class the game exposes inside level 1 rises from the control's ~60% to at least 90%.",
+      "COST HELD: mean probe actions per run is at most 2.0. Measured expectation is 0.70, and 1.4 allowing for RESET recovery after a probe-induced game_over.",
+      "NO CRASHES: zero tracebacks naming _bootstrap_probe, and total actions do not fall (a crash loop would show as fewer)."
+    ],
+    "if_it_fails": "Record INSTRUMENT FAILURE and do NOT evaluate the primary verdict, exactly as with arm V. A probe that did not fire says nothing about probing."
+  },
+
+  "PRIMARY_VERDICT": {
+    "honest_power_statement_written_before_the_run": "This bench CANNOT prove this arm. A byte-identical rerun of the shipped config returned 33 then 29 levels; the 80%-power MDE at n=1 vs n=1 is about 12.6 levels. The causal mechanism predicts roughly 1.25 of 25 games unlocking, which is far inside that noise. We are running a SAFETY SCREEN, not a capability proof, and this sentence exists so no future reader mistakes one for the other.",
+    "control": "q38-temp09-v1: 35 levels, 4 zero-level games, mean 6.722",
+    "conditions": {
+      "REJECT": "levels <= 29, OR zero-level games >= 7, OR the paired per-game sign test is significantly negative (p < 0.10 with more games lost than gained). Either signals real harm.",
+      "EARNS_DRAWS": "anything else. Under the 2026-08-24 rule a wrong promote costs 0.095 board points and a right one pays 0.205, so a candidate needs only a 20.7% prior of being better to deserve draws. The causal evidence (31 of 589 runs provably locked out of level 1, scoring 0.13 levels against 1.01) clears that bar comfortably, and the priced cost is -0.014 bench points.",
+      "ties_go_to": "the incumbent on capability, but this arm still enters the rotation, because on a max-keeping board rotating across configs of equal mean costs exactly zero."
+    }
+  },
+
+  "SECONDARY_MEASUREMENTS_recorded_but_NOT_gating": [
+    "zero-level games, the metric the mechanism specifically predicts should fall",
+    "share of runs missing a human-required level-1 class (should go to ~0 on the 22 games with a replay)",
+    "actions spent on level 1, which the probe necessarily raises",
+    "per-level efficiency on cleared levels, which the probe necessarily lowers slightly"
+  ],
+
+  "what_would_falsify_the_whole_idea": "If coverage rises to ~100% and zero-level games do NOT fall across this arm and its replicate pooled, the coverage effect was selection rather than cause, and the probe should be reverted. That is the one outcome that would retire this lever rather than leave it inconclusive.",
+
+  "expiry": "The variance argument for rotation inverts around 2026-10-20, when the private board makes the MEAN the objective. Re-decide this arm on mean alone at that date."
+}

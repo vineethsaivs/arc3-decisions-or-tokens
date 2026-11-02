@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-30T19:35:00+00:00",
+  "arm": "BB",
+  "name": "Polyphony reproduction: the CC0 top-of-board architecture, unmodified, on our 25-game bench",
+  "predeclared_before_any_result": true,
+  "bundle": "vineethsaivs/arc3-poly-repro-v1",
+  "kernel": "vineethsaivs/arc3-poly-repro-ordinary-commit",
+  "control": "q38-temp09-v1: 35 levels, 4 zero-level games, mean 6.722",
+  "what_this_is": "Not a port and not an overlay. The upstream src/ tree, setup_commands.json, solver pickle and PolyphonySettings are shipped VERBATIM. The only addition is games25.pkl and a notebook hook that swaps bm.games, because upstream publishes a 3-game smoke config (poly-20260826-smoke: ar25, ka59, ls20) that is not comparable to anything we have measured.",
+  "why_reproduce_before_improving": "CLAUDE.md doctrine: fork the strongest published lineage, reproduce it, then overlay one change at a time. It is also the only way to attribute a result: if we ported selectively and it underperformed we could not tell a bad port from a bad idea.",
+  "MECHANISM_GATE_check_this_first": {
+    "conditions_all_required": [
+      "the run completes 25 games and emits benchmark.json",
+      "the polyphony loop actually ran: transcripts or workspace artifacts show a policy.py being written, and verify() reporting matched/total at least once",
+      "the planner ran at least once, i.e. at least one game reached verification.certified before the policy deadline"
+    ],
+    "if_the_third_fails_but_the_first_two_pass": "record PARTIAL: the architecture ran but never certified a policy, so every game fell through to the policy deadline and played directly. That is a real and publishable finding (it would mean exact-replay certification is unreachable on our 25 games, which our own arm-W critique predicted for 13 of them), and the primary verdict should then be read as a floor on polyphony, not a measurement of it.",
+    "if_the_first_fails": "INSTRUMENT FAILURE. Integration bug, not evidence about the architecture. Diagnose from In[2] and the vllm log before drawing any conclusion."
+  },
+  "PRIMARY_VERDICT": {
+    "measure": "total levels over the 25 games, plus the paired per-game sign test against the control.",
+    "STRONG_PROMOTE": ">= 47 levels, i.e. beyond 3 sigma of the 4-level noise floor. This is the outcome that would justify making polyphony the new base for everything.",
+    "PROMOTE": "40 to 46, or the sign test clearly favours the arm",
+    "TIE": "30 to 39 with no sign-test separation. Incumbent keeps the submission slot, but polyphony still becomes the development base if the mechanism gate passed fully, because a tie on OUR bench against an architecture scoring 4.71 on the board is far more informative than a tie between two overlays.",
+    "REJECT": "<= 29",
+    "ties_go_to_the_incumbent_for_the_SUBMISSION_SLOT": "explicitly, and never promote on a variance argument."
+  },
+  "the_number_to_beat_for_reference": "Upstream scores 4.71 on the public board against our 2.65, a factor of 1.78. If that transferred linearly to bench levels we would see about 62. Nobody should expect linear transfer; the 25-game bench and the ~55-game hidden board are different instruments. The 47-level STRONG_PROMOTE band is set from OUR noise floor, not from their board score.",
+  "honest_prior": "0.45 that this returns >= 40 levels, 0.20 that it returns >= 47. The architecture is proven at the top of the board on our exact model and serving stack, which is the strongest prior we have ever had for an arm. The uncertainty is integration and whether their advantage is in the published branch at all.",
+  "known_upstream_defect_NOT_fixed_here": "their inference/core/action_names.py also omits ACTION7, so the UNDO batch-rejection bug we verified in arm AA is present upstream. Deliberately left in place for the reproduction. It is the first overlay after this run.",
+  "cost": "~2.4 GPU-h"
+}

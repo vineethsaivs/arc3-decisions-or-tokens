@@ -1,0 +1,36 @@
+{
+ "schema_version": 1,
+ "created_at": "2026-09-09T02:30:00+00:00",
+ "arm": "GG3 (Flash-Next, utilization 0.92->0.95, KV 5->7.5 GiB, admission 5->8, context held at 48,128)",
+ "verdict": "INSTRUMENT FAILURE, not a rejection. The vLLM server OOM'd at startup and never served. The hypothesis is untested.",
+
+ "what_happened": {
+  "symptom": "kernel status error. All 25 games ran and produced ZERO actions; every analyzer call failed with connection refused on 127.0.0.1:1234. The notebook raised 'Public runs produced no actions.' at In[7] AFTER the full clock had elapsed.",
+  "root_cause": "OOM during MoE autotuning. vllm-openai-server.log: 'Initial free memory 94.43 GiB, reserved 7.5 GiB memory for KV Cache' then 'memory allocation failed with OOM on device 0 while trying to allocate 100663296 bytes (free: 29753344, total: 101973950464)'.",
+  "the_budget_that_actually_applies": "The card reports ~95 GiB usable. Flash-Next loads at 81.8 GiB. GG2 worked with a 5.0 GiB KV pool, leaving about 8.2 GiB for activations and the autotuner. GG3 asked for 7.5 GiB, leaving 5.7 GiB, and that is NOT enough."
+ },
+
+ "MY_ARITHMETIC_WAS_WRONG_AND_HERE_IS_THE_CORRECTION": {
+  "what_I_claimed": "Raising --gpu-memory-utilization 0.92 -> 0.95 lifts the total budget from 88.3 to 91.2 GiB and therefore makes room for a larger KV pool.",
+  "what_vLLM_actually_does": "It says so in its own log: 'reserved 7.5 GiB memory for KV Cache as specified by kv_cache_memory_bytes config and skipped memory profiling. This does not respect the gpu_memory_utilization config.' When --kv-cache-memory-bytes is set, --gpu-memory-utilization is IGNORED and memory profiling is SKIPPED.",
+  "consequence": "The utilization change did nothing at all. The pool was reserved regardless and the engine died. My reasoning in generated/stack-audit-gaps-2026-09-08.json about 'the 9.6 GiB of an unallocated card' is WRONG for any config that pins kv-cache-memory-bytes, which is every Flash-Next config we run.",
+  "correction_recorded_in": "CLAUDE.md rule 15(d)"
+ },
+
+ "THE_MORE_EXPENSIVE_DEFECT_THIS_EXPOSED": {
+  "finding": "There is NO fail-fast guard when the analyzer is unreachable. The server OOM'd at 21:44 and the harness went on to play 25 games for the full 7,920-second clock against a refused port, executing zero actions, and only raised at the very end.",
+  "cost": "about 4.7 GPU-hours for zero information, out of a 30-hour weekly budget.",
+  "the_fix_worth_building": "abort the run if the first N analyzer requests all fail with a connection error. Cheap, host-side, and it would have returned this same diagnosis in under two minutes.",
+  "note": "This is a bigger prize than GG3 itself. It converts every future serving misconfiguration from a 4.7-hour loss into a 2-minute one."
+ },
+
+ "corrected_retry_spec_if_it_is_ever_worth_running": {
+  "keep": "admission 8 and context 48,128, which is the actual hypothesis (remove GG2's confound).",
+  "change": "KV 5.0 -> 6.0 GiB, NOT 7.5. That leaves about 7.2 GiB of headroom against the 8.2 GiB that demonstrably works, so it is a one-step move rather than a two-step one.",
+  "drop": "the utilization edit entirely. It is inert while kv-cache-memory-bytes is set, so it is a variable that cannot act and should not be in the arm.",
+  "oversubscription": "8 x 48,128 = 385,024 against a ~126,000-token pool at 6 GiB = 3.05x, which is ABOVE the 2.49x that ran clean in GG. That is the real risk of restoring admission to 8, and it is the thing the arm would actually be testing.",
+  "priority": "LOW. GG2 is already promoted and replicated; GG3 only removes a confound. Do not spend quota on it while a model probe or a scored draw needs the slot."
+ },
+
+ "what_is_unaffected": "G-flashnext48k stays promoted. Its two runs (44 and 40 levels) were served correctly at KV 5 GiB, utilization 0.92, admission 5, and nothing here touches them."
+}

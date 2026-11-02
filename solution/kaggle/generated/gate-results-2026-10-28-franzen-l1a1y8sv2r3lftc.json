@@ -1,0 +1,17 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-28",
+ "gate": "gate-predeclared-2026-10-28-franzen-l1a1y8sv2r3lftc.json",
+ "arm": {"kernel": "vineethsaivs/arc3-franzen-l1a1y8sv2r3lftc-a", "version": 1, "change": "the new pin's agent serving ThinkingCap (lamdang's W4A16 AutoRound repackaging of bottlecapai/ThinkingCap-Qwen3.8-Flash-Next) in place of Intel's Flash-Next"},
+ "control": {"kernel": "vineethsaivs/arc3-franzen-l1a1y8sv2r3lfk-a", "version": 1, "note": "same build serving Intel's Flash-Next, run side by side on Kaggle 16:25 to 18:26Z"},
+ "evidence": {
+  "levels": "W 122 against concurrent A 129 and pooled A about 124; bar for ship: pooled A + 8 (about 132)",
+  "score": "W mean game score 49.19 against A 57.79 (-8.60, -15%)",
+  "actions": "W 11,523 against A 6,780 (+70%); cleared levels at a median 0.83 of the human baseline's actions against 0.70, and 20% over 1.5x against 8%",
+  "serving": "Vertex tcw-1 (first hour): draft accept 2.75 against 2.70 for the controls, 924 against 946 to 951 tok/s: the drafter transfers; the loss is behavior, not speed",
+  "install": "loads cleanly: weights 234 s on Vertex, p448 kept 448 experts in 48 layers, 0 tracebacks on Kaggle"
+ },
+ "promote": false,
+ "verdict": "KILL. ThinkingCap fails the ship rule on levels and loses 15% of score on the efficiency term: it thinks less per action and acts more, and the score's (baseline/actions)^2 term charges every extra action. One pair is enough here because the action count is a mechanism, not noise. The Vertex wave (4 W, 2 A) was cancelled after about an hour; the 181 GB GCS copy was deleted.",
+ "what_this_does_not_claim": "One concurrent pair; the level gap (-7) alone is inside the noise, the score and action gaps are not."
+}

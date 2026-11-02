@@ -1,0 +1,19 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-30",
+ "declared_before_results": true,
+ "declared_at": "2026-10-30T00:42:56Z (file time), before any unstick2 run was pushed and before any unstick result was read",
+ "candidate": "l1a1y8sv2r3lf15uns2 (W) against the lf15 agent (A); l1a1y8sv2r3kp12lf15uns2 (probe, would become the pin)",
+ "change": "franzen_overlays/unstick2.py: unstick (stall check, untested object types, step verification; gate-predeclared-2026-10-30-franzen-l1a1y8sv2r3lf15unst.json) plus, on the first opener of each level after level 1, the object types no frame of an earlier level had (a piece of 8x8 or smaller by color and exact shape, a larger region only if its color is new), with advice to test one of each early. Offline test solution/sim/test_franzen_unstick2.py passes; on probe frames vc33 L2 lists 3 new types",
+ "evidence": "In three paired plays the level turned on a type the earlier levels lacked and the clearing runs tested it early (sp80 L2 red bars, s5i5 L3 gray walls that push, su15 L4 a chasing ghost); docs/research/2026-10-30-unstick/FINDINGS.md",
+ "wave": "Kaggle only (free quota): W1 when the unstick wave frees a slot on 10-30 if quota allows, W2 and W3 after the weekly refresh (10-31 00:00Z), then the probe. A pooled = the kv2 gate's 7 runs (play numbers from benchmark.json)",
+ "gate": {
+  "m1_fires": "W mean per run: at least 5 stall-check openers, at least 5 untested-list openers and at least 20 new-types openers",
+  "m2_response": "Pooled over W, of the turns that are the 3rd, 5th or 7th idle turn in a row on a level, at least 0.70 execute an action (reference 0.54)",
+  "m3_actions": "W actions per run <= pooled A x 1.10 and W median actions/baseline on cleared levels <= pooled A + 0.05",
+  "no_harm": "W mean levels >= pooled A - 2.5 and W mean game score >= pooled A - 1.5",
+  "probe": "Kaggle probe of l1a1y8sv2r3kp12lf15uns2 installs and plays, 0 tracebacks in kernel.log and serve.log"
+ },
+ "decision": "ship on m1, m2, m3, no_harm and the probe; kill on any miss; no further runs are added after reading. If unstick has shipped by then, unstick2 replaces it only if it passes; if unstick was killed on m2 or no_harm, unstick2 is still read on its own gate",
+ "rollback": "re-pin the previous pin if the first live draw is 0.00 or a day errors twice"
+}

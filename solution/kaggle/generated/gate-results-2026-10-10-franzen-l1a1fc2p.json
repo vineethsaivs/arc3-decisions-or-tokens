@@ -1,0 +1,20 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-10",
+ "instrument": "300 s-per-game Kaggle probe (installs and plays, never 'is better') plus offline tests of both checks on the scored transport",
+ "control": "l1a1p v1, promoted 2026-10-08 (gate-results-2026-10-08-franzen-l1a1p.json): GCP pooled 111.0 levels, mean game score 51.51, 775.5 tok/s; board draw 27.15",
+ "arm": {
+  "kernel": "vineethsaivs/arc3-franzen-l1a1fc2p-a",
+  "version": 1,
+  "change": "l1a1 plus two fail-closed checks that act only in a scored run: a model server that exits before READY raises at once (cell 15), and a run that ends with under 20 levels raises at the end (cell 23). Gameplay, serving and the schedule are byte-identical to l1a1."
+ },
+ "evidence": {
+  "probe_l1a1fc2p_v1": "GPU_GATE PASS on an RTX PRO 6000 Blackwell (97,887 MiB, cc 12.0); p448, D-prime, wastefix, replycache and agentfix install lines present; the server missed the 721 s READY deadline, the benchmark was released while it loaded and all 25 games waited inside the 900 s first-request grace, then played (6 levels, 172 actions, 0 analyzer give-ups); the fail-closed summary printed on the bench path; 0 tracebacks",
+  "probe_l1a1fcp_v1": "same stack with only the end check: READY after 520 s, all install lines present, summary {'games': 25, 'levels': 8, 'actions': 257}, 0 tracebacks",
+  "offline": "solution/sim/test_failclosed.py (3 checks: levels_completed counts on the COMPETITION transport; a solver crash returns normally with every game crashed and check() raises); solution/sim/test_submission_guard.py (20 tests: an errored submission is retried, a complete one or a listing doubt is not, the shell sets the errored record aside and restores it when the slot is spent, no submission before 01:00 UTC); build_franzen_arms.py --self-check",
+  "why": "two scored draws (2026-10-03, 2026-10-10) completed at 0.00; a dead server or a swallowed solver failure used to bank 0.00 and spend the day, while an errored submission does not spend the slot (2026-09-30 evidence; Kaggle staff, ARC-2 forum 746520, 2026-10-07: 'Kaggle Error already doesn't count towards submission limits')"
+ },
+ "verdict": "PROMOTE. Same gameplay as the promoted l1a1 with two checks that can only turn a dead scored run (under 20 levels, or a server that exited before READY) into an error, which the daily job retries the same UTC day. Both probes install and play cleanly on the RTX PRO 6000, including a slow boot released into the grace.",
+ "what_this_does_not_claim": "No capability change. A run Kaggle kills from outside (the 10-03 and 10-10 midnight waves) is not caught by any notebook check; that case is handled by not submitting before 01:00 UTC.",
+ "promote": true
+}

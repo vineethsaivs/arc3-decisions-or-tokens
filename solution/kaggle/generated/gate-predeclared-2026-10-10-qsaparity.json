@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "declared_at": "2026-10-10T04:40Z, before the probe runs",
+  "probe": "qsaparity (vineethsaivs/arc3-franzen-qsaparity-a): 16 recorded parity prompts; per prompt, greedy-decode 512 tokens with MTP on, then compare 16 greedy tokens after A+D served from the decode-time cache against a fresh prefill of A+D, on the shipped SGLang and again after the QSA ring fix",
+  "validity": "at least 12 of 16 prompts must reuse the decode-time keys (cached_tokens >= len(A)+len(D)-8) on both boots, and fresh-vs-fresh first-token agreement must be at least 0.9 on both boots (the noise floor); otherwise the probe answers nothing",
+  "reading": {
+    "defect_matters": "fixed cached-vs-fresh first-token agreement exceeds shipped by at least 0.10, or the median tokens before divergence rises by at least 4",
+    "defect_negligible": "the two boots agree within 0.05 on first-token agreement and within 2 on median divergence",
+    "otherwise": "inconclusive at n=16"
+  },
+  "decision_use": "evidence for the l1a1sv3 / l1a1qr promotion and for the Paper Track; the fix ships on its bench gate regardless, because it is a correctness fix with no throughput cost"
+}

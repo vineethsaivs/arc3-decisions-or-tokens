@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-29T21:32:00+00:00",
+  "arm": "AA",
+  "name": "ACTION7 -> UNDO: make an advertised action actually executable",
+  "predeclared_before_any_result": true,
+  "bundle": "vineethsaivs/arc3-q38-undo-v1",
+  "kernel": "vineethsaivs/arc3-q38-undo-ordinary-commit",
+  "control": "vineethsaivs/arc3-q38-ctxwin-temp09-v1: 35 levels, 4 zero-level games",
+  "change": "One dictionary entry in inference/agent/action_names.py: \"ACTION7\": \"UNDO\". Nothing else in the tree differs from the parent.",
+  "the_defect": {
+    "advertised": "tool_agent.py:195 _normalize_valid_actions calls to_model_action(engine_name or value); the None from to_engine_action is swallowed and ACTION7 is offered to the model as valid.",
+    "rejected": "solver.py:627 calls to_engine_action(raw_action['action']); on None it returns 'Unknown action at index N' and REJECTS THE ENTIRE BATCH, so valid actions batched alongside it also do not execute.",
+    "corroboration": "ACTION7 executed 0 times in 500 recorded runs / 68,682 actions, on the 6 of 25 public games that expose it. That was previously recorded as the model declining to use UNDO. It was unreachable."
+  },
+  "MECHANISM_GATE_check_this_first": {
+    "condition": "In the arm's transcripts, on the games whose valid_actions include the undo action, the label UNDO must appear in at least one USER PROMPT, AND the run must contain at least one EXECUTED UNDO. A single successful execution clears the gate: the control's count is 0 out of 68,682.",
+    "if_it_fails": "record INSTRUMENT FAILURE and do NOT evaluate the primary verdict. In particular, if UNDO appears in prompts but is never executed, that is the genuine 'the model declines to use it' finding the old data was mistaken for, and it should be recorded as such."
+  },
+  "PRIMARY_VERDICT": {
+    "measure": "total levels over the 25-game bench, plus the paired per-game sign test, with the sign test taking precedence.",
+    "PROMOTE": "sign test favours the arm, or level total >= 40",
+    "TIE_incumbent_keeps_the_slot": "30 to 39 with no sign-test separation",
+    "REJECT": "<= 29",
+    "ties_go_to_the_incumbent": "explicitly, and never promote on a variance argument at a tie",
+    "restrict_the_read": "Only 6 of 25 public games expose the undo action. The other 19 are untreated and give a free within-run noise estimate, the way arm Z's zero-level games did on 08-29. Report the treated and untreated subsets separately; a large swing in the UNTREATED 19 is noise and bounds how much of any treated swing to believe."
+  },
+  "honest_prior": "0.25 that this moves levels. Undo matters only where a game has recoverable mistakes, and the agent must also learn what it does. The reason to run it anyway is that it is a one-line correctness fix on a free GPU slot, and leaving an advertised action permanently rejected is indefensible regardless of the level count.",
+  "cost": "~2.4 GPU-h. Zero environment actions added."
+}

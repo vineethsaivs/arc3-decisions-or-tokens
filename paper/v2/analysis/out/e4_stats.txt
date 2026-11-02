@@ -1,0 +1,1 @@
+e4_stats self-check OK (chi2 and t quantiles match tables)

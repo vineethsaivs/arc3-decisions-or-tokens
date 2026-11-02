@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "declared_at": "2026-10-12T03:59Z, before any run of the arm",
+  "arm": "l1a1y8sv2r2 (vineethsaivs/arc3-franzen-l1a1y8sv2r2-a): l1a1y8sv2r1 (watchdog, MEMFRAC 0.955, sandbox memory cap, image hashes off the scheduler, toolfast) plus the D3 drafter refit, keepdata and promptobs lite",
+  "why": "the stacked candidate for the pin: every rider is lossless or acts only on failure or errors, and each has its own counter, so one replica can judge each (the D3 verifier allows deciding D3 on accept length alone when stacked); runs alongside l1a1y8sv2r1, which doubles the evidence for the shared riders",
+  "instrument": "25-game Kaggle replica, one run; franzen_readout.py, servelog.py, stall_servelog.py, toolfast_counters.py, accept_by_context.py, keepdata_counters.py, promptobs_counters.py (all in solution/analysis); offline tests test_watchdog, test_franzen_memcap (Linux pass), test_franzen_toolfast, test_franzen_d3draft, test_franzen_keepdata, test_franzen_promptobs",
+  "control": "l1a1y8sv2 v1: 119 levels; accept 2.704 (60-80K 2.704, 80-100K 2.719); clean step at 14 running 36.5 ms; stall 13.4 ms per 10K cached; decode share 81.2%; toolfast counters gap sum 3,410 s, p10 0.68 s, slope 1.16 s, running 60-105 min 12.17; keepdata M1 18, M2 56, M3 9, M4 1, M5 220, M6 5; promptobs int_len 7, view_attr 2, unknown_udlr 7, tracebacks 220, tool results 2,476",
+  "mechanism_required": {
+    "robustness and throughput (as l1a1y8sv2r1)": "every item of gate-predeclared-2026-10-12-franzen-l1a1y8sv2r1.json except the levels floor",
+    "d3": "'d3draft: 29 mtp.* tensors spliced'; accept length at 8+ running at least 2.76; accept in the 60-80K and 80-100K context buckets at least 2.744 and 2.759; clean step at 14 running at most 37.1 ms",
+    "keepdata": "M1 at most 3, M2 at most 32, M3 0, M4 at least 15, M5 at most 223, M6 at most 7 (keepdata_counters.py)",
+    "promptobs": "int_len at most 2, view_attr 0, unknown_udlr 0, new_attr at most 5, tracebacks at most 253, tool results within 2,138 to 2,839 (promptobs_counters.py)",
+    "health": "0 tracebacks in kernel.log, 0 analyzer give-ups, no OOM, failclosed summary printed"
+  },
+  "promote": "every group holds AND at least 105 levels: the probe build l1a1y8sv2r2p ships",
+  "partial": "a group whose own counters fail is dropped and the rest ship after their own probe build; if the D3 accept items fall between 2.73 and 2.76 with neither context bucket below control, D3 is HOLD and the rest ship without it",
+  "reject": "<= 104 levels, an OOM or other crash, or a robustness item failing"
+}

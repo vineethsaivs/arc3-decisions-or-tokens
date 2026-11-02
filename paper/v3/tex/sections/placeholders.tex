@@ -1,0 +1,14 @@
+% RESULTS (formerly placeholders). Both results landed: round A on 10-23 (no adapter shipped) and the interleaved yield
+% test on 10-24 (predeclared verdict C NULL, paper/v3/analysis/out/yield_wave/read_2026-10-24.json). Each is used once
+% in the body (\interleavedresult in sections/05_yield.tex, \roundaresult in sections/07_finetune.tex) and mirrored in
+% the Writeup (paper/v3/writeup/WRITEUP.md, sections "A context lever that failed an interleaved test" and "Imitating
+% easy wins").
+
+% PLACEHOLDER-INTERLEAVED (FRAMING_v3 s9; predeclared design and analysis).
+\newcommand{\interleavedresult}{\textbf{Interleaved test.} We then ran six runs per arm on one day, on two builds that differ in one line, alternating regions; four more were launched and never ran (Appendix~\ref{app:yield}). The longer threshold scored 2.5 levels below the shorter (permutation $p$ 0.42), while re-sending the opener a third as often.\par
+At matched tokens the gap kept its sign. The across-days gain did not reproduce when interleaved; drift between days and about 5 levels of extra tokens are candidate causes, and this test cannot apportion them. At the pairs' SD the interval on the difference is $-14.2$ to $+9.2$ (Figure~\ref{fig:yield}c), so the test rules out gains above about 9 levels and not smaller ones. The verdict under the rules fixed in a dated file, amended once before any run started, is null.}
+
+% PLACEHOLDER-ROUND-A (FRAMING_v3 s3 item 4b).
+\newcommand{\roundaresult}{\textbf{Round A gate outcome.} Two of three adapters finished in time. On the demonstration games, against shared controls, one led by 1.9 levels in a first wave and the other was killed. The lead did not replicate: the second wave alone read $-2.8$, and both waves pooled read $+0.25$ against a $+1.75$ bar.\par
+The served adapter kept only 28\% of its trained change, because rounding merged weights to BF16 erases most of a small update. A stochastic-rounding merge keeps almost all of it; that full-strength adapter read $-0.6$ levels against pooled controls (bar $+1.5$). No round A adapter shipped, and the style gate passed every adapter it read.\par
+\textbf{Rounds B and C.} A round B adapter, trained on levels the agent clears only sometimes, drew three times on the board while its gate ran (35.90, 39.79, 35.98), because we submitted it before the gate read. It then failed: $-1.4$ levels on the games it trained on. Served at three times its scale (round C), it rose on those games but read $-0.8$ levels on games it never saw, against a $+1.5$ bar, and reinforcement learning ended there.}

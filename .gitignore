@@ -1,0 +1,4 @@
+reproduced_figs/
+__pycache__/
+*.pyc
+.DS_Store

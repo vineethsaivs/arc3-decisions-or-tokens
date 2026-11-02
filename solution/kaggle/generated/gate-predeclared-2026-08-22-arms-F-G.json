@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-22T05:49:26.477343+00:00",
+  "subject": "Predeclared gates for arms F and G, written BEFORE either was pushed",
+  "why_this_file_exists": "Arms D and E on 2026-08-21 were pushed WITHOUT a predeclared gate, minutes after arm A's result. This file exists so that does not repeat. Nothing below was written after seeing a result.",
+  "incumbent_control": {
+    "arm": "q38-context-window-v1 (history budget 48,128)",
+    "kernel": "vineethsaivs/arc3-q38-ctxwin-ordinary-commit",
+    "levels": 33,
+    "mean": 5.963,
+    "zero_level_games": 5,
+    "actions": 1979,
+    "peak_kv": 0.576,
+    "generation_tok_s": 431.2,
+    "decisions_per_game": 24,
+    "submitted_as": "55679168 on 2026-08-22, pending"
+  },
+  "shared_preconditions": [
+    "All 25 games run and hold their full 7,920s slot.",
+    "Peak GPU KV cache usage strictly below 0.90.",
+    "Zero genuine vLLM relaunch-to-stock events (the phrase appears in every kernel log at t~8s as echoed setup SOURCE; check KV cache size is 398,272, not 199,136).",
+    "Zero 'maximum context length' errors."
+  ],
+  "arms": {
+    "q38-ctxwin-up16-imgtok-v1": {
+      "kernel": "vineethsaivs/arc3-q38-ctxwin-up16-imgtok-ordinary-commit",
+      "change": "MULTIMODAL_UPSCALE 8 -> 16 AND the image-token estimator fix, both on the winning 49,152 window",
+      "control": "the incumbent (33 levels)",
+      "hypothesis": "Upscale 16 alone FAILED (23 levels vs 33) because it raises the ESTIMATED image charge 1,585 -> 3,891 against a true 256 -> 1,024, spending the raised context budget on phantom tokens. The estimator fix drops the upscale-16 charge to 1,039. This is the ONLY configuration in which the visual-resolution hypothesis gets a fair test: 2x2 grid cells per vision token at roughly unchanged retained history.",
+      "PROMOTE_requires_all_of": [
+        "total_levels >= 33, i.e. at least ties the incumbent",
+        "zero_level_games <= 5",
+        "paired sign test against the incumbent shows more games gained than lost"
+      ],
+      "REJECT_if_any_of": [
+        "total_levels <= 29",
+        "generation throughput below 340 tok/s",
+        "any shared precondition fails"
+      ],
+      "INCONCLUSIVE_band": "total_levels 30 to 32. A tie is NOT a promotion; the incumbent ships.",
+      "note_on_confound": "This arm changes TWO things at once. That is deliberate: the estimator fix is the enabler that makes upscale 16 affordable, not an independent treatment. If it wins, the follow-up must separate them."
+    },
+    "q38-ctxwin-temp03-v1": {
+      "kernel": "vineethsaivs/arc3-q38-ctxwin-temp03-ordinary-commit",
+      "change": "LOCAL_ANALYZER_TEMPERATURE 0.6 -> 0.3 on the winning window. One env var, no source change.",
+      "control": "the incumbent (33 levels)",
+      "hypothesis": "Sampling has never been touched in this project. Direction chosen AGAINST the intuitive one: the obvious move is to raise temperature for exploration and for per-draw variance (worth +0.22 board per +0.10 sigma at N=48), but our own 500-run measurement found failing runs have HIGHER action entropy and do not cycle. Our failure mode is not too little exploration.",
+      "PROMOTE_requires_all_of": [
+        "total_levels >= 33",
+        "zero_level_games <= 5",
+        "paired sign test against the incumbent shows more games gained than lost"
+      ],
+      "REJECT_if_any_of": [
+        "total_levels <= 29",
+        "any shared precondition fails"
+      ],
+      "INCONCLUSIVE_band": "total_levels 30 to 32.",
+      "known_risk_if_promoted": "Lower temperature almost certainly LOWERS per-draw sigma, which is a real cost on a max-of-N public board through 2026-09-30. If this arm wins on levels, the promotion decision must weigh that: a capability gain of less than about +0.2 board would be cancelled by the variance it removes. Do not ship it on a marginal level win."
+    }
+  },
+  "what_neither_gate_can_establish": "A hidden-set gain. Per-draw board sigma is 0.315. These gates catch regressions and confirm mechanisms; the paired sign test against the incumbent is the deciding statistic, not the level total.",
+  "overlay_sha256": {
+    "apply_sampling.py": "1bcc61f6c8a5971a5c79efe1e1b29bad343ac855327b8ba5d84398484c10fd78",
+    "apply_multimodal_upscale.py": "ff261ba94f597c3cd9e738155fe8a1225eb4f5c0f2389cbb7770b27d3c8ccb56",
+    "apply_image_token_estimate.py": "e1ee22ab4f69ebb13563b0c63b96a039993c668a748b52f46b341e845541d5fb",
+    "apply_context_window.py": "c378b4fb2770e8d0d9d73b2d0dfe01c141c45af0d66e9a648937d2ca46535d4a"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-12",
+  "gate": "gate-predeclared-2026-10-12-franzen-l1a1y8sv2r1.json (declared 2026-10-12T03:37Z, toolfast added 03:50Z, both before any run)",
+  "instrument": "25-game Kaggle replica (14 streams, 7,200 s window), one run; franzen_readout.py, solution/analysis/servelog.py, stall_servelog.py, toolfast_counters.py; plus a 300 s Kaggle probe of the probe build for install and liveness",
+  "control": "l1a1y8sv2 v1 (the pinned config's replica run): 119 levels, mean 54.23, 799.7 tok/s, cache hit 94.6%, decode share 81.2%, stall 13.4 ms per 10K cached tokens, in-batch gap sum 3,410 s, 2,522 responses, 2,476 python calls",
+  "arm": {
+    "kernel": "vineethsaivs/arc3-franzen-l1a1y8sv2r1p-a",
+    "version": 1,
+    "change": "the probe build of l1a1y8sv2r1 (bench kernel vineethsaivs/arc3-franzen-l1a1y8sv2r1-a v1): l1a1y8sv2 plus the server watchdog (franzen_overlays/watchdog.py), MEMFRAC 0.955, the sandbox memory cap (memcap.py), SGLANG_MM_PRECOMPUTE_HASH=1 and toolfast (toolfast.py). The probe build differs from the bench only in the replica runtime"
+  },
+  "evidence": {
+    "levels": "128 levels over 25 games, 0 games at 0, mean game score 59.35 (control 119, 54.23)",
+    "watchdog": "PASS: 'watchdog: watching pid 480; in-place HTTP retries 360'; end print '0 relaunches'; 0 OutOfMemoryError",
+    "memfrac": "PASS: server_args mem_fraction_static 0.955; max_total_num_tokens 1,495,872 (band 1,490,000 to 1,503,000); 0 OutOfMemoryError, 0 'expandable_segments: memory mapping failed'; no 'free device mem' line logged (the control logged 0.15 GiB three times)",
+    "no_kv_harm": "PASS: 0 'KV cache pool is full'; cache hit 95.3% (floor 93.5%); prefills over 20K new 117 (cap 130); KV mean 0.664, max 0.96",
+    "mmhash": "PASS: stall 1.7 +- 2.6 ms per 10K cached tokens (cap 10; control 13.4); small prefill at 60-120K context 90 ms (control 194); decode share 84.6% (floor 82.5%; control 81.2%)",
+    "memcap": "PASS on harm, one band exceeded on the high side: 0 tool results with MemoryError (cap 3); 'Tool timed out' 5 (cap 13); 0 'Sandbox process exited unexpectedly'; python calls 2,822 against the declared 2,300 to 2,700 band. The excess is throughput, not memcap: responses rose 14% (2,876 vs 2,522) and the share of responses with a python call is unchanged (98.1% vs 98.2%)",
+    "clean": "PASS: 0 tracebacks in kernel.log, 0 analyzer give-ups, failclosed summary {'games': 25, 'levels': 128, 'actions': 6861}",
+    "toolfast": "PASS: install line 'arm overlay toolfast'; in-batch gap sum 563 s (cap 1,200; control 3,410); p10 gap at history 300-499 0.003 s (cap 0.10; control 0.68); slope 0.101 s (cap 0.30; control 1.16); mean running over minutes 60-105 13.1 (floor 12.7; control 12.17); longest snippet 58 actions, 0 of 100 or more",
+    "serving": "846.0 tok/s harness (control 799.7, +5.8%); running mean 13.13 (control 12.50); accept 2.699; READY after 512 s",
+    "probe_l1a1y8sv2r1p_v1": "PASS (07:14Z push, complete 08:12Z): GPU_GATE PASS; READY after 616 s; 'watchdog: watching pid 478', 0 relaunches; install lines for memcap, toolfast, wastefix, replycache, agentfix; mem_fraction_static 0.955; SGLANG_MM_PRECOMPUTE_HASH in the notebook; '#OURS_FORM ok version=d_prime'; 0 tracebacks, 0 OOM; failclosed summary {'games': 25, 'levels': 8, 'actions': 252}. Kept as the fallback pin if l1a1y8sv2r3p fails its probe",
+    "report_only": "host RAM max 116.0 GB (control 116.2), harness proc slope +0.69 GB/h (control +1.10); 0 'analyzer endpoint returned HTTP' lines; '#OURS_FORM ok version=d_prime' present; health {'oom': 0, 'giveup_games': 0, 'relaunches': 0}"
+  },
+  "verdict": "PROMOTE, pending the probe build l1a1y8sv2r1p. Every robustness and mechanism item passes and 128 levels clears the 105 floor. One declared band (python calls 2,300 to 2,700) is exceeded on the high side; the mechanism behind it is more responses in the same window, with the same python-call share and zero memory errors, so it is not the harm the band was set to catch.",
+  "what_this_does_not_claim": "128 vs 119 is inside the replica's run-to-run spread (identical bytes scored 123 and 101); no level gain is claimed. The watchdog did not fire in this run; its relaunch path was proved by the wdt and wdt2 rehearsals.",
+  "promote": true
+}

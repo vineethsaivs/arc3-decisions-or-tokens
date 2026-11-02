@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "declared_at": "2026-10-12T03:37Z, before any run of the arm",
+  "arm": "l1a1y8sv2r1 (vineethsaivs/arc3-franzen-l1a1y8sv2r1-a): l1a1y8sv2 + server watchdog + MEMFRAC 0.955 + sandbox memory cap + SGLANG_MM_PRECOMPUTE_HASH=1 + toolfast (incremental runtime-state write, cached load, per-frame ascii memo; byte-identical sandbox payload in solution/sim/test_franzen_toolfast.py)",
+  "why": "robustness: two CUDA OOMs after READY on 10-11 (free device memory dips to 0.15 GiB; 9 h OOM risk estimated 5 to 20% per run); a host OOM would likely kill the SGLang scheduler (about 105 GB pinned PLE RSS); throughput: the scheduler sha256-hashes every re-sent history image (6.8 ms each) while all streams wait",
+  "instrument": "25-game Kaggle replica, one run; franzen_readout.py, solution/analysis/servelog.py, solution/analysis/stall_servelog.py; watchdog rehearsals l1a1y8sv2wdt and wdt2 already passed (gate-predeclared-2026-10-11-franzen-l1a1y8sv2wd.json)",
+  "control": "l1a1y8sv2 v1: 119 levels, 799.7 tok/s, cache hit 94.6%, accept 2.704, decode share 81.2%, stall 13.4 +- 2.6 ms per 10K cached tokens, min free device memory 0.15 GiB; y8 family stall 13.4 to 20.6 ms, decode share 79.9 to 81.2%; toolfast_counters.py on y8sv2: in-batch gap sum 3,410 s, p10 gap at history 300-499 0.68 s, slope 1.16 s, running 60-105 min 12.17, longest snippet 113 actions (y8: 3,030, 0.383, 1.378, 12.52, 55)",
+  "mechanism_required": [
+    "watchdog: 'watchdog: watching pid' line, 0 relaunches in the end print, no OOM",
+    "MEMFRAC: server_args mem_fraction_static 0.955; max_total_num_tokens 1,490,000 to 1,503,000; 0 OutOfMemoryError and 0 'expandable_segments: memory mapping failed' lines; lowest 'free device mem' reading at least 0.60 GiB if any is logged",
+    "no KV harm: at most 2 'KV cache pool is full' lines, cache hit at least 93.5%, prefills over 20K new at most 130",
+    "mmhash: stall per 10K cached tokens at most 10 ms (stall_servelog.py) and decode share at least 82.5% (servelog.py); if the stall item fails while cache hit holds, check the env line in the built notebook",
+    "memcap: tool results with MemoryError at most 3, each traceable to an unbounded loop; 'Tool timed out' at most 13; python calls 2,300 to 2,700",
+    "0 tracebacks in kernel.log, 0 analyzer give-ups, failclosed summary printed",
+    "toolfast (solution/analysis/toolfast_counters.py): install line 'arm overlay toolfast'; p10 in-batch gap at history 300-499 at most 0.10 s; slope (median gap at 300-499 minus at 0-99) at most 0.30 s; in-batch gap sum at most 1,200 s; mean running requests over minutes 60-105 at least 12.7; longest snippet at most 200 actions with at most 3 of 100 or more; 'Sandbox process exited unexpectedly' not above the control's"
+  ],
+  "promote": "every item holds AND at least 105 levels: then the probe build l1a1y8sv2r1p ships (all four are lossless or act only on failure)",
+  "partial": "if only the mmhash or only the toolfast items fail, the remaining riders can ship without that one after their own probe build",
+  "reject": "<= 104 levels, an OOM or other crash, or a robustness item failing",
+  "amended_at": "2026-10-12T03:50Z, before any run: toolfast (franzen_overlays/toolfast.py) added as a fifth rider"
+}

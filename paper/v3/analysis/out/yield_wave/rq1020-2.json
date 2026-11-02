@@ -1,0 +1,227 @@
+{
+ "ar25": {
+  "invocations": 51,
+  "resume": 5,
+  "yield_ends": 5,
+  "requests": 91,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "bp35": {
+  "invocations": 54,
+  "resume": 12,
+  "yield_ends": 12,
+  "requests": 127,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "cd82": {
+  "invocations": 60,
+  "resume": 0,
+  "yield_ends": 0,
+  "requests": 90,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "cn04": {
+  "invocations": 68,
+  "resume": 13,
+  "yield_ends": 13,
+  "requests": 144,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "dc22": {
+  "invocations": 69,
+  "resume": 4,
+  "yield_ends": 4,
+  "requests": 113,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "ft09": {
+  "invocations": 16,
+  "resume": 3,
+  "yield_ends": 3,
+  "requests": 43,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "g50t": {
+  "invocations": 68,
+  "resume": 14,
+  "yield_ends": 14,
+  "requests": 157,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "ka59": {
+  "invocations": 86,
+  "resume": 17,
+  "yield_ends": 17,
+  "requests": 134,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "lf52": {
+  "invocations": 47,
+  "resume": 3,
+  "yield_ends": 3,
+  "requests": 84,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "lp85": {
+  "invocations": 28,
+  "resume": 2,
+  "yield_ends": 2,
+  "requests": 62,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "ls20": {
+  "invocations": 47,
+  "resume": 8,
+  "yield_ends": 8,
+  "requests": 92,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "m0r0": {
+  "invocations": 64,
+  "resume": 7,
+  "yield_ends": 7,
+  "requests": 143,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "r11l": {
+  "invocations": 39,
+  "resume": 12,
+  "yield_ends": 12,
+  "requests": 83,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "re86": {
+  "invocations": 62,
+  "resume": 13,
+  "yield_ends": 13,
+  "requests": 118,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "s5i5": {
+  "invocations": 73,
+  "resume": 11,
+  "yield_ends": 11,
+  "requests": 106,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "sb26": {
+  "invocations": 44,
+  "resume": 5,
+  "yield_ends": 5,
+  "requests": 78,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "sc25": {
+  "invocations": 88,
+  "resume": 3,
+  "yield_ends": 3,
+  "requests": 125,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "sk48": {
+  "invocations": 82,
+  "resume": 15,
+  "yield_ends": 15,
+  "requests": 150,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "sp80": {
+  "invocations": 57,
+  "resume": 15,
+  "yield_ends": 15,
+  "requests": 108,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "su15": {
+  "invocations": 64,
+  "resume": 8,
+  "yield_ends": 8,
+  "requests": 82,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "tn36": {
+  "invocations": 74,
+  "resume": 8,
+  "yield_ends": 8,
+  "requests": 115,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "tr87": {
+  "invocations": 26,
+  "resume": 4,
+  "yield_ends": 4,
+  "requests": 66,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "tu93": {
+  "invocations": 52,
+  "resume": 13,
+  "yield_ends": 13,
+  "requests": 111,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "vc33": {
+  "invocations": 62,
+  "resume": 7,
+  "yield_ends": 7,
+  "requests": 108,
+  "yield_tokens": [
+   "8192"
+  ]
+ },
+ "wa30": {
+  "invocations": 100,
+  "resume": 5,
+  "yield_ends": 5,
+  "requests": 128,
+  "yield_tokens": [
+   "8192"
+  ]
+ }
+}

@@ -1,0 +1,292 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-24T17:29:08.997286+00:00",
+  "subject": "Gate results for arms J (temperature 1.2) and K (top_k 100). Gates predeclared 2026-08-24T03:2xZ before either was pushed; read under the same day's amendment.",
+  "predeclared_gate": "solution/kaggle/generated/gate-predeclared-2026-08-24-arms-J-K.json",
+  "predeclared_gate_sha256": "ba629688575603124cc3e74817fcd6044a34ce4cbe2fe9d79aa848f4ddb222fd",
+  "amendment_in_force": "solution/kaggle/generated/gate-amendment-2026-08-24-remove-variance-ratchet.json",
+  "amendment_sha256": "6a15f504cedd0cc5c03dbd6d48c9351fd579ea5541449262fb96febacf65683c",
+  "controls": {
+    "temp09_incumbent": {
+      "levels": 35,
+      "zero": 4,
+      "mean": 6.722
+    },
+    "ctxwin_06_run_a": {
+      "levels": 33,
+      "zero": 5
+    },
+    "ctxwin_06_run_b_byte_identical": {
+      "levels": 29,
+      "zero": 7
+    },
+    "pooled_control_mean_levels": 32.3
+  },
+  "arm_J_temperature_12": {
+    "kernel": "vineethsaivs/arc3-q38-ctxwin-temp12-ordinary-commit",
+    "change": "LOCAL_ANALYZER_TEMPERATURE 0.9 -> 1.2. Single variable.",
+    "benchmark_sha256": "13c8508f36a3bf7b7e38c625f73900c988ff6dbc5cd1bcfcd19b2667f9d05ae2",
+    "total_levels": 31,
+    "zero_level_games": 7,
+    "mean_score": 5.593,
+    "paired_vs_incumbent": {
+      "gained": 3,
+      "unchanged": 16,
+      "lost": 6,
+      "one_sided_p": 0.9102
+    },
+    "status": "REJECT",
+    "reading": "31 levels against the incumbent's 35 and a pooled control of 32.3, with zero-level games UP from 4 to 7 and the paired sign test leaning the wrong way (3 gained / 6 lost). It is inside the noise band and it does not clear any bar. Under the amendment a tie goes to the incumbent, so it does not ship. Combined with arm G (temperature 0.3, 22 levels), the temperature dose-response is now 0.3 -> 22, 0.6 -> 33 and 29, 0.9 -> 35, 1.2 -> 31. **Temperature 0.9 is the shipping value and the axis is closed.**"
+  },
+  "arm_K_top_k_100": {
+    "kernel": "vineethsaivs/arc3-q38-ctxwin-topk100-ordinary-commit",
+    "source_dataset": "vineethsaivs/arc3-q38-ctxwin-topk100-v1",
+    "change": "LOCAL_ANALYZER_TOP_K 20 -> 100 at temperature 0.9. Single variable, verified: identical src tree hash to the incumbent, exactly one differing line in setup_commands.json.",
+    "benchmark_sha256": "cdf555c3c2484485c75c838f82d2cf73d89d0dd896dd47d69c0729ecc0742355",
+    "total_levels": 44,
+    "zero_level_games": 1,
+    "mean_score": 8.246,
+    "paired_vs_temp09_incumbent": {
+      "gained": 9,
+      "unchanged": 13,
+      "lost": 3,
+      "one_sided_p": 0.073
+    },
+    "paired_vs_ctxwin_06_run_a": {
+      "gained": 9,
+      "unchanged": 13,
+      "lost": 3,
+      "one_sided_p": 0.073
+    },
+    "paired_vs_ctxwin_06_run_b": {
+      "gained": 10,
+      "unchanged": 13,
+      "lost": 2,
+      "one_sided_p": 0.0193
+    },
+    "predeclared_checks": {
+      "total_levels_at_least_33": {
+        "value": 44,
+        "pass": true
+      },
+      "zero_level_games_at_most_5": {
+        "value": 1,
+        "pass": true
+      },
+      "paired_more_gained_than_lost": {
+        "value": {
+          "gained": 9,
+          "unchanged": 13,
+          "lost": 3,
+          "one_sided_p": 0.073
+        },
+        "pass": true
+      },
+      "peak_kv_below_0_90": {
+        "value": 0.563,
+        "pass": true
+      },
+      "kv_cache_size_398272": {
+        "value": 398272,
+        "pass": true
+      },
+      "all_25_games_ran": {
+        "value": true,
+        "pass": true
+      },
+      "zero_context_length_errors": {
+        "value": 0,
+        "pass": true
+      }
+    },
+    "status": "PROMOTE",
+    "why_this_one_is_different_from_every_previous_arm": [
+      "SIZE. 44 levels against a pooled control of 32.3 is +11.7, which is z = 1.9 to 2.3 against the measured arm-minus-control sigma of 5.1 to 6.1. Every previous arm this project ran asked a 1-to-4 level question that the instrument could not resolve. This one is near the instrument's own 80%-power MDE of about 12.6 levels.",
+      "BREADTH, which is the thing we actually needed. Zero-level games fell to 1, against 4, 5 and 7 in the three control runs. The 2026-08-24 gap analysis said our board profile is 'a level-1 machine' with roughly 22 of 55 hidden games scoring zero, and that converting zeros is the cheapest path to rank 5.",
+      "IT SOLVED A GAME NOTHING HAD EVER SOLVED. tr87-cd924810 was one of exactly two hard zeros across all 14 prior q38 arms; arm K cleared 2 levels on it. That is a qualitatively new event, not a shift in a total.",
+      "FOUR INDEPENDENT STATISTICS ALL MOVED THE SAME WAY: total levels 35 -> 44, zero-level games 4 -> 1, shipped-scorer mean 6.722 -> 8.246 (+23%), paired sign test 9 gained / 3 lost.",
+      "THE MECHANISM IS COHERENT AND WAS PREDICTED IN ADVANCE. The predeclared gate argued that top_k = 20 hard-caps what temperature can do, because at 20 candidates a raised temperature only reshapes probability inside the same 20 tokens. Removing that clamp is what let the raised temperature produce exploration, and exploration is what converts zero-level games."
+    ],
+    "honest_weaknesses": [
+      "n = 1. The paired sign test against the incumbent is p = 0.073 one-sided, not below 0.05. It reaches p = 0.019 only against the weakest of the three control runs, which is the wrong comparison to lead with.",
+      "A byte-identical replicate of a DIFFERENT config moved 33 -> 29 on the same instrument the same week, so +11.7 is roughly two noise units, not ten.",
+      "top_k = 100 deviates from Qwen's own recommended sampling for this model (temperature 1.0, top_p 0.95, top_k 20). We are off-vendor on purpose, and the only evidence is this one run.",
+      "A confirmation run (arm P, byte-identical) is already pushed and lands in about 2h15m, before today's submission slot at 17:06 Pacific."
+    ],
+    "rollback": "vineethsaivs/arc3-q38-ctxwin-temp09-ordinary-commit v1 (temperature 0.9, top_k 20), or vineethsaivs/arc3-q38-ctxwin-ordinary-commit v1, the temperature-0.6 config that drew 1.87 and 2.39."
+  },
+  "temperature_dose_response_CLOSED": {
+    "0.3": 22,
+    "0.6": [
+      33,
+      29
+    ],
+    "0.9": 35,
+    "1.2": 31,
+    "conclusion": "0.9 is the shipping value. Do not spend another commit on temperature."
+  },
+  "per_game_levels": {
+    "game": [
+      "ar25-0c556536",
+      "bp35-0a0ad940",
+      "cd82-fb555c5d",
+      "cn04-2fe56bfb",
+      "dc22-fdcac232",
+      "ft09-0d8bbf25",
+      "g50t-5849a774",
+      "ka59-38d34dbb",
+      "lf52-271a04aa",
+      "lp85-305b61c3",
+      "ls20-9607627b",
+      "m0r0-492f87ba",
+      "r11l-495a7899",
+      "re86-8af5384d",
+      "s5i5-18d95033",
+      "sb26-7fbdac44",
+      "sc25-635fd71a",
+      "sk48-d8078629",
+      "sp80-589a99af",
+      "su15-1944f8ab",
+      "tn36-ef4dde99",
+      "tr87-cd924810",
+      "tu93-0768757b",
+      "vc33-5430563c",
+      "wa30-ee6fef47"
+    ],
+    "ctxwin_06_a": [
+      3,
+      0,
+      2,
+      1,
+      1,
+      2,
+      1,
+      1,
+      1,
+      4,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      2,
+      0,
+      1,
+      2,
+      2,
+      0,
+      2,
+      3,
+      1
+    ],
+    "ctxwin_06_b": [
+      2,
+      0,
+      1,
+      0,
+      2,
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      3,
+      1,
+      4,
+      2,
+      0,
+      1,
+      1,
+      2,
+      0,
+      1,
+      3,
+      1
+    ],
+    "temp09": [
+      4,
+      1,
+      1,
+      1,
+      0,
+      2,
+      0,
+      1,
+      1,
+      3,
+      1,
+      2,
+      1,
+      2,
+      1,
+      1,
+      2,
+      0,
+      1,
+      1,
+      2,
+      0,
+      2,
+      4,
+      1
+    ],
+    "temp12": [
+      4,
+      0,
+      1,
+      1,
+      0,
+      4,
+      0,
+      0,
+      1,
+      2,
+      1,
+      1,
+      1,
+      2,
+      2,
+      2,
+      0,
+      0,
+      1,
+      1,
+      2,
+      0,
+      2,
+      2,
+      1
+    ],
+    "topk100": [
+      2,
+      1,
+      1,
+      1,
+      1,
+      3,
+      1,
+      1,
+      1,
+      4,
+      1,
+      1,
+      1,
+      3,
+      1,
+      5,
+      2,
+      0,
+      1,
+      3,
+      2,
+      2,
+      3,
+      2,
+      1
+    ]
+  }
+}

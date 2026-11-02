@@ -1,0 +1,90 @@
+{
+ "schema_version": 1,
+ "created_at": "2026-09-08T17:00:00+00:00",
+ "arm": "rcarry (reasoning carry)",
+ "subject": "Two 25-game runs of the reasoning-carry arm, byte-identical bundle. Run 1 was completed 2026-08-29 and never read; run 2 was pushed today as the replicate.",
+ "mechanism": "tool_agent.py:2267 stores the model's thinking under assistant_message['reasoning']; the model's chat_template.jinja reads message.reasoning_content and defaults to ''. Every prior turn was therefore sent with an EMPTY <think> block, discarding 96% of everything the model writes (mean thinking 5,779 chars vs 232 chars of visible text over 386 responses). The overlay exposes the last 2 assistant turns' thinking under the key the template actually reads, at _chat_completion, on copies.",
+ "mechanism_live_in_the_shipped_bytes": "arc3-q38-rcarry-v1/src/ARC3-Inference/inference/agent/tool_agent.py: _carry_reasoning at 1494, call site at 1535, REASONING_CARRY_TURNS=2 and REASONING_CARRY_MAX_CHARS=6000 in setup_commands.json. Confirmed in both run logs.",
+ "instrument_checks_both_runs": {
+  "games": 25,
+  "passes": 1,
+  "wallclock_per_game_s": 7920,
+  "concurrency": 28,
+  "levels_available": 183,
+  "all_games_ended": "gave_up (clock)",
+  "unknown_action_rejections": 0,
+  "tracebacks": 0
+ },
+ "runs": {
+  "run 1 (2026-08-29, kernel v1)": {
+   "levels": 31,
+   "zeros": 4,
+   "mean25": 5.149,
+   "ex_ft09": 4.768,
+   "paired_vs_control_pass0": "6 up / 7 down / 12 tied (-1)",
+   "tok_per_action": 1022,
+   "actions_per_game": 125.0
+  },
+  "run 2 (2026-09-08, kernel v2)": {
+   "levels": 46,
+   "zeros": 4,
+   "mean25": 10.452,
+   "ex_ft09": 9.001,
+   "paired_vs_control_pass0": "11 up / 4 down / 10 tied (+7)",
+   "tok_per_action": 919,
+   "actions_per_game": 139.1
+  }
+ },
+ "pooled_n2": {
+  "levels": 38.5,
+  "mean25": 7.801,
+  "ex_ft09": 6.885
+ },
+ "control_family_n2": {
+  "configs": [
+   "q38-temp09-v1 (rcarry's own base)",
+   "q38-undo-v1"
+  ],
+  "levels": 35.0,
+  "mean25": 6.29,
+  "ex_ft09": 5.957
+ },
+ "delta_pooled": {
+  "levels": "+3.5 (+10%)",
+  "mean25": "+24.0%",
+  "ex_ft09": "+15.6%"
+ },
+ "single_point_trap_check": "PASSES. In run 2, 12 games gained and 4 lost against the base; the largest single game (sb26, +3) is 27% of the net +11. ex-ft09 (9.001) moves with mean25 (10.452), so ft09 is not carrying it.",
+ "mechanism_signature_both_runs": {
+  "prediction": "retained reasoning stops re-derivation, so tokens per action FALL and actions per game RISE",
+  "base_temp09": {
+   "tok_per_action": 1138,
+   "actions_per_game": 114.9
+  },
+  "run1": "-10.2% tok/action, +8.8% actions/game",
+  "run2": "-19.2% tok/action, +21.1% actions/game",
+  "consistency": "both runs move the predicted way, and the run with the LARGER signature is the run with the LARGER level gain. n=2, so this is suggestive, not a dose-response.",
+  "IT_IS_NOT_EVIDENCE_ON_ITS_OWN": "byte-identical reruns move tokens per action by 3.9% to 14.0% (solution/analysis/token_efficiency_null.py). Run 1's -10.2% is inside that null; run 2's -19.2% is outside it. Do not gate on this counter."
+ },
+ "external_corroboration": "OpenAI, 2026-07-29: GPT-5.6 Sol 13.3% -> 38.3% on the ARC-AGI-3 PUBLIC set with no weight change, from RETAINED REASONING plus COMPACTION, at ~6x fewer output tokens. Retained reasoning is exactly this mechanism. Measured on a closed frontier model at a 13.3% baseline, so it raises the prior; it does not prove the effect here.",
+ "honest_limits": [
+  "31 then 46 levels on byte-identical bytes. Single-run sd on this bench is 3.6 to 7.5 levels; the pooled SE at n=2 is about 5. The pooled +3.5 is roughly 0.7 sigma and is NOT significant.",
+  "Run 1's paired sign was -1 and run 2's was +7. They disagree in sign.",
+  "The fitted bench-to-board map puts pooled rcarry at board 2.43 (on levels) to 2.62 (on mean25), which is a TIE with D-undo's 2.66 posterior, not an improvement. Pooled mean25 7.801 is above the fit's calibration range (max 7.151), so that prediction is an extrapolation.",
+  "No predeclared gate existed for this arm; the defect record of 2026-08-27 declared no bands. This is a measured promotion, not a pre-registered one."
+ ],
+ "decision": {
+  "status": "PROMOTE",
+  "framing": "EARNS DRAWS under CLAUDE.md rule 15(b), explicitly NOT a significance claim. A verified repair of a code path that was silently discarding 96% of model output, pooled ABOVE the control family on all three outcome statistics across two runs, with no measured regression, clears the ~21% prior a max-keeping board requires by a wide margin.",
+  "action": "add as a THIRD rotation config alongside D-undo and K-topk100 rather than replacing either. Retiring a config on this evidence would be the 2026-09-07 arm-AE mistake in reverse.",
+  "retire_if": "after 6 draws its observed board mean is more than 0.40 below the best other config.",
+  "next_experiment": "COMPACTION, the untested half of the OpenAI result. _trim_messages_for_context (tool_agent.py:2035) does exactly the rolling truncation they name as the defect, and raising that same budget was our single largest measured win (33 levels vs 23). Argue against arm AB first: AB carried a summary ACROSS level resets and game_over, i.e. it added STALE information; compaction preserves information inside a level that is about to be destroyed. Different mechanism, and the distinction must be stated in the predeclared gate."
+ },
+ "artifacts": {
+  "run1_benchmark": "solution/kaggle/generated/kernel-outputs/q38-rcarry2-v1/benchmark.json",
+  "run2_benchmark": "solution/kaggle/generated/kernel-outputs/q38-rcarry2-run2/benchmark.json",
+  "defect_record": "solution/kaggle/generated/reasoning-carry-defect-2026-08-27.json",
+  "discovery_record": "solution/kaggle/generated/rcarry-found-unread-2026-09-08.json",
+  "counter_null": "solution/analysis/token_efficiency_null.py"
+ }
+}

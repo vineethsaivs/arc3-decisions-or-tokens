@@ -1,0 +1,43 @@
+   1   75.56  Yi-Chia Chen @ Fields Model
+   2   70.24  Tufa Labs
+   3   58.59  xz
+   4   56.26  NVARC3
+   5   56.02  Team Turducken
+   6   54.55  Grigoriy Zatravkin & co
+   7   54.52  the last dance 🕺
+   8   53.12  infinity
+   9   51.04  yktori
+  10   50.37  mtg
+  11   47.29  Md Boktiar Mahbub Murad
+  12   47.19  The ARChitects
+  13   46.82  復活の混テキスト
+  14   45.41  artificialagencylab.com
+  15   45.03  Majkel1337
+  16   43.73  大阪公立大学 & Maciej & Natalia
+  17   42.91  All your GPU are belong to us
+  18   42.34  fshindo
+  19   42.27  pensukesan
+  20   41.73  insuperabilehart
+  21   41.17  Lord Han Solo
+  22   41.00  UNK
+  23   40.98  Vineeth Sai Varikuntla
+  24   40.95  rellik13
+  25   40.75  paul
+  26   40.49  Michael Poluektov
+  27   40.39  khailash santhakumar
+  28   39.88  tascj
+  29   39.69  AquaUrsa Research
+  30   39.40  Name X
+  31   39.22  zhangzibo54
+  32   39.18  dreach.ai
+  33   39.03  HMC_Stevelee
+  34   38.95  Abstraction Lab & MindsAI
+  35   38.84  Nhan Duc Nguyen
+  36   38.77  Nick2187
+  37   38.22  Advaith Vecham
+  38   38.15  Cakpo Vital
+  39   37.98  SparseTech
+  40   37.92  Tong Hui Kang
+
+field: 5048 teams, median 2.54, top 75.56
+US:    rank 23/5048 (top 0.5%)  score 40.98  submissions 81  (22 teams above)

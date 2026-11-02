@@ -1,0 +1,41 @@
+
+== 1. Efficiency of cleared levels
+runs 34 game-runs 850
+mean game score 56.44 ; if every CLEARED level were at human baseline (a=b): 59.30
+cleared levels: 4203  actions/baseline quantiles  p10 0.31 p25 0.45 p50 0.67 p75 0.97 p90 1.38
+share of cleared levels with a<=b: 0.79 ; a<=1.5b: 0.92 ; a<=2b: 0.97
+median a/b by level index: {1: 0.74, 2: 0.64, 3: 0.7, 4: 0.79, 5: 0.54, 6: 0.62, 7: 0.36, 8: 0.85, 9: 0.3}
+
+== 2. Where the uncleared points sit
+replica points lost to uncleared levels: 40.7 of 100
+  mixed(40-80%): 4.5
+  never(<=10%): 25.3
+  rare(10-40%): 9.0
+  usual(>=80%): 2.0
+top lost (game level rate nlevels):
+  sp80 L6/6 clear 0.00 lost 1.14
+  dc22 L6/6 clear 0.00 lost 1.14
+  cn04 L6/6 clear 0.09 lost 1.04
+  ls20 L7/7 clear 0.00 lost 1.00
+  ka59 L7/7 clear 0.00 lost 1.00
+  g50t L7/7 clear 0.03 lost 0.97
+  sp80 L5/6 clear 0.00 lost 0.95
+  dc22 L5/6 clear 0.00 lost 0.95
+  sk48 L8/8 clear 0.00 lost 0.89
+  s5i5 L8/8 clear 0.00 lost 0.89
+  re86 L8/8 clear 0.03 lost 0.86
+  wa30 L9/9 clear 0.00 lost 0.80
+  su15 L9/9 clear 0.00 lost 0.80
+  bp35 L9/9 clear 0.00 lost 0.80
+lost by game: bp35 3.7, lf52 3.6, sk48 3.4, s5i5 3.2, wa30 3.2, su15 3.0, sp80 2.6, tn36 2.4, dc22 2.3, g50t 2.1
+
+== 3. How deep runs get, and when
+P(level reached) by index: {1: 1.0, 2: 0.98, 3: 0.91, 4: 0.85, 5: 0.76, 6: 0.6, 7: 0.46, 8: 0.39, 9: 0.16, 10: 0.0}
+time of last cleared level (s): p25 3679 p50 5411 p75 6392 p90 6805 (window 7200)
+time sunk in the final unsolved level (s): p25 855 p50 1908 p75 3494 ; share of games ending unsolved: 0.65
+
+== 4. Points per time bin (the marginal value of clock)
+level clears per 720 s bin (all 34 runs, per run): [17.4, 17.2, 16.6, 16.9, 14.5, 12.4, 8.8, 8.4, 6.1, 5.5]
+weighted board points per bin (per run): [4.82, 6.99, 7.12, 7.52, 7.09, 6.54, 4.84, 5.48, 4.51, 4.39]
+generated tokens per bin per run (K): [598, 625, 620, 620, 645, 631, 606, 634, 625, 632]
+points from the last 10% of the window: 4.39 of 59.30 total (7%); one extra 720 s bin at that rate would add about +4.39 replica points

@@ -1,0 +1,36 @@
+{
+ "schema_version": 1,
+ "created_at": "2026-09-08T17:40:00+00:00",
+ "predeclared_before_any_result": true,
+ "written_while": "the run was still in status=running; no benchmark.json had been fetched",
+ "arm": "rcarry (reasoning carry), third byte-identical run",
+ "why_this_file_exists": "rcarry was promoted into the daily rotation today on n=2 (31 and 46 levels, pooled 38.5 against a 35.0 control family). That pooled gap is about 0.7 sigma. On 2026-09-07 this project promoted arm AE on a single run and had to revert it the next day. Writing the decision rule down BEFORE seeing run 3 is the only thing that makes the third run informative rather than confirmatory.",
+
+ "the_comparison": {
+  "statistic": "total levels on the 25-game bench, 1 pass, pass-matched. Secondary and always reported beside it, never instead: zero-level games, mean25, ex-ft09, and the per-game up/down/tied split.",
+  "control_family": "q38-temp09-v1 (35 levels, mean25 6.722, ex-ft09 6.407) and q38-undo-v1 (35, 5.858, 5.507). Family mean 35.0 / 6.290 / 5.957.",
+  "arm_so_far": "run 1 = 31 levels / 5.149 / 4.768; run 2 = 46 / 10.452 / 9.001. Pooled n=2 = 38.5 / 7.801 / 6.885.",
+  "instrument": "single-run sd on this bench is 3.6 to 7.5 levels. At n=3 the SE of the arm mean is about 4.3, so a pooled gap under about 4.3 levels is not separable."
+ },
+
+ "BANDS_on_pooled_n3_levels": {
+  ">= 39.0": "HOLD IN THE ROTATION and say the evidence strengthened. Pooled n=3 at or above 39 is +4 over the control family, at the edge of the n=3 SE. Still not significance; it is a better-supported earns-draws.",
+  "35.0 to 38.9": "HOLD IN THE ROTATION, and state plainly that three runs have NOT separated it from the control family. This is the expected outcome and it is not a failure: the promotion was made on rule 15(b) economics, which need a 21% prior, not on significance. Do not upgrade the language.",
+  "32.0 to 34.9": "HOLD but DEMOTE the claim. Pooled below the control family mean means the two-run picture was optimistic. Keep the draws already allocated, stop describing it as above control, and re-read after its first two board draws.",
+  "< 32.0": "REMOVE from the rotation the same day and re-run daily_submit.sh sync. Pooled under 32 across three runs, against a 35.0 family, is a measured regression and rule 15(c) is a hard exclusion."
+ },
+
+ "SECONDARY_that_can_OVERRIDE_a_pass": [
+  "If run 3's gain is carried by a single game (largest single-game delta > 50% of the net), treat the band one step worse. This is the 2026-08-31 single-point trap: a +17.8% mean that was entirely ft09.",
+  "If ex-ft09 moves the opposite way to mean25, report both and treat the band one step worse.",
+  "If zero-level games rise above 6 (family 3 to 4), that is a breadth regression and downgrades a HOLD to a demoted claim regardless of the level total."
+ ],
+
+ "NOT_a_gate": "tokens per action and actions per game. Both move in the predicted direction in runs 1 and 2, and both are inside the +/-14% null of byte-identical reruns (solution/analysis/token_efficiency_null.py). They are reported as mechanism colour and can never promote or reject.",
+
+ "what_will_NOT_change_regardless": [
+  "The defect is real and the repair is real: the harness stored thinking under `reasoning` while the chat template reads `reasoning_content`. That is proven against the template and does not depend on any level count.",
+  "The rotation hazard stands: a replicate was pushed to this slug as v3, so before R-rcarry's first slot on 2026-09-11 the kernel must read status=complete, and if v3 completed the rotation version field should move 2 -> 3.",
+  "COMPACTION remains the untested half of the OpenAI result and its prior question is already answered for free: the trimmer fires on 24.7% of turn transitions and destroys 2,837 messages per run (generated/history-eviction-measured-2026-09-08.json)."
+ ]
+}

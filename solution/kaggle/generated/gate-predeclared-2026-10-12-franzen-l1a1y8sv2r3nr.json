@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "declared_at": "2026-10-12T09:35Z, before any draw of the y8 family has scored and before any run of the arm",
+  "arm": "l1a1y8sv2r3nr (vineethsaivs/arc3-franzen-l1a1y8sv2r3nr-a) and its probe l1a1y8sv2r3nrp: the pin l1a1y8sv2r3p with RESET hidden again (cell 7 loses the 'EXPOSE_RESET': 'on' line that agentfix() adds; the agentfix overlay itself stays: stale-guard waiver, level_starts)",
+  "why": "research plan Q8 (docs/research/2026-10-11-improve/PLAN.md): l1a1, the first config that exposed RESET, averaged 27.83 over two draws against p448s14dp's 30.02 over four (about 1.6 se); the replica says the opposite (pre-l1a1 108.7 levels over 20 runs, l1a1 110.3 over 3; RESET removed 7 to 11 burn-to-reset episodes per run). Low prior; this buys information only the board can give",
+  "trigger": "evaluate once the 10-14 draw has scored: run the arm only if the first three y8-family draws (10-12 l1a1y8sv2p, 10-13 and 10-14 l1a1y8sv2r3p) average under 32.0 public. If any of the three is a field-wide zero or an error, use the next valid y8-family draw instead",
+  "instrument": "25-game Kaggle replica, one run; solution/analysis/agentfix_counters.py, franzen_readout.py, the health script; then a board A/B",
+  "control": "l1a1y8sv2r3 v1 (the shipped set's replica) and l1a1y8sv2r2 v1 (122 levels); y8-family manual RESETs 41, 47, 48 per run",
+  "mechanism_required": [
+    "0 manual RESETs; report automatic RESETs and burn-to-reset episodes (pre-RESET runs: 20 to 27 and 7 to 11)",
+    "health clean: 0 OOM, 0 relaunches, 0 tracebacks in kernel.log, 0 give-ups, failclosed summary printed",
+    "every other install line of the pin present (watchdog, d3draft, memcap, toolfast, promptobs-lite); accept at 8+ running at least 2.76",
+    "at least 105 levels"
+  ],
+  "board_ab": "if the replica passes: promote l1a1y8sv2r3nrp on alternate days through 10-22 (4 draws each with the pin, starting with nr on the day after its probe passes). From 10-23 adopt nr only if its mean beats the pin's mean over the same window by at least 1.5 public points; otherwise the pin stands. All draws are tickets either way",
+  "reject": "the trigger does not fire; or the replica misses any mechanism item"
+}

@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-03",
+  "plan": "docs/PLAN_2026-10-01.md",
+  "instrument": "25-game scored-run replica (7,200 s shared window)",
+  "control": {
+    "kernel": "vineethsaivs/arc3-franzen-p448-a",
+    "version": 1
+  },
+  "arm": {
+    "kernel": "vineethsaivs/arc3-franzen-p448au-a",
+    "version": 1,
+    "change": "p448 plus B2 strategy audit (fires once per level after 30K tokens and 20 actions)"
+  },
+  "result": {
+    "levels": [
+      122,
+      110
+    ],
+    "harness_tok_s": [
+      618.9,
+      671.8
+    ],
+    "cache_hit_pct": [
+      93.08,
+      92.94
+    ],
+    "levels_at_75k_100k_150k": [
+      [
+        67,
+        81,
+        104
+      ],
+      [
+        57,
+        68,
+        88
+      ]
+    ]
+  },
+  "verdict": "AGENT FAIL: fewer levels at matched tokens (57 vs 67 at 75K) and 110 total. Not carried into v2.",
+  "promote": false,
+  "noise_note": "Every p448-based arm so far scored 108 to 117 against p448's 122, which suggests 122 was a high draw. Replicates of p448 and p448s14 were pushed 10-03 12:02 PDT to measure it."
+}

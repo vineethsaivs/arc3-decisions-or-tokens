@@ -1,0 +1,107 @@
+\section{Fine-tuning protocols: the rejection-sampling run and GRPO round A}\label{app:grpo}
+
+\subsection{The rejection-sampling run}\label{app:rft}
+
+\paragraph{Data.}
+The shipped agent, with a request logger and a RE-ARC-3 loader added for development only, played 127 RE-ARC-3 games with no game family from the demonstration set, at the development budget per game and the shipped sampling (temperature 0.7, top-p 0.95, top-k 20), over three Spot attempts on one rented RTX PRO 6000. % V3-L1
+It cleared 548 of 601 levels (91.2\%) and won 106 games, against 67.8\% of levels on the demonstration set. % V3-L1
+Each request chain was cut to the system prompt plus the latest suffix that fits 15,000 estimated tokens, giving 13,652 windows split by game family (10,810 train, 2,206 validation, 636 test); 99\% are cut suffixes, while logged prompts at play time had medians of 21K to 53K tokens. % V3-L2
+A reply is a target when its level is one the run cleared, so every turn of a cleared level counts, deaths and RESETs included; 6,806 train windows (63.0\%) carry a target. % V3-L2
+By efficiency, 17.0\% of the 7,426 supervised train turns come from levels cleared at or under the human baseline's actions, 50.9\% from levels at over twice the baseline and 20.4\% at over four times. % V3-L3
+
+\paragraph{What the adapter changed.}
+Table~\ref{tab:rft} gives the counters that Sec.~\ref{sec:finetune} reads.
+
+\begin{table}[!htb]
+\caption{What the adapter changed on the demonstration set, by strength (25 games; one run is one development run). Family: the yield-8,192 family without an adapter (seven configurations, two of them later rejected), range across nine runs for levels, actions and RESETs (mean in brackets), eight with transcripts for the other counters, and two runs for tokens per second. Against all 18 family runs on Kaggle and Vertex, levels run from 115 to 132 (mean 124.4). Style counters are on cleared levels. RE-ARC-3: the shipped agent's own training-data play, read from the project's records and not recomputed. Rates are comparable across columns; whole-run counts are not comparable with RE-ARC-3, which has more games.}\label{tab:rft} % V3-L1 V3-L9 V3-L10 V3-L12 V3-L13 V3-L14 V3-L18
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.29\linewidth}>{\raggedright\arraybackslash}p{0.21\linewidth}rr>{\raggedright\arraybackslash}p{0.14\linewidth}@{}}
+\toprule
+Counter (per run unless a rate) & Family, no adapter & Half & Full (two runs) & RE-ARC-3 play \\
+\midrule
+Levels cleared (of 183) & 119 to 129 (124.0) & 117 & 109, 115 & 91\% of levels \\ % V3-L1 V3-L9 V3-L10
+Actions & 6,108 to 7,082 (6,511) & 7,375 & 7,859, 7,927 & n/a \\ % V3-L13 V3-L14
+RESET actions & 52 to 87 (65) & 100 & 129, 138 & n/a \\ % V3-L13 V3-L14
+Deaths (GAME OVER echoes) & 8 to 13 & 10 & 26, 27 & n/a \\ % V3-L13 V3-L14
+Reasoning characters per action & 2,021 to 2,346 & 1,979 & 1,729, 1,772 & 966, 1,347 \\ % V3-L13 V3-L14 V3-L18
+Actions per reply & 2.35 to 2.67 & 2.67 & 2.69, 2.75 & 4.52, 4.28 \\ % V3-L18
+NO-OP share of actions & 0.042 to 0.058 & 0.058 & 0.073, 0.081 & 0.032 to 0.037 \\ % V3-L13 V3-L14 V3-L18
+Tokens per reply & 2,097 to 2,277 & 2,152 & 2,031, 1,962 & 1,783, 2,152 \\ % V3-L13 V3-L14 V3-L18
+Harness tokens per second & 885.5, 894.9 & 930.2 & 916.8, 917.2 & n/a \\ % V3-L12
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Training.}
+1,400 random train windows from 100 games (1,507 supervised replies, 16.0M tokens) trained a LoRA of rank 16 and alpha 32 (merge scale 2.0) on the Gated DeltaNet projections, attention and the shared expert, with routed experts frozen; weighted token negative log-likelihood at temperature 1 over the whole reply; AdamW at $10^{-4}$, cosine to $10^{-5}$, 350 steps, one pass. % V3-L4
+It ran at 977 tokens per second with a peak of 78.4 GiB: 4.55 h of training time, 4.78 h wall, \$7.89 at the Spot list price. % V3-L5
+Validation loss on 32 fixed windows from 15 held-out families fell from 0.7853 to 0.6759 ($-13.9\%$), 81\% of the drop by step 40; two step-0 readings of the same base differ by 0.29\%. % V3-L6 V3-L7
+The merged adapter as served matched the trained adapter (mean absolute log-probability difference 0.029 on 30 requests, argmax agreement 97.8\%) under a parity gate revised before training because two collects of one server differ by 0.040. % V3-L8
+
+\paragraph{Runs and decision.}
+Two development runs at merge scale 2.0 cleared 109 and 115 levels and one at 1.0 cleared 117, all on the rented VM with the shipped configuration plus the draft vocabulary of Appendix~\ref{app:serving} and the adapter folded in at load. % V3-L9 V3-L10
+The project's stated rule, written in its progress notes and not in a timestamped predeclaration file, was 130 levels in each full-strength run to proceed, and at half strength 120 or fewer to stop; all three fall in the stop region. % V3-L11
+The loss is concentrated: per game the full-strength mean is up on 6 games, down on 12 and tied on 7 (two-sided sign test $p = 0.24$). % V3-L15
+On 20 RE-ARC-3 prompts the mean completion length rose but the median fell, and one 5,663-token reply carries the rise, so ``longer outputs'' is not a finding; greedy-token confidence on 30 prompts is flat. % V3-L16 V3-L17
+The rented-GPU time for the line was about 13.5 h of play data (about \$17, estimated), the 4.78 h of training and at most 9.6 h of development runs; runs took 2.13 to 2.14 h each. % V3-L19
+
+\subsection{GRPO round A: protocol and amendments}
+
+The recipe and gates were written into \texttt{solution/lora/grpo/GATES.md} at 07:50Z on 2026-10-20, before any round-A window, adapter or gate output existed; the data record followed at 17:40Z, two amendments at about 17:52Z and 17:56Z, and a family amendment at 19:49Z, before the second and third members trained. % V3-G3 V3-G7
+
+\paragraph{Recipe.}
+Reward per play and level is 1 if the level is cleared within a budget like the hidden run's, minus 0.1 per death up to five. % V3-G3
+Groups are the plays of one game that reach the level; the advantage is the reward minus the group mean, times $2i/(n+1)$ for level $i$ of $n$, with no supervision where its size is under 0.05. % V3-G3
+The loss is the token mean over 16 windows of $-\mathrm{sg}(\rho)\,A\,m\,\log\pi + 0.01\,k_3$, where $\rho$ is the ratio to the base, $m$ masks tokens with $\rho$ outside $[0.8, 1.28]$ or outside either top-$k$/top-$p$ keep set, and $\log\pi$ uses the logits at temperature 0.7 renormalised over the server's keep set. % V3-G3
+AdamW at $3\times10^{-5}$, constant after 3 warmup steps; LoRA rank 16, alpha 16 (scale 1.0) on attention, Gated DeltaNet and the shared expert; one epoch is 57 steps. % V3-G3
+Stops at each validation: val $k_3$ over 0.02 or entropy more than 10\% from step 0; null below 0.002. % V3-G3
+
+\paragraph{Data.}
+The reference member's 900 train windows come from 264 plays: 200 RE-ARC-3 rollouts and 64 plays by eight concurrent development runs of the shipped agent on the eight games of the demonstration set's training half; 27\% are RE-ARC-3 windows, the family both rejection-sampling adapters drifted toward. % V3-G1
+The third member's 882 windows come only from those 64 plays, and its 25 validation windows are byte-identical to the reference member's. % V3-G2
+
+\paragraph{The defect and the amendments.}
+At step 0 the adapter is zero, so the reading is base against base; the reference member's first start read raw val $k_3$ 12.909 on 66,949 validation tokens, which one token moving 13.7 nats explains. % V3-G4
+Raw step-0 readings in the other base-against-base comparisons were 0.1357, 0.1238, 0.1267 and 23.14. % V3-G4
+Across ten pairs of five independent base passes (three VM processes, two Vertex hosts), 12.1\% to 12.4\% of tokens match exactly, 16.9\% to 17.1\% leave the trust-region band, the RMS gap is 0.365 to 0.373 nats, and raw $k_3$ spans 0.099 to 1,525 while clipped $k_3$ is 0.0629 to 0.0658 (Figure~\ref{fig:trainnoise}). % V3-G5
+At step 1 a gradient pass and a no-gradient pass of the same zero adapter, a different comparison from the pairs above, mask 16.3\% to 16.6\% of tokens: 4.95\% outside a keep set and 11.3\% to 11.7\% by the band, counted after the keep-set misses. % V3-G6
+Amendment 1 clamped each token's log ratio to $[-2, 2]$ in the val $k_3$; amendment 2 read both stops and the null rule net of the run's own step-0 clipped reading and dropped amendment 1's null rule. % V3-G7
+The loss keeps the raw $k_3$. The floor's SD is 40\% of the 0.002 null margin, so the null rule sits near its noise. % V3-G7 V3-W7
+
+\begin{figure}[!htb]
+\centering
+\figfile{fig_trainnoise}{2.55in}
+\caption{The training forward pass is not deterministic. (a) Validation $k_3$ between pairs of identical base-only passes over the same 66,949 tokens, each pair read both ways, on a log scale: raw (open) spans four decades, clipped to $\pm2$ nats per token (filled) does not; the predeclared stop at 0.02 is dashed. Shape: VM with VM, VM with Vertex, Vertex with Vertex. (b) The clipped values on a linear scale: floor 0.0644 (SD 0.0008) and the amended stop at the floor plus 0.02. Lower and flatter is better for a guard.}\label{fig:trainnoise} % V3-G5 V3-G7
+\end{figure}
+
+\paragraph{Readings.}
+Table~\ref{tab:grpoval} gives the validation readings net of each run's floor. % V3-G8 V3-G9 V3-G10
+The reference member broke both stops at step 24 and kept step 16; the doubled-rate member broke both at step 16 and kept step 8; at equal learning rate times steps they read alike (V3-G11). % V3-G8 V3-G9 V3-G11
+Supervision mass was net negative on 17 of 24 steps of the reference member and 11 of 16 of the doubled-rate member, so failed plays carried more of each update; masked share rose as the adapter moved. % V3-G12
+Validation readings measure distance from the shipped agent's own play on held-out RE-ARC-3 windows, not quality, and the rise in val NLL equals $k_1$ on the same tokens. % V3-G12
+
+\begin{table}[!htb]
+\caption{Round A validation readings, net of each run's step-0 floor (about 0.064). Entropy and val NLL are changes from step 0. Stops: net $k_3$ above 0.02 or entropy beyond 10\%. One seed per member; 24 validation windows of held-out RE-ARC-3 play.}\label{tab:grpoval} % V3-G8 V3-G9 V3-G10 V3-G11
+\centering\footnotesize
+\begin{tabular}{@{}lrrrrrl@{}}
+\toprule
+Member & Step & lr $\times$ steps & Net $k_3$ & Entropy & Val NLL & Note \\
+\midrule
+Reference ($3\times10^{-5}$) & 8 & $2.4\times10^{-4}$ & $+0.0001$ & $+1.6\%$ & $+0.75\%$ & \\
+ & 16 & $4.8\times10^{-4}$ & $+0.0116$ & $+5.4\%$ & $+1.86\%$ & kept \\
+ & 24 & $7.2\times10^{-4}$ & $+0.0260$ & $+11.1\%$ & $+3.92\%$ & both stops \\
+Doubled rate ($6\times10^{-5}$) & 8 & $4.8\times10^{-4}$ & $+0.0136$ & $+6.3\%$ & $+1.82\%$ & kept \\
+ & 16 & $9.6\times10^{-4}$ & $+0.0658$ & $+25.0\%$ & $+8.24\%$ & both stops \\
+Public half only ($3\times10^{-5}$) & 8 & $2.4\times10^{-4}$ & $+0.0022$ & $-0.08\%$ & $-0.37\%$ & running at writing \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Gates.}
+Gate (a') compares the style of replies to 400 recorded states (reasoning length and action calls per reply) for the base, a known-bad control (the full-strength rejection-sampling adapter) and the member, against the base's own sample-to-sample band. % V3-G13
+Its first run failed to boot the member's server, an infrastructure fault; as interim information only, the known-bad control moves reasoning length to 0.831 of the base's, outside the base's band, so the gate can see that direction. % V3-G13
+Wave 1 runs every non-null member against shared controls in one concurrent batch, and wave 2 runs the best survivor fresh, promoting only if the pooled 12-against-12 difference on 17 bench games clears a bar (2.0 levels at three members), the wave-2 difference alone is not negative and no style veto fires. % V3-G14
+On a pool of 16 recorded runs this design promotes a family of null members with probability 0.038 (0.111 under a stress model) and a lone true $+6$ member 0.82 (0.69). % V3-X14 V3-G14
+Before any result the project put the chance that an adapter with a true $+6$ levels ships at 0.05 to 0.12. % V3-G15
+The round's spend on trainer smoke runs and members, at list prices, is in Appendix~\ref{app:regen}. % V3-G16

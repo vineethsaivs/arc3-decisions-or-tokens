@@ -1,0 +1,122 @@
+\section{All draws}\label{app:draws}
+
+Table~\ref{tab:draws} lists every scored submission since 2026-09-30: two Kaggle system errors, three draws of the retired September stack, and the 31 completed draws since the fork to 2026-11-02 (28 live, 3 dead). % G1 V3-B1 V3-B7 V3-W16 V3-W24 V3-W30
+An error did not spend the daily slot: both errors were followed by a completed run the same UTC day. % B10
+Submission ids are in \texttt{paper/v3/evidence/data/board\_draws.csv}; the best draw is \subid{57417773}. % V3-B2
+
+\begin{table}[!p]
+\caption{All scored submissions since 2026-09-30 (dates 2026, times UTC; public score on half of the 110 hidden games, higher is better). Bytes: size of the submission file Kaggle reports (not read for the last five draws). $\dagger$: dead run, excluded from means. Shipped: the configuration behind the 40.09 and 40.98 draws; variant: the same agent with the own-traffic draft vocabulary, which should leave the output distribution unchanged; keepalive: the shipped agent with a warmup keepalive that acts only while the server boots; adapter: the round B adapter of Sec.~\ref{sec:finetune}; 15 streams: the keepalive agent with 15 games in flight instead of 14; harness: the 15-stream agent with the harness changes of Sec.~\ref{sec:harness} (two on 11-01, all four shipped on 11-02).}\label{tab:draws} % G1 V3-B1 V3-B4 V3-B7
+\centering\footnotesize
+\setlength{\tabcolsep}{3.5pt}\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{@{}ll>{\raggedright\arraybackslash}p{0.17\linewidth}>{\raggedright\arraybackslash}p{0.38\linewidth}rr@{}}
+\toprule
+Date & UTC & Group & Change from the previous submission & Score & Bytes \\
+\midrule
+09-30 & 00:01, 21:17 & September stack & Kaggle system error, twice; the slot was not spent & error & 0 \\ % NEW:errors
+09-30 & 22:04 & September stack & retired stack, before the fork & 5.90 & 3,846 \\ % NEW:sept
+10-01 & 00:02 & September stack & none & 5.76 & 3,907 \\ % NEW:sept
+10-02 & 00:54 & September stack & a different build of the retired stack & 4.03 & 3,815 \\ % NEW:sept
+10-03 & 00:06 & base notebook & Franzen's notebook as published & 0.00$^\dagger$ & 3,411 \\ % G1 B11
+10-04 & 00:06 & before the yield change & startup trims; expert pruning (448 of 512); 14 streams & 28.97 & 3,865 \\ % G1
+10-05 & 00:06 & before the yield change & slot priority across games (shiiin9's formula) & 31.90 & 3,811 \\ % G1
+10-06 & 00:06 & before the yield change & none & 29.44 & 3,810 \\ % G1
+10-07 & 00:06 & before the yield change & none & 30.56 & 3,893 \\ % G1
+10-08 & 00:06 & before the yield change & none & 28.19 & 3,851 \\ % G1
+10-09 & 00:06 & before the yield change & transcript-waste fixes; reply cache; agent fixes & 27.15 & 3,841 \\ % G1
+10-10 & 00:06 & before the yield change & none (same kernel version as 10-09) & 0.00$^\dagger$ & 3,411 \\ % G1 B11
+10-11 & 02:06 & before the yield change & two fail-closed checks (they act only on a dead run) & 28.51 & 3,832 \\ % G1
+10-12 & 02:06 & yield family & yield after 8,192 tokens (was 2,048); index-key fix; asynchronous M-RoPE upload & 34.34 & 3,835 \\ % G1 V3-B1
+10-13 & 02:06 & yield family, shipped & watchdog; memory fraction 0.955 and sandbox cap; image hashing off the scheduler; incremental tool state; drafter refit; prompt fields; +11\% tokens & 40.09 & 3,878 \\ % G1 V3-B1
+10-14 & 02:06 & yield family, shipped & none & 34.22 & 3,882 \\ % V3-B1
+10-15 & 02:06 & yield family, variant & own-traffic draft vocabulary & 31.63 & 3,881 \\ % V3-B1
+10-16 & 02:06 & yield family, variant & none & 30.97 & 3,838 \\ % V3-B1
+10-17 & 02:06 & yield family, variant & none & 33.05 & 3,886 \\ % V3-B1 V3-B8
+10-18 & 06:56 & yield family, variant & none; submitted late after two missed fires & 0.00$^\dagger$ & 3,411 \\ % V3-B1 V3-B7
+10-19 & 02:06 & yield family, variant & none & 28.97 & 3,868 \\ % V3-B1
+10-20 & 02:06 & yield family, shipped & back to the shipped configuration & 40.98 & 3,847 \\ % V3-B1 V3-B2
+10-21 & 15:06 & yield family, keepalive & warmup keepalive: the warmup game re-sends RESET while the server boots (acts only before it is ready) & 35.05 & 3,862 \\ % V3-W16
+10-22 & 14:10 & yield family, keepalive & none & 36.03 & 3,850 \\ % V3-W16
+10-23 & 02:25 & yield family, keepalive & none & 37.56 & 3,820 \\ % V3-W16
+10-24 & 03:40 & yield family, adapter & round B adapter, submitted before its gate read; it failed the gate (Sec.~\ref{sec:finetune}) & 35.90 & 3,898 \\ % V3-W16 V3-W17
+10-25 & 03:08 & yield family, adapter & none & 39.79 & 3,853 \\ % V3-W16
+10-26 & 03:07 & yield family, adapter & none & 35.98 & 3,894 \\ % V3-W16
+10-27 & 16:19 & yield family, keepalive & back to the keepalive agent, with a longer keepalive cap (about 2 h) & 33.09 & 3,855 \\ % V3-W16
+10-28 & 04:34 & yield family, keepalive & none & 33.45 & 3,859 \\ % V3-W16
+10-29 & 02:41 & 15 streams & one more game in flight (15 streams, not 14); submitted by hand after a missed fire & 38.17 & n/a \\ % V3-W24
+10-30 & 03:06 & 15 streams & none & 29.63 & n/a \\ % V3-W24
+10-31 & 03:06 & 15 streams & none (before the harness changes of Sec.~\ref{sec:harness}) & 35.25 & n/a \\ % V3-W24
+11-01 & 02:06 & harness & the stall check and corner-joined regions (Sec.~\ref{sec:harness}); one draw says nothing about this build's mean & 33.56 & n/a \\ % V3-W24
+11-02 & 03:06 & harness & adds the tool fixes and the replay check (Sec.~\ref{sec:harness}); the final draw & 36.38 & n/a \\ % V3-W30
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Groups.}
+The seven live draws before the yield change average 29.25 (SD 1.58). % G2
+The eight live draws of the yield family to 2026-10-20 average 34.28 (SD 4.25); the exact one-sided permutation $p$ against the earlier seven is 18/6,435 = 0.0028 (Mann-Whitney $U$ 50.5 of 56). % V3-B5
+That is a rank test across different, time-ordered configurations: it ranks the stack and attributes nothing. % V3-B5
+The shipped configuration's three draws average 38.43 (SD 3.67) and the variant's four valid draws 31.15 (SD 1.70); the three are the top three of the seven (exact one-sided $p = 1/35$; Welch $t$ 3.19). % V3-B4
+We formed the hypothesis that the shipped configuration draws higher on 2026-10-19 from two draws against four ($p = 1/15$); the one draw since, 40.98, sits above all four of the variant's, which has probability 1/5 under no difference. % V3-B4
+The five keepalive draws after it, play-identical to the shipped configuration, average 35.04, between the two, so the gap has shrunk as chance and calendar predict; the adapter's three average 37.22. % V3-W16
+The variant changes only the draft model's vocabulary, which should leave the output distribution unchanged (speculative sampling preserves it when the verify path is correct), so we do not attribute the gap to it; calendar or node variation plus chance is the economical reading. The same calendar term applies to every time-ordered comparison in the paper. % V3-B4
+
+\paragraph{Selection.}
+The expected maximum of eight normal draws is 1.42 SD above their mean, about 40.3 for the yield family's eight to 2026-10-20; of fifteen, 1.74 SD (V3-B6). % V3-B6
+Figure~\ref{fig:selection} draws the same point for the agent's twelve valid draws to 2026-10-28, with Dodge's expected maximum over the empirical distribution \citep{dodge2019showyourwork} beside a normal model. % V3-B6
+
+\begin{figure}[!htb]
+\centering
+\figfile{fig_selection}{2.3in}
+\caption{How much of 40.98 is selection. Gray points: the agent's twelve valid board draws in date order (shipped configuration, its draft-vocabulary variant and its keepalive variants). Solid line: expected best of $n$ draws resampled from those twelve (Dodge's closed form on the empirical distribution, so it cannot exceed 40.98), 40.33 at twelve and 40.82 at 23, the live draws since the fork to 2026-10-28; dashed: a normal model with the same mean and SD; dotted: the mean, 34.59. Orange: best so far. Higher is better.}\label{fig:selection} % V3-B5 V3-B6 V3-W16
+\end{figure}
+
+\paragraph{Dead draws.}
+All three zeros are status complete with the same 3,411-byte file, against 3,810 to 3,907 bytes for live files. % V3-B7 B11
+The 2026-10-03 and 2026-10-10 zeros fell in field-wide failures of the 00:00 to 00:20Z wave; the 2026-10-18 zero came from a 06:56Z submission after the two morning fires never ran, inside a field cluster of early endings (Appendix~\ref{app:failures}). % B11 V3-B7
+Its cause is unknown and cannot be known, because a scored run returns no log. % V3-B7
+
+\paragraph{Final Submissions.}
+Finals rule v4 (adopted 2026-10-20 at 07:30Z, after the 40.98 draw was submitted at 02:06Z, under the author's delegation and open to the author's veto until 2026-10-28) defines the agent's family as the shipped configuration and its play-identical variants; valid draws exclude errors, zeros and field-wide failure days. % V3-B9 V3-W38
+With no eligible adapter, it marks the family's two best valid draws, 40.98 and 40.09. % V3-B9
+Both are marked by hand: on 2026-10-31 two marks were set and removed at the author's request (counter 0 of 2) while draws continued, and on 2026-11-02, after the last draw, they were set again (2 of 2 after a reload). They are also the two highest public draws. % V3-W25 V3-W35 BOARD-REFRESH
+The draws of 2026-10-29 to 10-31 are of a 15-stream build outside the family, and those of 2026-11-01 (33.56) and 2026-11-02 (36.38, the final draw) are of harness builds (Sec.~\ref{sec:harness}); neither beat 40.09, so the two highest public draws are unchanged. % V3-W24 V3-W25 V3-W30 BOARD-REFRESH
+
+\ifanon\else
+\paragraph{Rank history.}
+Table~\ref{tab:rank} gives our rank and the field's bars in the daily snapshots. % V3-B3 V3-W16
+
+\begin{table}[!htb]
+\caption{Daily leaderboard snapshots (public scores), at 00:06Z to 10-21 and at the daily job's run (01:06Z to 16:19Z) after it, and live reads on 2026-11-01 at about 18:35Z and 2026-11-02 at about 12:15Z, before the deadline. Ours: rank and best public score at the snapshot.}\label{tab:rank} % V3-B3 V3-W24 V3-W30
+\centering\footnotesize
+\begin{tabular}{@{}lrrrrrrrr@{}}
+\toprule
+Snapshot & Teams & Our rank & Our best & Rank 1 & Rank 3 & Rank 5 & Rank 10 & Rank 20 \\
+\midrule
+10-12 & 4,176 & 142 & 31.90 & 62.96 & 45.00 & 42.55 & 38.84 & 36.49 \\
+10-13 & 4,222 & 32 & 34.34 & 67.49 & 45.00 & 42.66 & 39.11 & 36.49 \\
+10-14 & 4,264 & 9 & 40.09 & 68.91 & 45.00 & 43.64 & 39.53 & 36.98 \\
+10-15 & 4,307 & 10 & 40.09 & 68.91 & 45.00 & 43.64 & 40.09 & 37.07 \\
+10-16 & 4,350 & 10 & 40.09 & 68.91 & 47.25 & 43.94 & 40.09 & 37.18 \\
+10-17 & 4,386 & 12 & 40.09 & 68.91 & 50.37 & 47.25 & 41.19 & 37.27 \\
+10-18 & 4,428 & 12 & 40.09 & 68.91 & 50.37 & 48.92 & 41.74 & 37.27 \\
+10-19 & 4,484 & 11 & 40.09 & 68.91 & 50.37 & 48.92 & 41.74 & 37.27 \\
+10-20 & 4,522 & 11 & 40.09 & 68.91 & 52.82 & 49.85 & 43.94 & 37.27 \\
+10-21 & 4,559 & 11 & 40.98 & 68.91 & 52.82 & 49.85 & 43.94 & 37.27 \\
+10-22 & 4,628 & 11 & 40.98 & 68.91 & 52.82 & 49.85 & 44.84 & 37.98 \\
+10-23 & 4,660 & 11 & 40.98 & 68.91 & 52.82 & 49.85 & 44.84 & 37.98 \\
+10-24 & 4,744 & 11 & 40.98 & 68.91 & 52.82 & 49.85 & 45.03 & 37.98 \\
+10-25 & 4,797 & 11 & 40.98 & 68.91 & 56.02 & 49.85 & 45.03 & 37.98 \\
+10-26 & 4,843 & 12 & 40.98 & 71.48 & 56.02 & 50.37 & 45.03 & 38.20 \\
+10-27 & 4,909 & 12 & 40.98 & 75.56 & 56.02 & 50.37 & 45.03 & 38.20 \\
+10-28 & 4,927 & 13 & 40.98 & 75.56 & 56.02 & 51.04 & 45.41 & 38.20 \\
+10-29 & 4,960 & 13 & 40.98 & 75.56 & 56.02 & 51.04 & 45.41 & 38.20 \\
+10-30 & 4,979 & 15 & 40.98 & 75.56 & 58.59 & 51.51 & 46.82 & 38.98 \\
+10-31 & 4,998 & 15 & 40.98 & 75.56 & 58.59 & 51.51 & 46.82 & 39.52 \\
+11-01 & 5,017 & 17 & 40.98 & 75.56 & 58.59 & 51.51 & 46.82 & 39.94 \\
+11-01, 18:35Z & 5,030 & 18 & 40.98 & 75.56 & 58.59 & 56.02 & 46.82 & 40.75 \\
+11-02 & 5,038 & 18 & 40.98 & 75.56 & 58.59 & 56.02 & 46.82 & 40.75 \\
+11-02, 12:15Z & 5,048 & 23 & 40.98 & 75.56 & 58.59 & 56.02 & 50.37 & 41.73 \\
+\bottomrule
+\end{tabular}
+\end{table}
+\fi

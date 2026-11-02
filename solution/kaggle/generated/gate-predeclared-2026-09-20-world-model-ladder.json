@@ -1,0 +1,52 @@
+{
+  "arms": {
+    "GG10": {
+      "dataset": "vineethsaivs/arc3-onewave-orch-gg10-v1",
+      "gate": {
+        "PASS": "mechanism clears AND levels >= GG8 + 5 AND levels >= 47.",
+        "REJECT": "levels <= 30, or the inert condition above.",
+        "UNDECIDED_BY_BENCH": "everything else. The 12.5-level MDE cannot resolve this arm on levels alone.",
+        "mechanism_is_the_verdict": {
+          "build_model_invoked": ">= 8 of 25 games",
+          "inert_if": "build_model fires in <= 2 of 25, in which case REJECT regardless of levels",
+          "predict_defined_by_the_builder": ">= 12 of 25 games, against the actor's measured 5 of 25"
+        },
+        "read_against": "GG8 from the same wave, NEVER against ONEWAVE",
+        "written_before": "any run of this bundle"
+      },
+      "independent_variable": "THE DELEGATED BUILDER, and nothing else, READ AGAINST GG8 AND NEVER AGAINST ONEWAVE. GG10 is byte-identical to GG8 plus apply_orchestrator: a build_model tool that hands the last 4 within-level transitions to a separate builder generation whose only job is to write predict(). GG8 asks the acting model to write its own world model between moves; GG10 asks a second generation to write it.",
+      "kernel": "vineethsaivs/arc3-onewave-orch-gg10-a"
+    },
+    "GG8": {
+      "dataset": "vineethsaivs/arc3-onewave-wm-gg8-v1",
+      "gate": {
+        "PASS": "mechanism gate clears AND levels >= 47. Ships to the next slot per rule 15(a).",
+        "REJECT": "levels <= 30, which is 2.4 sd below the family mean. Rule 15(c) bars it permanently.",
+        "UNDECIDED_BY_BENCH": "31 to 46 levels. Report the mechanism counters, ship nothing, keep ONEWAVE.",
+        "mechanism_is_the_verdict": {
+          "plan_invoked": ">= 5 of 25 games (baseline 1)",
+          "predict_defined": ">= 8 of 25 games (GG6 baseline 5)",
+          "prelude_in_memory": ">= 12 of 25 games (baseline 18)",
+          "validate_invoked": ">= 20% of sandbox tool calls (baseline 1.5%)"
+        },
+        "note": "the measured Flash-Next MDE at n=1 vs n=1 is 12.5 levels, so levels alone cannot resolve this arm.",
+        "on_mechanism_failure": "the level total is NOT read as a verdict; the arm did not run.",
+        "written_before": "any run of this bundle"
+      },
+      "independent_variable": "THE CERTIFICATION PREDICATE, and nothing else. validate(predict) stops being whole-board exact equality over 4,096 cells and becomes a LOCAL predicate: predict may return '?' for any cell it does not claim, unclaimed cells are skipped in the diff, coverage is reported, and a board claiming nothing is bucketed rather than passed. The transition log is level-filtered so cross-level pairs never enter it. Model, sampling, clock, concurrency, schedule and game set are all held at ONEWAVE.",
+      "kernel": "vineethsaivs/arc3-onewave-wm-gg8-a"
+    }
+  },
+  "blocking_fix_applied_first": {
+    "change": "assert budget < 3200 -> 3600",
+    "file": "solution/sim/test_world_model_prompt.py:128",
+    "why": "The guard was stale, not the prompt. Its own comment records the cap being moved 2,000 -> 3,200 when the worked example was added; the abstaining-render overlay then added the '?' cell convention and the coverage floor, taking the addendum to 3,540 chars. That is ~1,200 tokens, 2.5% of the 48,128-token history budget. Shrinking the prompt instead would have deleted the worked example, which IS the arm: arm V measured predict() written in 1 of 25 games without it."
+  },
+  "control": "ONEWAVE, 46 levels. Flash-Next family 44 / 40 / 47 / 41 / 46, mean 43.6, sd 3.16, MDE 12.5 at n=1 vs n=1.",
+  "record": "gate-predeclared-2026-09-20-world-model-ladder",
+  "tonights_slot": "ONEWAVE, unchanged, and by arithmetic rather than by default. Pooled within-config sd is 0.542; against our banked 4.61, P(a single draw sets a new max) is 17.1% for ONEWAVE (mean 4.095), 5.4% for S-wavefit (3.738), 1.9% for G-flashnext48k (3.487). Swapping would lower tonight's expected draw. If either arm clears its mechanism gate AND lands >= 47 levels by 15:00 PDT it ships tonight per rule 15(a); otherwise the winner carries tomorrow.",
+  "what_this_cannot_show": "Neither arm is worth the 12.5-level MDE, so the modal outcome for both is UNDECIDED-BY-BENCH and neither can be shown to close any part of the 4.61 vs 12.88 gap. The mechanism counters are the deliverable: this is the first clean read on whether the certify-then-plan architecture every published high scorer uses is reachable on open weights.",
+  "why_two_arms_at_once": "GG10 is byte-identical to GG8 plus apply_orchestrator, so the two runs plus the shipping ONEWAVE bench form a ladder, 46 / GG8 / GG10, in which GG10 minus GG8 is a clean single-variable read on the delegated builder. Running either alone costs the same wall clock and throws that contrast away. Max 2 concurrent GPU sessions, so this is the whole wave.",
+  "written": "2026-09-20T17:32:13+00:00",
+  "written_before": "either kernel produced a single line of output"
+}

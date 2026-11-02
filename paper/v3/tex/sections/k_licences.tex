@@ -1,0 +1,114 @@
+\section{Licences, release and AI use}\label{app:licences}
+
+We list the licence of every upstream piece, say how our files are licensed, and state the release status as last checked. We make no claim about prize eligibility. The licence survey is from 2026-10-13 and was not re-fetched for this version.
+
+\paragraph{Upstream licences.} Table~\ref{tab:licences} gives what we found on 2026-10-13 on the model cards, repositories and Kaggle pages. Readings of ours are marked. This is not legal advice.
+
+\begingroup\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.22\linewidth}>{\raggedright\arraybackslash}p{0.45\linewidth}>{\raggedright\arraybackslash}p{0.25\linewidth}@{}}
+\caption{Licence of every upstream piece, as found on 2026-10-13. ``Our reading'' marks an inference, not a finding.}\label{tab:licences}\\
+\toprule
+Piece & Licence found & Note \\
+\midrule
+\endfirsthead
+\toprule
+Piece & Licence found & Note \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+Qwen3.8-Flash-Next \citep{qwen38flashnext}
+& Qwen Community License 1.0 (text of the LICENSE file in the model repository): an MIT-style grant (use, modify, distribute, sublicense, fine-tune, derivatives) with conditions. The copyright and permission notice must travel with copies. The model name must be shown on products above 100M monthly users or US\$20M monthly revenue. A separate Qwen licence is needed to run a ``Model as a Service'' or ``AI Work Assistant'' business (internal use excepted). % N-E6s6.2 audit_cites-C25
+& Our reading: a custom licence with field-of-use conditions, not an OSI-approved text. \\
+\addlinespace
+Intel W4A16 AutoRound \citep{intel2026w4a16}
+& Model card ``other / qwen-community-1.0'', ``follow the license of the original model''; Kaggle copy ``Other (specified in description)''.
+& Derivative of the Qwen weights. \\
+\addlinespace
+albucino drafter \citep{albucino2026drafter}
+& \texttt{qwen-community-1.0}; Kaggle copy ``Other (specified in description)''.
+& \\
+\addlinespace
+ursuciprian D3 weights \citep{ursuciprian2026d3}
+& \texttt{qwen-community-1.0}, ``the license conditions apply to this derivative''; training tools Apache-2.0.
+& Our private dataset holds the refit tensors unchanged and so inherits this (our reading). \\ % N-E6s6.2
+\addlinespace
+lee-chang-93 REAP-448 checkpoint; REAP method \citep{lasby2025reap}
+& Checkpoint: NVIDIA Open Model License and Qwen Community License 1.0. Method repository: Apache-2.0.
+& We use only which expert ids were kept, never their weights. \\
+\addlinespace
+Pennyroyal SGLang, SGLang, Ratsimbazafy fork
+& Apache-2.0.
+& \\
+\addlinespace
+Olympie fork (low-M GEMM patch)
+& No licence file.
+& An upstream problem in Franzen's wheelhouse, not ours. \\
+\addlinespace
+lovedheart sglang fork (QSA fix)
+& Apache-2.0.
+& \\
+\addlinespace
+Tufa Duck harness \citep{bessis2026duck}
+& No LICENSE file at the repository root, in \texttt{ARC3-Inference} or in \texttt{tufa-arc-agi-framework}. The \texttt{pyproject.toml} classifier reads ``License :: OSI Approved :: MIT License''.
+& A classifier is a claim, not a grant. \\
+\addlinespace
+Franzen's notebook and patch \citep{franzen2026milestone2}
+& His repository is Apache-2.0. The notebook is a public Kaggle notebook; our fork's first cell states ``Apache 2.0 by default'' and keeps the original's terms.
+& \\
+\addlinespace
+Franzen's two datasets
+& Kaggle licence field ``Unknown'' for both; both public.
+& The forum asks whether rule 5.a.3 covers ``unknown''; no answer. \\
+\addlinespace
+shiiin9 D-prime file \citep{shiiin92026dprime}
+& The source notebook is public. Its licence is not recorded in our repository and we did not read it.
+& Kaggle's default would be Apache-2.0 (our reading). \\
+\addlinespace
+ARC-AGI repository (arcprize)
+& MIT.
+& The competition wheels are separate artifacts. \\
+\addlinespace
+Our D3 dataset and kernel
+& Private; no licence set that we found.
+& See below. \\
+\end{longtable}
+\endgroup
+
+\paragraph{Our files.} We will release the files we wrote under CC-BY 4.0, the licence that Kaggle's competition rules apply to a winning submission and its source code; third-party files keep their own licences (Table~\ref{tab:release}). The 12 overlays behind the 40.98 configuration hold 1,316 lines, and ten of them (988 lines) are ours alone. % N-E6s6.4 H9
+The ARC Prize page separately asks that code authored by the submitter be released under a permissive public-domain licence such as CC0 or MIT-0 (below); the two texts differ, and the release will state which applies to our files.\ownernote{Decide CC-BY 4.0 against CC0 or MIT-0 for our own lines before release, then replace the clause after the semicolon with the decision.} The submitted kernel, version 1, cannot be edited without a new version, and its first cell says Apache 2.0 by default. Copyright in AI-generated code is unsettled in some jurisdictions, and we have not checked any assistant's terms on output ownership.
+
+\begin{table}[!htb]
+\caption{How our files and the files inside them are licensed. Lines are file lines including docstrings, except the last row (added lines).}\label{tab:release}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.40\linewidth}r>{\raggedright\arraybackslash}p{0.44\linewidth}@{}}
+\toprule
+Files & Lines & Licence \\
+\midrule
+wastefix, replycache, agentfix, memcap, toolfast, promptobs, watchdog, failclosed, asyncmrope\_serve, d3draft\_serve & 988 & CC-BY 4.0 for our lines; the anchor strings they quote keep their owners' licences. \\ % N-E6s6.4
+p448\_serve & 214 & CC-BY 4.0 for the code; the table of kept expert ids is derived from third-party models, so credit it. \\ % N-E6s6.4
+qsaring\_serve & 114 & Stays Apache-2.0 with its notice (derived from Apache-2.0 code). \\ % N-E6s6.4
+Build script and tests & not counted & CC-BY 4.0. \\
+shiiin9's D-prime file & 252 & Not ours; we cannot relicense it. \\ % N-E6s6.4
+Franzen's patch, Duck harness, SGLang, weights & 8,405 & Third-party; cannot be dedicated by us. \\ % N-E6s6.4
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Release status (as of 2026-11-02).} Nothing is released yet. On 2026-11-02 an anonymous request for the submitted kernel and one for the D3 dataset each returned ``not found''; both are private. The kernel embeds every overlay as one escaped string, so a reader cannot audit the code from the notebook. The readable overlays, the build script and the tests live in a project repository that has no licence file and no remote. Of its overlay files, 25 are untracked in git, including the eight behind the 40.98 configuration listed above (memcap, toolfast, promptobs, qsaring, asyncmrope, d3draft, watchdog, failclosed), and the build script that defines the shipped configuration is modified but uncommitted. % N-E6s6.5 V3-W40
+\paragraph{Release record.} Not yet created. At release this paragraph will name the repository, the tagged commit and the release date, and the date the kernel and dataset were made public and re-checked from a logged-out browser. Until then, the release status above is the record.
+\ownernote{Before posting: make the kernel and the D3 dataset public, push the repository at a tagged commit with a LICENSE file, the overlays and the build script, then rewrite the release record above and replace the status paragraph with ``Released at <repo>@<hash> on <date>''.}
+The dataset needs Qwen's licence text and ursuciprian's attribution when it is published. Franzen's four inputs are public today. If one goes private, every submission errors, so a fallback build mounts our copies from a private kernel that would also need to be public to be cited.
+
+\paragraph{Rules.} The ARC Prize 2026 page (arcprize.org/competitions/2026) says ``all code and methods authored by the submitter must be made open source under a permissive public domain license (eg. CC0 or MIT-0)'', and that third-party code must be available under ``at least, an open source license which allows public sharing (eg. Apache-2.0, GPLv3)''. The same page says ``Participants must open source their solutions before receiving official private evaluation scores''; when this applies is not stated. Kaggle's rules for both competitions license a winning submission and its source code under CC-BY 4.0, a second licence text next to CC0 or MIT-0.
+The Paper Track asks for a Writeup of at most 1,500 words with a cover image and an attached public notebook, on its Kaggle page. A PDF linked from the Writeup has no word limit \citep{kamradt2026forum748431}. A private Kaggle resource attached to a public Writeup ``will automatically be made public after the deadline'' (2026-11-09 23:59 UTC in the rules as fetched; arcprize.org says papers are due 2026-11-08). The Accuracy criterion matches the submission ID to the notebook. % N-E6s6.1 audit_cites-C8
+
+\paragraph{The Qwen question.} Rule 5.a.1.a of the ARC-AGI-3 competition requires an open source system, model and weights as defined by the Open Source AI Definition checklist. Rule 5.a.3 says that input data or pretrained models with an incompatible licence need no open-source grant. The first sentence is absent from the Paper Track rules we fetched (a string search finds none there and one in the ARC-AGI-3 rules); the second appears in both. Forum threads 745079 and 745837 ask whether Qwen Community License weights are eligible. The hosts had not replied in either on 2026-10-13. We draw no conclusion and make no claim about eligibility. % N-E6s6.1
+
+\paragraph{AI use.} The author directed the work and selected what went into submissions. Claude Code agents (Anthropic) wrote much of the code, the analyses and the text.\ownernote{Confirm or rewrite the two sentences before this note.}
+
+\noindent The agent evaluated is the open-weight Qwen3.8-Flash-Next served locally; no external API is called at evaluation time. A scheduled job made the daily Kaggle submissions under the author's standing authorisation. Numbers in the paper come from recorded files and scripts in the repository (Appendix~\ref{app:regen}). AI systems are not authors. % H10

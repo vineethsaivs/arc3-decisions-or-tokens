@@ -1,0 +1,26 @@
+pair               tok/s       running        accept       cache hit       KV mean  levels
+p448       618.9   687.1  10.66  10.92  2.714  2.682  93.24  93.65  0.504  0.521  122/106
+p448s14    731.2   729.3  12.42  12.63  2.675  2.664  93.39  93.43  0.609  0.621  117/111
+l1a1y8     780.7   758.4  12.55  12.56  2.698  2.698  95.37  94.79  0.613  0.611  128/124
+dpctl      739.3   744.0  12.51  12.64  2.687  2.682  93.28  93.64  0.615  0.624  123/101
+L1         756.9   745.0  12.47  12.26  2.684  2.695  94.37  93.56  0.615  0.608  116/113
+l1a1       784.3   766.6  12.68  12.51  2.695  2.702  94.25  93.91  0.627  0.618  113/109
+
+Relative within-pair difference |a-b|/mean, by metric (six pairs)
+  tok_s      per-run CV  3.23%   rel diffs 10.44  0.27  2.89  0.64  1.58  2.28
+  running    per-run CV  1.11%   rel diffs  2.47  1.71  0.13  1.03  1.66  1.34
+  accept     per-run CV  0.39%   rel diffs  1.18  0.42  0.03  0.21  0.42  0.25
+  cache_hit  per-run CV  0.36%   rel diffs  0.44  0.04  0.61  0.39  0.86  0.37
+  kv         per-run CV  1.34%   rel diffs  3.43  1.99  0.33  1.43  1.22  1.47
+  levels     per-run CV  7.31%   rel diffs 14.04  5.26  3.17 19.64  2.62  3.60
+
+Note: the first pair (p448 vs p448rep) differs by 10.4% in tok/s; excluding it the per-run tok/s CV is 1.29%.
+
+MDE for tok/s (two-sided .05, power .80, K runs per arm, z) and lever sizes, in percent:
+  K=1: all six pairs (CV 3.23%) 12.8%;  excluding the p448 pair (CV 1.29%, 5 df) 5.1%
+  K=2: all six pairs (CV 3.23%) 9.1%;  excluding the p448 pair (CV 1.29%, 5 df) 3.6%
+  p448 (REAP keep-448) harness tok/s vs start      +13.7%  [gate-results-2026-10-02-franzen-p448-vs-start.json]
+  s14 (14 streams) vs p448, tok/s                  +12.0%  [gate-results-2026-10-03-franzen-p448s14-pooled.json (12% both runs; +18.2% first run)]
+  l1a1 serving vs dpctl, tok/s                     + 4.6%  [gcp-bench-2026-10-06.md (+4.6%, both runs)]
+  r1 riders vs y8sv2 control, tok/s                + 5.8%  [gate-results-2026-10-12-franzen-l1a1y8sv2r1.json (846.0 vs 799.7)]
+wrote <repo>/paper/v2/analysis/out/e4_serving.json

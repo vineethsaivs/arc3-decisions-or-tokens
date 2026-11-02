@@ -1,0 +1,13 @@
+run,group,platform,merge_scale,levels,mean_score,generated_tokens,actions,tok_per_action,tok_s,accept_len,cache_hit_pct,zero_level_games
+l1a1y8,pin_y8_family,kaggle,,128,61.18,5682211,6217,914.0,780.7,2.698,95.3,0
+l1a1y8r,pin_y8_family,kaggle,,124,56.99,5538765,6108,906.8,758.4,2.694,94.7,0
+l1a1y8sv2,pin_y8_family,kaggle,,119,54.23,5793643,6220,931.5,799.7,2.704,94.6,1
+l1a1y8sv2o16,pin_y8_family,kaggle,,120,54.0,5862969,6324,927.1,810.1,2.707,94.8,0
+l1a1y8sv2r1,pin_y8_family,kaggle,,128,59.35,6125103,6861,892.7,846.0,2.698,95.3,0
+l1a1y8sv2r2,pin_y8_family,kaggle,,122,56.0,6434566,6416,1002.9,890.0,2.827,95.2,0
+l1a1y8sv2r3,pin_y8_family,kaggle,,129,58.46,6425664,6296,1020.6,885.5,2.832,95.0,0
+l1a1y8sv2r3s4,pin_y8_family,kaggle,,120,52.67,6268461,7077,885.8,861.0,3.11,95.1,1
+l1a1y8sv2r3hm32,pin_y8_family,kaggle,,126,56.95,6492535,7082,916.8,894.9,2.837,94.9,0
+loraR1,lora_r16,gcp_g4_vm,2.0,109,46.69,6640603,7859,845.0,916.8,3.036,94.8,0
+loraR2,lora_r16,gcp_g4_vm,2.0,115,48.8,6658151,7927,839.9,917.2,3.032,95.2,0
+loraH1,lora_r16,gcp_g4_vm,1.0,117,49.72,6732305,7375,912.9,930.2,2.951,95.4,0

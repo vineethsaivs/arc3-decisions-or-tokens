@@ -1,0 +1,22 @@
+{
+  "record": "gate-results-2026-09-23-HUDFLAG-OBJPAIR",
+  "read_against": "the predeclared gates in each bundle manifest, written before either run",
+  "control": {"arm": "ONEWAVE", "levels": 46, "actions_per_game": 101.2, "actions_floor": 91.1},
+  "HUDFLAG": {
+    "kernel": "vineethsaivs/arc3-hudflag-a",
+    "levels": 42, "zeros": 1, "actions_per_game": 108.9,
+    "mechanism": "PASS. anim_hudx_flip 83 pooled across 8 games, against a kill line of 40 pooled or fewer than 3 games. The control replay had predicted 97 across 7.",
+    "actions_floor": "PASS, 108.9 against 91.1",
+    "levels_band": "31 to 46: a tie. Per the gate, do not promote; keep the overlay as a truth repair.",
+    "what_it_is": "board_unchanged ignores the outer 2-cell ring when something moved inside the play area mid-animation, so a timer tick no longer suppresses the 'effect hidden in the intermediate frames' signal."
+  },
+  "OBJPAIR": {
+    "kernel": "vineethsaivs/arc3-objpair-a",
+    "levels": 39, "zeros": 4, "actions_per_game": 96.4,
+    "mechanism": "PASS. objdelta_nearest_repair 536 of 2,411 emissions, 22.2%, against a kill line of 5%. Non-empty 95.5%, 4.17 moves per emission.",
+    "actions_floor": "PASS, 96.4 against 91.1",
+    "levels_band": "31 to 46: a tie against ONEWAVE, and one level above OBJDELTA-v1's 38. Rides along in any future object-delta build."
+  },
+  "READING": "Both correctness repairs fired as designed, neither displaced play, and both tied. That makes seven host-side arms and compositions at 38 to 42 against a 46-level control. Neither beats GG7's 47, which ships tonight.",
+  "NEXT": "HUDFLAG and GG7 address the two halves of the same defect: HUDFLAG makes the animation hint fire when it should, and GG7 makes animation() actually callable when the hint fires. They belong in one build on the current base, not as separate arms."
+}

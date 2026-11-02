@@ -1,0 +1,21 @@
+{
+ "schema_version": 1,
+ "date": "2026-10-30",
+ "declared_before_results": true,
+ "declared_at": "2026-10-30T00:35:45Z (file time), before any unstick run was pushed (first push 00:36Z)",
+ "candidate": "l1a1y8sv2r3lf15unst (W) against the lf15 agent (A); l1a1y8sv2r3kp12lf15unst (probe, would become the pin)",
+ "change": "franzen_overlays/unstick.py: (1) a stall check in the opener at the 3rd, 5th, 7th ... analyzer turn on a level with no executed action, asking for at least one action (a short probe with its effect predicted, or the verified first steps of the plan); (2) with each stall check and after a game over or model RESET on the level, the object types no click on this level has touched (when MOUSE is valid) and the valid actions not yet used on the level; (3) Tufa's STEP_VERIFICATION_ADDENDUM on, its no-solution rule rewritten to suspect the mechanics first and the goal last, plus a line to replay the level's transitions through a simulator before a long plan. Offline test solution/sim/test_franzen_unstick.py passes",
+ "evidence": "Paired plays of the same level, cleared in one replica and stuck in another (r1, r2, r3, r3s4, 10-12): tn36 L2, sk48 L2, s5i5 L2/L3, bp35 L2, sp80 L2, su15 L4, plus walls. 27% of never-cleared levels have 3+ analyzer turns in a row with no action against 8% of cleared ones; never-cleared levels spend 40% of their clock in such turns (cleared 29%). Stuck runs wrote off an object type untested (tn36 r2 never clicked the vertical bars; sp80 r2 clicked MOUSE once and never the red bars)",
+ "reference_for_mechanism": "The four r-runs above (Kaggle, r3 agent; the pin's agent adds levelfirst, imports, keepalive and a 15th stream): per run 1,450 to 1,521 analyzer turns; 16 to 24 turns that are the 3rd, 5th or 7th idle turn in a row, of which 0.54 executed an action (42 of 77 pooled); streaks of 5+ idle turns 2.75 per run. Script: scratchpad unst/streaks.py (copied to solution/analysis/unstick_counters.py with the result)",
+ "wave": "Kaggle only (free quota): 2 W now (00:36Z), the 3rd W and the probe when a slot frees. A pooled = the kv2 gate's 7 runs: vertex kva, s15w-1..4 and Kaggle lf15-1029, lf15-1029-2 (play numbers from benchmark.json)",
+ "gate": {
+  "m1_fires": "W mean per run: at least 5 stall-check openers and at least 5 untested-list openers (the mechanism is live on Kaggle)",
+  "m2_response": "Pooled over W, of the turns that are the 3rd, 5th or 7th idle turn in a row on a level, at least 0.70 execute an action (reference 0.54)",
+  "m3_actions": "W actions per run <= pooled A x 1.10 and W median actions/baseline on cleared levels <= pooled A + 0.05",
+  "no_harm": "W mean levels >= pooled A - 2.5 and W mean game score >= pooled A - 1.5",
+  "probe": "Kaggle probe of l1a1y8sv2r3kp12lf15unst installs and plays, 0 tracebacks in kernel.log and serve.log"
+ },
+ "reported_not_gated": "streaks of 5+ idle turns per run (reference 2.75); levels and score on the held-out set are not run",
+ "decision": "ship (pin for the remaining draws) on m1, m2, m3, no_harm and the probe; a tie with the mechanism verified ships; kill on any miss; no further runs are added after reading",
+ "rollback": "re-pin l1a1y8sv2r3kp12lf15 v1 if the first live draw is 0.00 or a day errors twice"
+}

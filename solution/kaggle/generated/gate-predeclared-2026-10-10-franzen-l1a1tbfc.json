@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "declared_at": "2026-10-10T04:05Z, before any run of the arm",
+  "arm": "l1a1tbfc (vineethsaivs/arc3-franzen-l1a1tbfc-a and its replicate): l1a1 plus a strict thinking budget of 10,240 tokens plus both fail-closed checks",
+  "instrument": "25-game replica, 14 streams, 7,200 s window, two runs; readout solution/analysis/franzen_readout.py and thinking_counters.py",
+  "control": "l1a1 GCP runs 113 and 109 levels (pooled 111.0, mean game score 51.51, 775.5 tok/s); dpctl 123 and 101 (pooled 112.0)",
+  "mechanism_required": [
+    "replies cut at the output cap with no tool call: 0 in both runs (L1: 29 per run, 6.5% of generated tokens)",
+    "replies forced at the budget that still make a call that executes: at least 95%",
+    "tool-call format errors not above the control's",
+    "the 64-token self-test passes at boot"
+  ],
+  "promote": "mechanism holds AND pooled levels >= 111.0 (at least the l1a1 control). Matched-token levels are reported, not gated.",
+  "hold": "mechanism holds and pooled levels between 105 and 110: the incumbent keeps the pin (lossy-decode ties go to the incumbent, as predeclared on 2026-10-05)",
+  "reject": "pooled levels <= 104, or any mechanism condition fails"
+}

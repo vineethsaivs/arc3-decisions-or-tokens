@@ -1,0 +1,118 @@
+\section{Fixing what the model is shown and can check: stalls, objects, tools and replays}\label{sec:harness}
+
+\paragraph{Why look here.}
+The yield changed when a request resumes and moved nothing once the arms were interleaved (Sec.~\ref{sec:yield}).
+Two other places shape the model's decisions: what the board looks like to it, and what happens when it stops acting.
+From 2026-10-29 to 2026-11-01 we ran a short program on both, and on what the model can check, diagnosis first and a written kill rule per change. % V3-W18 V3-W19 V3-W28 V3-W29
+Its result is four changes whose mechanisms fire and whose level means we report and do not claim, and a fifth that passed its gate and showed no gain on its target games.
+
+\paragraph{Diagnosis.}
+We read paired plays, the same level cleared in one development run and stuck in another, from four runs made before the program, and counted or quoted every claim from the transcripts. % V3-W18
+Stuck runs stop acting. An \emph{idle turn} is a turn of the model that ends, at a yield or the length cap, with no action executed. % V3-W18
+Of the levels never cleared, 27\% hold three or more idle turns in a row, against 8\% of the cleared levels. % V3-W18
+Their clock tells the same story: 40\% of it goes to such turns, against 29\%. % V3-W18
+Stuck runs also write off an object type or an action they never tested, and misread what the harness shows them.
+
+\begin{figure}[t]
+\centering
+\figfile{fig_clock}{6.4in}
+\caption{Where the clock goes. (a) Per game, mean minutes of clock on levels it cleared (gray) and on the level open when the window closed (orange), sorted by the orange tail; right: mean levels cleared of the game's levels. (b) Share of the clock by the number of actions executed in a turn; bars pool the runs, dots are single runs (filled: stall check; open: plus corner-joined regions). Six development runs of the first two changes below, 25 games each; time stamps include queueing on shared serving. The figure shows where time goes, not waste and not what a faster turn would buy, and a game that cleared every level has no tail by construction.}\label{fig:clock} % V3-W23
+\end{figure}
+
+\paragraph{Where the clock goes.}
+In the six runs of the first two changes below, 76\% of the clock goes to the levels a game clears, about 13 minutes each, and 24\% to the level it was on when the window closed (Figure~\ref{fig:clock}). % V3-W23
+Idle turns, those that execute no action, hold 27\% of the clock, but a read of them found mostly real work, simulators and reads of the history, so we built no blunt cut. % V3-W23
+
+\paragraph{Where the clock goes, by level.}
+Late in the program, a research pass over our transcripts, our harness code, public harnesses and the agent literature, with a skeptic for each top candidate, asked what sets the clock per level (Appendix~\ref{app:research}). % V3-W34
+Execution is cheap: multi-action plans rarely fail, and on the levels it clears the agent uses well under a human's actions. % V3-W31
+Discovery is not: levels that take over 15 minutes are 27\% of later-level clears and hold 66\% of their clock (Figure~\ref{fig:discovery}). % V3-W31
+On those levels code like the clearing turn's (a text proxy, matched on about a third of them) first appears with a median 13\% of the level's clock left, which fits most of a long level going to finding the rule or the goal, not to carrying out a plan. % V3-W31
+
+\begin{figure}[t]
+\centering
+\figfile{fig_discovery}{5.2in}
+\caption{Where the clock goes, by level. Transcripts of development runs, cleared levels from level 2 on; a level counts as cleared when a later turn shows a higher level, which misses a level cleared on a game's last turn. Solid: 11 runs of the 15-stream harness family before the replay check (the stall check build and three builds that add object groups, the scroll report or the tool fixes), 1,016 cleared levels. Dashed: the replay-check build, 3 runs, 279 cleared levels; its numbers are readings, not claims. (a) Levels sorted longest first: cumulative share of levels against cumulative share of their clock; the dot marks 15 minutes (27\% of levels, 66\% of the clock); gray: equal shares. (b) On levels over 15 minutes, the share of the level's clock elapsed when code like the clearing turn's (identifier overlap 0.5 or more) first appears; the text proxy matches 94 of 272 levels (27 of 83); line: median, 87\% elapsed. (c) Cleared levels whose code checks a model against the recorded history: by a detector of hand-written replay loops before the stall check (3 earlier runs) and in the stall-check family; the detector cannot see a helper call, so the replay-check bar stacks hand-written only, both, and helper only. The figure shows where the clock goes, not that any change clears more levels.}\label{fig:discovery} % V3-W31
+\end{figure}
+
+\paragraph{Five changes, five kill rules.}
+Each change has a gate, written before its first run: the counter it exists to move must move, the model must respond to it, actions must not rise, and mean levels and game score must stay within 2.5 levels and 1.5 points of the control. % V3-W19
+Any miss kills the change, and no run is added after reading.
+Each change ran three times on Kaggle against a pooled control of seven runs of the 15-stream build that the first change extends (mean 123.4 levels, SD 7.8; five of the seven on Vertex AI). % V3-W19
+
+\begin{figure}[t]
+\centering
+\figfile{fig_gates}{4.2in}
+\caption{Levels (a) and game score (b) per development run. Gray: the control, seven runs (five on Vertex AI, two on Kaggle); orange: each change, three runs on Kaggle; bar: mean; dashed line: the control's mean; shading: one SD of identical runs (8.25 levels, 4.98 points). Higher is better. Twenty-two runs in all. The tool fixes and the replay check extend the corner-joined build, not the scroll build. The control is mostly from another platform (Vertex AI) than the changes (Kaggle). The figure draws no test: no change's level mean differs from the control's by more than one such SD (only the corner-joined build's score mean sits just above its band), so it cannot rank the changes, and the control and the changes ran on different platforms and days.}\label{fig:gates} % V3-W19 V3-W20 V3-W22 V3-W23 V3-W28 V3-W29
+\end{figure}
+
+\paragraph{A stall check.}
+When a level has gone three, five or seven idle turns in a row, the harness tells the model to execute an action in this turn, a short probe with its effect predicted or the checked first steps of its plan. % V3-W20
+It also lists the object types (colour and size) and the valid actions not yet tried on the level, and asks for step-by-step checking: mechanics first, replay recorded steps before a long plan, retry a no-op from another state. % V3-W20
+Of the idle turns that were the third, fifth or seventh in a row, 87\% were followed by an action, against 54\% in the runs we diagnosed. % V3-W20 V3-W18
+Streaks of five or more idle turns fell from 2.75 per run to 0.33. % V3-W20
+Every predeclared item passed on all three runs (Figure~\ref{fig:gates}; Appendix~\ref{app:harness}). % V3-W20
+
+\paragraph{A first version failed its own rule.}
+Its first build never printed the untested list, because the harness reports actions under one set of names and the history under another. % V3-W21
+The rule killed it on that counter, and we fixed the names. % V3-W21
+Its two runs cleared 131 and 127 levels, as many as the fixed build, so levels from so few runs cannot tell a half-built mechanism from a built one. % V3-W21
+
+\paragraph{Objects the model could not see whole.}
+The model's main view of a board is a segmentation into regions of one colour joined along edges.
+A glyph drawn with corner contacts falls apart in it: in bp35's third level the X marks that are the level's key read as 15 single pixels, and a stuck run called them decoration (Figure~\ref{fig:glyph}). % V3-W22
+On 184 level starts in human replays, 76 hold such an object. % V3-W22
+We gave each region a \texttt{group}, the lowest id among regions of its colour joined to it by corner contacts, and changed nothing else. % V3-W22
+In every run the model read \texttt{group} in 33 to 64 code blocks, against none before, and every predeclared item passed. % V3-W22
+
+\begin{figure}[t]
+\centering
+\figfile{fig_glyph}{6.4in}
+\caption{Edge-joined and corner-joined regions on one board. bp35 level 3, start frame of a human replay, cropped to the three X marks: (a) the board; (b) edge-joined nodes turn the 15 X cells into 15 single-pixel nodes; (c) with \texttt{group}, three objects of 3 by 3; (d) 76 of 184 level starts in 22 human replays hold a group of two or more nodes at least 3 by 3 cells (73 if sparse dot patterns are dropped). Counts come from the real patched module and describe the boards, not play: the figure does not show that the model reads a group better or that any level cleared because of it.}\label{fig:glyph} % V3-W22
+\end{figure}
+
+\paragraph{A camera that moves.}
+In some games the whole board scrolls with the player, and the diff tool then reports hundreds of unrelated changes: one step of bp35 gave the model 1,343 changed cells and 89 moved dots, and one run read the scroll as draining water. % V3-W23
+The diff tool now detects a whole-interior shift, reports it as \texttt{scroll}, compares objects after undoing it, and the turn opener says when the view scrolled (Figure~\ref{fig:scroll} in Appendix~\ref{app:harness}). % V3-W23
+On the human replays the detector fires in bp35 and lf52 only, and never in the other 20 games. % V3-W23
+
+
+\paragraph{A mechanism that fires without a level gain.}
+The detector fires in play: about 24 scroll messages per run in those two games, and none in the others. % V3-W23
+Its three runs cleared 111, 122 and 130 levels. % V3-W23
+The mean is below the control's and below the build it extends, and bp35 stayed at one level in all three runs while lf52 reached two, three and four. % V3-W23 V3-W27
+The gate printed PASS, by a tenth of a level on its no-harm item, but a passed gate is necessary and not sufficient: the change showed no benefit on the games it targets, so it was not shipped. % V3-W27
+Three runs cannot say that it hurts.
+
+\paragraph{Tool failures that threw work away.}
+Two failures of the python tool discarded work the model had done. % V3-W28
+A snippet that ran past its time limit came back as ``Tool timed out'' with everything it had printed lost, and \texttt{inspect.getsource} on a function kept from an earlier snippet failed; in the six runs before, these happened 6.0 and 7.8 times per run. % V3-W28
+The tool now stops a snippet 3 seconds before its limit, counting only its own compute and never time spent waiting on the game, and returns what it printed; \texttt{getsource} reads the stored source. % V3-W28
+In three runs both failures fell to zero, the early stop fired about six times per run, and every predeclared item passed (Appendix~\ref{app:harness}). % V3-W28
+
+\paragraph{Checking a theory against the history.}
+The cheapest counterexample is one the history already holds, at no cost in actions, yet the model checked its simulator against recorded steps on about 6\% of cleared later levels (the research pass counted goal guesses tested against history at about 0.3 times per run, not reproduced here). % V3-W29 V3-W31
+Public harnesses with the largest fixed-weight gains make that replay a rule \citep{skoutnev2026twin,rodionov2026ablation}; Twin's harness took the same model and agent from 61.1 to 93.3, though its ablation removed five parts at once. % V3-W33
+Skeptics judged each of the top four candidates, this one included, too small for three runs to see, so we built it to be gated on use and no harm. % V3-W34
+We gave the sandbox two helpers. % V3-W29
+\texttt{check\_model(step, observe)} replays the level's recorded transitions through the model's own simulator, newest first, and reports the first mismatches with predicted and actual state; it also notes when a board and action led to two different results, which means hidden state. % V3-W29
+\texttt{check\_goal(is\_goal)} runs a goal test on every recorded board of the level; the level ended on none of them, so a hit means the test is wrong or incomplete, or that board needed one more action. % V3-W29
+Neither can take an action, and both stop at a time limit. % V3-W29
+
+\paragraph{What the helpers did.}
+The model wrote about 34 code blocks per run that call them, in five or six games, about one block in a hundred and close to the rate of an earlier validation helper on this model. % V3-W29 V3-W34
+Of 85 replays, 42 named a wrong prediction and ten more reported only exceptions raised by the model's own code; no goal check found a counterexample. % V3-W29
+
+\paragraph{Checks against the history, across builds.}
+Cleared later levels with a simulator check rose from 6\% to 9\%, or 10\% with goal checks (Figure~\ref{fig:discovery}c).
+Hand-written replays read slightly lower; these are readings across builds, not claims, and not evidence of substitution. % V3-W31 % V3-W31
+Every predeclared item passed, including a bar against the build it replaced (Appendix~\ref{app:harness}). % V3-W29
+
+\paragraph{What three runs can say.}
+Three runs per arm cannot resolve a lead of five levels: identical code scored 123 and then 101 (Sec.~\ref{sec:measure}), and three runs against seven resolve about 16. % V3-W19 B1
+The stall check and corner-joined builds lead the control by about five levels, the replay build by about three and the tool-fix build trails by about one, and we report these without claiming them; the gates test that a mechanism fires and that nothing is harmed, and they did. % V3-W20 V3-W22 V3-W28 V3-W29
+\paragraph{Which control.}
+The size of a lead depends on the control: against the two Kaggle controls alone, the four shipped changes lead by about 6 to 13 levels, about twice their leads over the pooled control (Appendix~\ref{app:harness}).
+The builds ran one after another on Kaggle, the control mostly on Vertex AI, and each change contains the one before (the tool fixes extend the corner-joined build, not the scroll build), so day, platform and independence are all open.
+None alters the token budget, so a lead would be a lead in decisions; three runs cannot say whether there is one.
+The build with the first two changes drew 33.56, and the build with all four shipped changes drew 36.38 in the final draw; one draw each says nothing about a mean (Sec.~\ref{sec:board}), and the two Final Submissions are earlier draws of an earlier build. % V3-W24 V3-W30

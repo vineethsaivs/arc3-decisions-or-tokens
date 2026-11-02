@@ -1,0 +1,71 @@
+\section{Measuring a noisy agent}\label{sec:measure}
+
+\paragraph{Identical code, different scores.}
+Six pairs of byte-identical development runs differ by up to 22 levels, and the second run was lower in all six (sign test $p$ 0.031), for a reason we have not found. % B1 B2
+Their pooled SD is 8.25 levels, with a wide interval (Table~\ref{tab:instruments}); around the shared first-minus-second shift it is 5.6. % B1 N3-7
+Any comparison run on different days can carry such a shift, which is the strongest argument for running arms side by side.
+
+Eight byte-identical runs on one day, on rented copies of the scoring GPU (six started together, two 2.5 hours later), cleared 115 to 132 levels with no order effect. % V3-X3 V3-X4
+The leaderboard shows the same thing at a coarser grain: one agent's seventeen valid draws span 12 points (Figure~\ref{fig:noise}). % V3-B5 V3-W30
+
+\begin{figure}[t]
+\centering
+\figfile{fig_noise_draws}{3.25in}
+\caption{Identical code, different scores. (a) Levels cleared on the 25 demonstration games by six pairs of byte-identical development runs (filled: first run; open: second, lower in all six pairs; number: the spread) and by eight byte-identical runs on one day (diamonds). Higher is better. (b) The same agent's seventeen valid board draws, one point per draw, grouped by build. A \emph{draw} is one scored run. Shipped agent: the configuration pinned on 2026-10-12. Draft-model variant: the same agent with a retuned vocabulary map for its draft model, which should leave the output distribution unchanged. Boot-keepalive variant: the shipped agent with a keepalive that acts only while the server boots. Later builds: the 15-stream and harness builds drawn from 2026-10-29. The one draw that scored 0.00 (2026-10-18, a 3,411-byte output, cause unknown) is the open dot, off the scale. Dashed line: the mean of the seventeen. The mean of the first twelve draws, to 2026-10-28, is also 34.59, by coincidence. 40.98 is the best of these draws and of all 28 live draws since the fork. Raw values; no error bars.}\label{fig:noise} % B1 V3-X3 V3-B4 V3-B5 V3-W16 V3-W30
+\end{figure}
+
+\paragraph{What two runs can see.}
+With run SD $\sigma$ and $n$ runs per arm, a two-sided test at the 5\% level with 80\% power detects shifts above
+\begin{equation}\label{eq:mde}
+\mathrm{MDE}(n) = 2.80\,\sigma\sqrt{2/n}.
+\end{equation}
+At the pairs' SD, two runs per arm resolve 23 levels, and a wave of twelve runs per arm made side by side would resolve about 9 (Figure~\ref{fig:power}). % B4 V3-X12
+Nearly every lever we built is smaller than 23 levels (Appendix~\ref{app:tried}), so a level count from two runs can veto gross harm and cannot promote. % B4 F3
+
+\paragraph{One rule for intervals.}
+We report every comparison at the identical-run SDs, 5.95 for eight runs on one day and 8.25 for six pairs run one after another, hours to a day apart, two-sided. % V3-X3 B1
+Bootstrap intervals over runs treat runs on different days as exchangeable, which the shift above argues against, so they come second.
+Intervals are 95\% unless marked.
+
+\begin{figure}[t]
+\centering
+\figfile{fig_power}{2.7in}
+\caption{Two runs per arm resolve about 23 levels. Smallest shift a two-sided test sees at 80\% power (Eq.~\ref{eq:mde}) against runs per arm, log scales; lower is better. Solid: the six pairs' SD of 8.25, with graded bands for its 50\%, 80\% and 95\% intervals; dashed: SD 5.95 of eight runs on one day. Markers sit where each lever's effect meets the solid line, so their x is the runs per arm a test needs; the serving marker is the curve's prediction, not a measurement.}\label{fig:power} % B1 B4 C4 D1 V3-L9 V3-L10
+\end{figure}
+
+\paragraph{The gate.}
+Our gate reads mechanism first. % B6 B8
+(1) Before any run, declare the counter a change acts on, such as tokens per second, draft acceptance length or prefix-cache hit rate, and its bounds; these counters vary 0.4\% to 3.2\% between identical runs, against 7.3\% for levels. % B8
+(2) Compare with the pooled control, never one control run. % B7
+(3) Use levels only as a veto: both runs must clear a floor nine levels below the pooled control. % B6
+(4) Ship a tie when the counter passed and no harm counter, a metric that signals damage such as tracebacks or deaths, moved.
+The floor is weak by design: it rejects a harmless change 26\% of the time and passes a true loss of nine levels 25\% of the time, so it screens only gross harm. % B6
+The draft model's reduced vocabulary passed such a gate, at a gain below its prediction (Table~\ref{tab:instruments}). % V3-H1 V3-H2 V3-H4
+
+\paragraph{A paired decision test.}
+A change to what the model sees can be judged one decision at a time: take recorded states, ask the model for two replies with the change and two without, and compare how often replies agree on their first action with how often two unchanged replies agree; the second rate is the model's own sampling noise. % V3-T1 V3-T2 V3-T3
+We used it on a leaner history rule, which replaces older reasoning and images with short markers and would save about 3.5\% of tokens, a lever worth about one level on the curve and invisible to any affordable number of runs. % V3-T6 V3-W5
+On 117 recorded states the leaner history changed the first decision more than the model's sampling noise on the point estimate, mostly by acting sooner, and so failed its predeclared tolerance (Table~\ref{tab:instruments}). % V3-T3 V3-T5
+The 90\% interval of that change contains the tolerance, and as a significance test the result is marginal (two-sided paired $p$ 0.09); we have not checked that first-action agreement predicts levels. % V3-T3 V3-T4
+The test cost under one GPU-hour, and it cannot see effects that build up over a game. % V3-W6
+
+\paragraph{Concurrent replication.}
+Rented copies of the scoring GPU (Vertex AI jobs on the same RTX PRO 6000) run the unchanged notebook and matched a Kaggle run within 1\% on every serving counter, one run each. % V3-X1
+They can run side by side, so a wave of twelve runs per arm would finish in one round of about two and a quarter hours and would remove the day and order confounds of sequential tests, though not run noise; so far we have run eight identical runs on one day (six started together), not a two-arm wave. % V3-X8 V3-X13 V3-X3
+
+\begin{table}[t]
+\caption{What each instrument resolves, on development runs (25 demonstration games, not held out). MDE: minimum detectable shift in levels (Eq.~\ref{eq:mde}). Costs at list prices; a development run is about 2.2 free Kaggle GPU-hours or \$3.88 to \$5.45 on a rented RTX PRO 6000. Intervals are 95\% unless marked.}\label{tab:instruments} % B1 B4 B8 V3-X3 V3-X11 V3-X12 V3-X13 V3-H2 V3-H4 V3-T3 V3-C8
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.23\linewidth}>{\raggedright\arraybackslash}p{0.27\linewidth}>{\raggedright\arraybackslash}p{0.27\linewidth}>{\raggedright\arraybackslash}p{0.17\linewidth}@{}}
+\toprule
+Instrument & Noise & Resolves & Cost \\
+\midrule
+Two runs per arm & SD 8.25 levels from six identical pairs (6 df; 5.3 to 18.2) & MDE 23.1 levels & 4 runs \\ % B1 B4
+Eight identical runs, one day & SD 5.95 (7 df; 3.9 to 12.1); no order shift & MDE 16.7 at 2 per arm, 6.8 at 12 per arm & 8 runs \\ % V3-X3 V3-X4 V3-X12
+Concurrent wave, 12 per arm (not yet run) & SD 8.25 assumed & MDE 9.4 levels & 24 jobs, one 2 h 17 min round, \$93 to \$131 \\ % V3-X12 V3-X13
+Serving counters & between-run CV 0.36\% (cache hit) to 3.23\% (tokens per second); levels 7.31\% & draft-vocabulary gate: decode $+1.2\%$ against $+1.4\%$ to $+1.7\%$ predicted & 1 run per arm \\ % B8 V3-H2 V3-H4
+Paired decision test & two unchanged replies agree on the first action in 0.778 of 117 states & leaner history: agreement $-0.071$ (90\% interval $-0.132$ to $-0.004$) against a tolerance of $-0.05$; paired $p$ 0.09 & 468 replies, 0.72 GPU-h \\ % V3-T3 V3-T4 V3-W6
+\bottomrule
+\end{tabular}
+\end{table}

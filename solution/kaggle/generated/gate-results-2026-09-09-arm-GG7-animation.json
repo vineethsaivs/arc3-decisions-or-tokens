@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-09-09T23:35:00+00:00",
+  "arm": "GG7 (animation retrieval enabled)",
+  "kernel": "vineethsaivs/arc3-gg7-animation-screen-a v1, complete",
+  "subject": "47 levels, the highest total this project has recorded. It is NOT a promotion, and the reason is the most useful part.",
+  "THE_CLOCK_a_correction_to_what_I_said_while_it_ran": {
+    "what_I_intended": "A short 2,700 s per-game mechanism screen on the quota remainder.",
+    "what_the_log_shows": "'SCREEN: per-game clock 2700.0s, animation_retrieval=True'. The assignment DID take and DID print.",
+    "what_actually_happened": "Every game's final_wallclock_seconds is 7,920 s. The value was set on bm.solver and then overridden downstream, so this ran at FULL CLOCK.",
+    "so": "I asserted mid-run that the override 'did not take effect'. That was wrong: it took, and was overridden later. The effect I predicted (full clock) was right; the mechanism I gave for it was not.",
+    "the_upside": "Because it ran full clock it IS directly comparable to the GG2 controls, which the screen would not have been. It also cost 0.78 GPU-h more than the weekly cap; enforcement is at push time, so the run completed and the practical cost is nil."
+  },
+  "RESULT": {
+    "levels": 47, "zeros": 2, "actions_per_game": 109.4,
+    "histogram": {"0": 2, "1": 9, "2": 7, "3": 4, "4": 3},
+    "cleared_L1": "23 of 25", "reached_L2": "14 of 25",
+    "L2_conversion_among_L1_clearers": "61%, against the controls' 59% and 50%",
+    "vs_GG2_run1_44": "9 up / 4 down / 12 tied, up-dn = +5, levels +3",
+    "vs_GG2_run2_40": "8 up / 3 down / 14 tied, up-dn = +5, levels +7",
+    "both_verdicts": "TIE. |up-dn| = 5 against a measured null of 8."
+  },
+  "THE_MECHANISM_BARELY_FIRED_AND_THAT_DECIDES_IT": {
+    "measured": "Across 4 sampled games the model requested an animation ONCE, in ft09. ar25, lp85 and tr87: zero requests, while the harness flagged 4, 3 and 1 transitions respectively as worth_inspecting.",
+    "control": "0 of 25 games, so retrieval is now non-zero and the prompt's promise is finally true.",
+    "but": "One request across four games cannot produce a 5-level gain. There is NO causal story connecting the treatment to the result."
+  },
+  "THE_READING_THAT_MATTERS": {
+    "what_GG7_actually_is": "Its source dataset is BYTE-IDENTICAL to GG2's. The only difference is one boolean, and that boolean changed behaviour once in four games. So GG7 is, to a very good approximation, a byte-identical RERUN of GG2.",
+    "therefore": "47 against 44 and 40 is not evidence of improvement. It is a third sample of the SAME config, and it widens the measured run-to-run range of our shipped configuration to 40-47, mean 43.7.",
+    "and_that_is_worth_more_than_a_promotion": "We now have three full-clock samples of one config instead of two. The within-config spread is 7 levels on this trio, which is consistent with the pooled sd of 8.21 and confirms that a single 47 means nothing on its own."
+  },
+  "PREDECLARED_BAND_vs_DECISION": {
+    "the_band_says": "'>= 47: PROMOTE to a byte-identical replicate the same day, then the rotation.' 47 hits it exactly.",
+    "the_decision": "NOT promoted to the rotation. The gate itself orders a replicate FIRST, and there is no quota for one until 2026-09-12. More importantly, the mechanism did not fire, so promoting would be promoting an UNEXPLAINED gain.",
+    "the_precedent_this_respects": "Arm K went 44 then 28 on byte-identical bytes. Arm AE went 37 then 28 and its promotion was reverted the next day. Both reversals happened from exactly this position: one high run, no mechanism. Rule 15(b)'s cheap-promote arithmetic assumes a candidate has some prior of being BETTER; a config that is byte-identical apart from a boolean that fired once has no such prior.",
+    "what_DOES_change": "GG7 still repairs a real defect: the prompt promised a function that did not exist, and the model demonstrably hunted for it. That repair is free and correct. It rides along with whatever ships next; it does not justify a rotation change by itself."
+  },
+  "next": "Replicate on 2026-09-12 as the gate orders. If a replicate also lands high with the mechanism still not firing, the honest conclusion is that our control estimate was too low, not that GG7 is better."
+}

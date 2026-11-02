@@ -1,0 +1,41 @@
+== Part 1. Franzen era: arm first run vs the control at the time (levels), rule N10
+arm                         arm  control  diff  N10 call  gate record promote flag
+franzen-p448-v1             122     92.0 +30.0  WIN       True  (start (1 run))
+franzen-p448lm-v1           111    122.0 -11.0  LOSS      False  (p448 (1 run))
+franzen-p448s14-v1          117    122.0  -5.0  TIE       False  (p448 (1 run))
+franzen-p448au-v1           110    122.0 -12.0  LOSS      False  (p448 (1 run))
+franzen-p448ho-v1           108    122.0 -14.0  LOSS      False  (p448 (1 run))
+franzen-p448sb-v1           105    114.0  -9.0  TIE       False  (p448 pooled (2))
+franzen-p448h14-v1          107    114.0  -7.0  TIE       False  (p448 pooled (2))
+franzen-p448h16-v1          115    114.0  +1.0  TIE       False  (p448 pooled (2))
+franzen-p448s14h71-v1       113    114.0  -1.0  TIE       False  (p448 pooled (2))
+franzen-p448s14ra-v1        113    114.0  -1.0  TIE       False  (p448 pooled (2))
+gcp-p448s14dpwfrc-v1        116    123.0  -7.0  TIE       True  (dpctl run 1)
+gcp-l1a1-v1                 113    123.0 -10.0  LOSS      True  (dpctl run 1)
+gcp-l1tb-v1                 115    123.0  -8.0  TIE       False  (dpctl run 1)
+gcp-h16dp-v1                104    123.0 -19.0  LOSS      None  (dpctl run 1)
+franzen-l1a1y8-v1           128    113.0 +15.0  WIN       True  (l1a1 run 1)
+franzen-l1a1y0sv2-v1        115    128.0 -13.0  LOSS      False  (y8 run 1)
+franzen-l1a1y8sv2-v1        119    128.0  -9.0  TIE       True  (y8 run 1)
+
+N10 calls over 17 comparisons: 2 WIN, 6 LOSS, 9 TIE
+  WIN:  franzen-p448-v1, franzen-l1a1y8-v1
+  LOSS: franzen-p448lm-v1, franzen-p448au-v1, franzen-p448ho-v1, gcp-l1a1-v1, gcp-h16dp-v1, franzen-l1a1y0sv2-v1
+  Of the LOSS calls, those made against a single-run control that was the HIGHER run of its byte-identical pair: franzen-p448lm-v1, franzen-p448au-v1, franzen-p448ho-v1, gcp-l1a1-v1, gcp-h16dp-v1, franzen-l1a1y0sv2-v1
+  The same arms against the pooled control of their pair:
+    franzen-p448lm-v1          111 vs pooled 114.0: -3.0
+    franzen-p448au-v1          110 vs pooled 114.0: -4.0
+    franzen-p448ho-v1          108 vs pooled 114.0: -6.0
+    gcp-l1a1-v1                113 vs pooled 112.0: +1.0
+    gcp-h16dp-v1               104 vs pooled 112.0: -8.0
+
+== Part 2. q38 era (older harness): first-run advantage vs advantage after the byte-identical replicate
+arm                        promoted/first run  pooled  control first adv pooled adv
+deathmem                                   42    37.5     35.0      +7.0       +2.5
+topk100                                    44    36.0     35.0      +9.0       +1.0
+rcarry (promoted run 2)                    46    35.7     35.0     +11.0       +0.7
+AE v2/v3                                   37    32.5     33.0      +4.0       -0.5
+GG2                                        44    42.0     35.0      +9.0       +7.0
+  mean first-run advantage +8.0 levels; mean after replicate +2.1 (73% shrinkage)
+  AE and rcarry were promoted on the first/lucky run and withdrawn the same or next day [verified, gate records]; GG2 is the one that survived its replicate.
+wrote <repo>/paper/v2/analysis/out/e4_gates.json

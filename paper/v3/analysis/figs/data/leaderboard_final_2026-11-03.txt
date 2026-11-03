@@ -1,0 +1,45 @@
+# Final public board read from solution/kaggle/generated/daily/board-2026-11-03.csv (daily job, 2026-11-03 01:06Z; the 03:06Z to 16:06Z snapshots show the same rank, field and bar scores).
+# Top 40 by rank: rank, public score, team name.
+   1   75.56  Yi-Chia Chen @ Fields Model
+   2   70.24  Tufa Labs
+   3   60.95  NVARC3
+   4   58.59  xz
+   5   56.02  Team Turducken
+   6   54.55  Grigoriy Zatravkin & co
+   7   54.52  the last dance 🕺
+   8   53.96  Majkel1337
+   9   53.12  Van-Phuc Huynh & Tran N M Tien
+  10   51.04  yktori
+  11   51.03  All your GPU are belong to us
+  12   50.37  mtg
+  13   47.29  Md Boktiar Mahbub Murad
+  14   47.19  The ARChitects
+  15   46.82  復活の混テキスト
+  16   45.41  artificialagencylab.com
+  17   44.51  rellik13
+  18   43.88  Michael Poluektov
+  19   43.73  大阪公立大学 & Maciej & Natalia
+  20   42.34  fshindo
+  21   42.27  pensukesan
+  22   41.73  insuperabilehart
+  23   41.38  Name X
+  24   41.17  Lord Han Solo
+  25   41.00  UNK
+  26   40.98  Vineeth Sai Varikuntla
+  27   40.75  paul
+  28   40.39  khailash santhakumar
+  29   39.88  tascj
+  30   39.69  AquaUrsa Research
+  31   39.32  ARCane
+  32   39.22  zhangzibo54
+  33   39.18  dreach.ai
+  34   39.03  HMC_Stevelee
+  35   38.95  Abstraction Lab & MindsAI
+  36   38.84  Nhan Duc Nguyen
+  37   38.77  Nick2187
+  38   38.22  Advaith Vecham
+  39   38.15  Cakpo Vital
+  40   37.98  SparseTech
+
+field: 5073 teams, median 2.58, top 75.56
+US:    rank 26/5073  score 40.98  submissions 81  (25 teams above)

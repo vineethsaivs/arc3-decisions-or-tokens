@@ -72,8 +72,9 @@ S_T = [dt(r["date_utc"]) for r in snap]
 col = lambda k: [float(r[k]) if r[k] != "" else None for r in snap]  # noqa: E731
 ours, r1, r3, r5 = col("our_best"), col("rank1"), col("rank3"), col("rank5")
 last = snap[-1]
-assert last["date_utc"] == "2026-11-02" and last["our_rank"] == "20" and last["teams"] == "5043"
-assert (ours[-1], r1[-1], r3[-1], r5[-1]) == (40.98, 75.56, 58.59, 56.02)
+# the last point is the final public board, read after the 2026-11-02 23:59Z deadline (26th of 5,073; see data/leaderboard_final_2026-11-03.txt)
+assert last["date_utc"] == "2026-11-03" and last["our_rank"] == "26" and last["teams"] == "5073"
+assert (ours[-1], r1[-1], r3[-1], r5[-1]) == (40.98, 75.56, 60.95, 56.02)
 # our best in the snapshots never exceeds the best draw on that date (draws are banked by the time a snapshot is taken)
 for t, o in zip(S_T, ours):
     assert o <= max([d[1] for d in draws if d[0] <= t.replace(hour=23, minute=59)] + [0]) + 1e-9, (t, o)
@@ -120,7 +121,7 @@ for series, ls_ in ((r1, "-"), (r3, (0, (4, 2))), (r5, (0, (1.5, 1.5)))):
     axB.plot([p[0] for p in pts], [p[1] for p in pts], color=GRAY, lw=1.0, ls=ls_, zorder=2)
 x_end = S_T[-1]
 off = (x_end - S_T[0]) * 0.03
-for v, name, colr in ((r1[-1], "rank 1: 75.56", C["gray_text"]), (r3[-1], "rank 3: 58.59", C["gray_text"]),
+for v, name, colr in ((r1[-1], "rank 1: 75.56", C["gray_text"]), (r3[-1], "rank 3: 60.95", C["gray_text"]),
                       (r5[-1], "rank 5: 56.02", C["gray_text"]), (ours[-1], "ours: 40.98" if ANON else f"ours: 40.98\n({last['our_rank']}th of {int(last['teams']):,})", ACC)):
     dy = {"rank 3": 2.6, "rank 5": -2.6}.get(name[:6], 0)      # keep the close bars' labels apart
     labels.append(axB.text(x_end + off, v + dy, name, ha="left", va="center", fontsize=7, color=colr,
@@ -134,7 +135,7 @@ labels.append(axB.text(dt("2026-07-17") + (dt("2026-08-25") - dt("2026-07-17")) 
                        linespacing=1.1))
 panel(fig, 0.005, 0.475, "(b)", "Our best public score against the bars (one snapshot per day)")
 
-axB.set_xlim(dt("2026-07-12"), dt("2026-11-02T20:00"))
+axB.set_xlim(dt("2026-07-12"), dt("2026-11-03T20:00"))
 axB.xaxis.set_major_locator(mdates.MonthLocator())
 axB.xaxis.set_major_formatter(mdates.DateFormatter("%b 1"))
 axB.xaxis.set_minor_locator(mdates.WeekdayLocator(byweekday=0))

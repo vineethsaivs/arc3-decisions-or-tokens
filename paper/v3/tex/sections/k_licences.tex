@@ -33,7 +33,7 @@ albucino drafter \citep{albucino2026drafter}
 \addlinespace
 ursuciprian D3 weights \citep{ursuciprian2026d3}
 & \texttt{qwen-community-1.0}, ``the license conditions apply to this derivative''; training tools Apache-2.0.
-& Our private dataset holds the refit tensors unchanged and so inherits this (our reading). \\ % N-E6s6.2
+& Our public dataset (version 2) holds the refit tensors unchanged and so inherits this (our reading); version 2 carries the Qwen licence text and a NOTICE with this attribution. \\ % N-E6s6.2 V3-W42
 \addlinespace
 lee-chang-93 REAP-448 checkpoint; REAP method \citep{lasby2025reap}
 & Checkpoint: NVIDIA Open Model License and Qwen Community License 1.0. Method repository: Apache-2.0.
@@ -72,7 +72,7 @@ ARC-AGI repository (arcprize)
 & The competition wheels are separate artifacts. \\
 \addlinespace
 Our D3 dataset and kernel
-& Private; no licence set that we found.
+& Dataset: public, version 2, with the Qwen Community License 1.0 text and a NOTICE (ursuciprian attribution); our 2026-10-13 survey found no licence set. Kernel: private on 2026-11-02; not re-checked since.
 & See below. \\
 \end{longtable}
 \endgroup
@@ -99,10 +99,10 @@ Franzen's patch, Duck harness, SGLang, weights & 8,405 & Third-party; cannot be 
 \end{tabular}
 \end{table}
 
-\paragraph{Release status (as of 2026-11-02).} The repository is public at github.com/vineethsaivs/arc3-decisions-or-tokens (tag v1, commit c77243c) with a LICENSE file and a THIRD\_PARTY list. It holds the paper sources and figures, the analysis scripts and data, the overlays and build script (without the files whose licences we could not confirm), the gate records and the research notes; the figure of the noise ruler and the discovery figure rebuild from it with one command. It leaves out the Tufa Duck bundle, shiiin9's priority file and the expert-id table, so most overlay tests do not run from it alone. The submitted kernel and the D3 dataset are private on this date: the kernel embeds those files as one escaped string, so a reader cannot audit the code from the notebook, and the dataset gained its Qwen licence and notice file as version 2 but is not yet public. % V3-W40 V3-W42
-\paragraph{Release record.} Repository github.com/vineethsaivs/arc3-decisions-or-tokens, tag v1, commit c77243c, public from 2026-11-02; anonymous requests for the repository and its LICENSE returned 200 that day. The kernel and dataset are not yet public and will be re-checked from a logged-out browser when they are.
-\ownernote{Before posting: make the kernel and the D3 dataset public, push the repository at a tagged commit with a LICENSE file, the overlays and the build script, then rewrite the release record above and replace the status paragraph with ``Released at <repo>@<hash> on <date>''.}
-The dataset needs Qwen's licence text and ursuciprian's attribution when it is published. Franzen's four inputs are public today. If one goes private, every submission errors, so a fallback build mounts our copies from a private kernel that would also need to be public to be cited.
+\paragraph{Release status (as of 2026-11-03).} The repository is public at github.com/vineethsaivs/arc3-decisions-or-tokens (tag v1, commit c77243c) with a LICENSE file and a THIRD\_PARTY list. It holds the paper sources and figures, the analysis scripts and data, the overlays and build script (without the files whose licences we could not confirm), the gate records and the research notes; the figure of the noise ruler and the discovery figure rebuild from it with one command. It leaves out the Tufa Duck bundle, shiiin9's priority file and the expert-id table, so most overlay tests do not run from it alone. The D3 dataset is public as version 2, which carries Qwen's licence text and a NOTICE with ursuciprian's attribution (reported 2026-11-03). The submitted kernel was private on 2026-11-02 and we have not re-checked it: it embeds those files as one escaped string, so a reader cannot audit the code from the notebook. % V3-W40 V3-W42 V3-W42
+\paragraph{Release record.} Repository github.com/vineethsaivs/arc3-decisions-or-tokens, tag v1, commit c77243c, public from 2026-11-02; anonymous requests for the repository and its LICENSE returned 200 that day. The dataset (version 2) became public afterwards; the kernel was not yet public on 2026-11-02 and is to be re-checked from a logged-out browser.
+\ownernote{Before posting: confirm the kernel is public (the D3 dataset already is), push the repository at a tagged commit with a LICENSE file, the overlays and the build script, then rewrite the release record above and replace the status paragraph with ``Released at <repo>@<hash> on <date>''.}
+The dataset carries Qwen's licence text and ursuciprian's attribution (version 2). Franzen's four inputs are public today. If one goes private, every submission errors, so a fallback build mounts our copies from a private kernel that would also need to be public to be cited.
 
 \paragraph{Rules.} The ARC Prize 2026 page (arcprize.org/competitions/2026) says ``all code and methods authored by the submitter must be made open source under a permissive public domain license (eg. CC0 or MIT-0)'', and that third-party code must be available under ``at least, an open source license which allows public sharing (eg. Apache-2.0, GPLv3)''. The same page says ``Participants must open source their solutions before receiving official private evaluation scores''; when this applies is not stated. Kaggle's rules for both competitions license a winning submission and its source code under CC-BY 4.0, a second licence text next to CC0 or MIT-0.
 The Paper Track asks for a Writeup of at most 1,500 words with a cover image and an attached public notebook, on its Kaggle page. A PDF linked from the Writeup has no word limit \citep{kamradt2026forum748431}. A private Kaggle resource attached to a public Writeup ``will automatically be made public after the deadline'' (2026-11-09 23:59 UTC in the rules as fetched; arcprize.org says papers are due 2026-11-08). The Accuracy criterion matches the submission ID to the notebook. % N-E6s6.1 audit_cites-C8

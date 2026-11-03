@@ -31,8 +31,13 @@ REAP, Olympie and lovedheart were checked against files in this tree on 2026-11-
   the patch itself ships inside Franzen's wheel, which declares Apache-2.0. The fork's own terms are unknown. Not ours.
 - lovedheart sglang fork (QSA pending-ring fix, commit 427e9380ad): Apache-2.0. qsaring_serve.py ports it as asserted edits
   and keeps that licence with its notice, whichever option is chosen for our own lines.
-- shiiin9 D-prime priority formula: source notebook is public; its licence was not checked or read. The vendored copy is
-  docs/research/2026-10-04-climb/evidence/kernels/shiiin9_form_priority_dprime.py (252 lines). Not ours to relicense.
+- shiiin9 D-prime priority formula (AFF AI CLUB, Kaggle shiiin9/affectify-arc-dfranzen-form-d1): the notebook page shows
+  Apache 2.0 (read 2026-11-03, current version). A modification of Franzen's Milestone 2 solution (Apache 2.0). Not ours to
+  relicense; keep the Apache 2.0 notice. The vendored copy is
+  docs/research/2026-10-04-climb/evidence/kernels/shiiin9_form_priority_dprime.py (252 lines), still left out of this export.
+- Expert ids (64 dropped per layer): recovered by us from the router rows of lee-chang-93/Qwen3.8-Flash-Next-NVFP4-REAP-k448
+  (REAP by Cerebras; that checkpoint is under the NVIDIA Open Model License and Qwen Community License 1.0). No weights are
+  redistributed. The licence status of an id list is not settled.
 - SGLang, the Pennyroyal build and the Ratsimbazafy fork: Apache-2.0. The vendored pennyroyal-v253 files keep their LICENSE.
 - ARC-AGI repository (arcprize): MIT.
 - No model weights, Kaggle datasets or the 288 MB pickles are in this kit.

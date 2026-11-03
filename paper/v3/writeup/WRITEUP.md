@@ -1,6 +1,6 @@
 # Decisions or Tokens? What Moves an Offline ARC-AGI-3 Agent, and How to Tell
 
-*Identical code cleared 123, then 101 of 183 levels. We size that noise, show a 12.5-level gain stop reproducing, and find that fine-tuning on its own wins lowered levels, on another platform.*
+*Identical code cleared 123, then 101 of 183 levels. We size that noise, show a 12.5-level gain stop reproducing, and find that fine-tuning on its own wins ran lower, confounded with platform and day.*
 
 <!-- COVER: paper/v3/figs/cover_1600x900.png goes in the Media Gallery as the cover image, not in the body. Title and subtitle go in their own Kaggle fields; the body starts at the opening paragraph (the hook), then the Accuracy line. -->
 <!-- IMAGES TO UPLOAD (Kaggle takes images separately; the ../figs paths below do not render there). Upload each file, then replace its path with the uploaded URL and keep the italic caption under it:
@@ -11,9 +11,9 @@
 5. paper/v3/figs/fig_finetune_writeup.png, under "Imitating easy wins" (Figure 5)
 Cover (Media Gallery only): paper/v3/figs/cover_1600x900.png. Alt text for all: ALT_TEXT.md. -->
 
-The same code cleared 123 of 183 levels, then 101. Decisions or tokens? At that noise they are not separable: an 11% speed-up prices at about 4 levels and four harness changes led by -1 to +6, both unresolved. A 12.5-level gain from re-sending context less often did not reproduce once runs were interleaved.
+The same code cleared 123 of 183 levels, then 101. Decisions or tokens? Neither is resolvable at that noise: an 11% speed-up prices at about 4 levels and four harness changes led by -1 to +6, both unresolved. A 12.5-level gain from re-sending context less often did not reproduce once runs were interleaved.
 
-**Accuracy.** Public score 40.98 (submission 57417773, 2026-10-20), rank 23 of 5,048 before the deadline, on half of the 110 hidden games: our best of 28 live *draws* (scored runs, one a day) since forking Franzen's notebook. The agent's 17 valid draws (nonzero, same family, no adapter) span 28.97 to 40.98, mean 34.59, 0.61 of its development-run score. The private score is not known until after 2026-11-02. [PDF](https://github.com/vineethsaivs/arc3-decisions-or-tokens/blob/main/paper/v3/tex/main.pdf), [notebook](https://www.kaggle.com/code/vineethsaivs/arc3-franzen-l1a1y8sv2r3p-a), [code](https://github.com/vineethsaivs/arc3-decisions-or-tokens). Paper CC BY 4.0; code CC BY 4.0 or MIT-0. <!-- STATUS 2026-11-02 21:00Z: the repository and PDF are public (https://github.com/vineethsaivs/arc3-decisions-or-tokens, commit c77243c, tag v1, LICENSE present). The submitted notebook and the D3 dataset (version 2 now has the Qwen LICENSE and NOTICE) are still private: the notebook embeds files with unread licences, so Kaggle's own after-the-deadline publication is the route; the owner decides about making the dataset public. Re-check logged out before submitting. -->
+**Accuracy.** Public score 40.98 (submission 57417773, 2026-10-20), public rank 26 of 5,073 at the deadline, on half of the 110 hidden games: our best of 28 live *draws* (scored runs, one a day) since forking Franzen's notebook. The agent's 17 valid draws (not the 0.00, adapter or earlier-build draws) span 28.97 to 40.98, mean 34.59, 0.61 of its development-run score. Private scores are pending. `sh release/reproduce.sh` (CPU) regenerates Figure 2. [PDF](https://github.com/vineethsaivs/arc3-decisions-or-tokens/blob/main/paper/v3/tex/main.pdf), [notebook](https://www.kaggle.com/code/vineethsaivs/arc3-franzen-l1a1y8sv2r3p-a), [code](https://github.com/vineethsaivs/arc3-decisions-or-tokens). Paper CC BY 4.0; code CC BY 4.0 or MIT-0. <!-- STATUS 2026-11-02 21:00Z: the repository and PDF are public (https://github.com/vineethsaivs/arc3-decisions-or-tokens, commit c77243c, tag v1, LICENSE present). The D3 dataset is now PUBLIC (version 2, with the Qwen LICENSE and NOTICE; reported 2026-11-03, V3-W42). The submitted notebook was still private on 2026-11-02 (it embeds files with unread licences, so Kaggle's own after-the-deadline publication is the route). Re-check both logged out before submitting. Board refreshed 2026-11-03 to the final public board, rank 26 of 5,073 (V3-W43). -->
 <!-- ACCURACY / BOARD-REFRESH: refreshed 11-02 12:15Z after the last draw (36.38); after the deadline re-read the rank, and once posted lead with the private score of the linked Final Submission. LICENCE: CC-BY 4.0 (Kaggle) vs CC0 or MIT-0 (arcprize.org) is the owner's open decision, see CHECKLIST.md; change this clause if the owner picks another. -->
 
 ## Problem
@@ -22,7 +22,7 @@ ARC-AGI-3 is a set of grid games the agent has never seen, scored on levels clea
 
 ## Prior work
 
-Our system is Franzen's: Tufa Labs' Duck loop driving a 4-bit Qwen3.8-Flash-Next. Run-to-run variance and self-training on one's own wins are known (Henderson et al. 2017; STaR, ReST). New here, as far as we found: a token-budget price, a measured yield threshold, and a KL guard read net of a nondeterministic forward pass. The closest public work, "Before Tuning the Harness" (known from its README), also repeats identical-code submissions and accounts cost per request; we price tokens in levels. <!-- URL for the hidden record, not for the body unless the owner wants it: https://github.com/guoyi12311125-netizen/arc3-repeat-controlled-eval (24-page PDF; read from the repository page and README only, per V3-W39 and scratchpad pt/C_rivals.md). -->
+Our system is Franzen's: Tufa Labs' Duck loop driving a 4-bit Qwen3.8-Flash-Next. Run-to-run variance and self-training are known (Henderson et al. 2017; STaR, ReST). New here, as far as we found: a token-budget price, a measured yield threshold, and a KL guard read net of a nondeterministic forward pass. The closest public work, "Before Tuning the Harness", also repeats identical-code submissions and accounts cost per request; we price tokens in levels. <!-- URL for the hidden record, not for the body unless the owner wants it: https://github.com/guoyi12311125-netizen/arc3-repeat-controlled-eval (24-page PDF; read from the repository page and README only, per V3-W39 and scratchpad pt/C_rivals.md). -->
 
 ## Approach
 
@@ -32,7 +32,7 @@ Our system is Franzen's: Tufa Labs' Duck loop driving a 4-bit Qwen3.8-Flash-Next
 
 A *turn* ends when the model acts. After a set number of generated tokens without acting, the harness *yields*, resuming the turn by re-sending its opening message (the *opener*) and the board image.
 
-The 40.98 build made 19 changes to Franzen's notebook (more since). Three decisions define the build: yielding after 8,192 tokens instead of 2,048, dropping an eighth of the experts so 14 games run at once, and fail-closed checks that turn a dead run into an error that does not spend the day's draw (none has fired on a scored run). Expert pruning is the one positive number: 19.5 more levels than the 3.3 its tokens predict, from two runs per arm, not interleaved, so inside the noise.
+The 40.98 build made 19 changes to Franzen's notebook (more since). Three decisions define the build: yielding after 8,192 tokens instead of 2,048, dropping an eighth of the experts so 14 games run at once, and fail-closed checks that turn a dead run into an error that does not spend the day's draw (none has fired on a scored run). Expert pruning is the one large point estimate: 19.5 more levels than the 3.3 its tokens predict, from two runs per arm, not interleaved, below the 23 levels two runs can detect.
 
 ## Identical code, different scores
 
@@ -58,13 +58,13 @@ Resampling 1,114 recorded level attempts at other budgets, score flattens with t
 
 Yielding at 8,192 tokens, not 2,048, cut re-sent openers about 70%. Across days, nine such runs averaged 12.5 more levels than 21 controls.
 
-Six runs per arm then ran interleaved on one build but for one line, with rules fixed in a dated file (amended once, before any run started). The rarer yield scored 2.5 levels below the old one (p 0.42), at matched tokens too. That excludes the 12.5-level gap (predeclared verdict: null) but not small gains. Drift between days and about 5 levels of extra tokens are candidate causes.
+Six runs per arm then ran interleaved on one build but for one line, with rules fixed in a dated file (amended once, before any run started). The rarer yield scored 2.5 levels below the old one (p 0.42), at matched tokens too. That excludes the 12.5-level gap (predeclared verdict: null) but not small gains (95% interval -14.2 to +9.2 at the pairs' SD, -7.5 to +2.5 by bootstrap). Drift and about 5 levels of extra tokens are candidate causes.
 
 ## Fixing what the model is shown
 
 ![Harness changes](../figs/fig_gates_writeup.png)
 
-*Figure 4. Levels per run: control (seven, mostly on another platform), three runs per change. Shading: one SD of identical runs.*
+*Figure 4. Levels per run: control (seven, mostly on another platform), three runs per change. Shading: one SD of identical runs. Shipped: stall, corner-joined, tool fixes, replay; scroll was not.*
 
 Paired plays (a level cleared in one run, stuck in another) showed that stuck runs stop acting. Five changes each had a kill rule in a dated file written before its first run.
 
@@ -78,25 +78,25 @@ All five passed their gates and four shipped, with leads over the control (mean 
 
 *Figure 5. (a) Levels against LoRA scale (0 = no adapter; nine of the 18 no-adapter runs shown). (b) Style counters.*
 
-A LoRA adapter trained on the agent's own cleared-level turns from 127 RE-ARC-3 games (Tufa Labs' generator) cut validation loss 13.9%. Two full-strength runs cleared 109 and 115 levels and one half-strength run 117: at or below the two lowest of 18 runs without it (rank p 0.004), though it ran on a rented VM on other days. One untested reading: the agent already clears 91% of those levels, so "cleared" kept many slow windows. Reinforcement learning (GRPO) shipped nothing: a first-wave lead of 1.9 levels did not replicate.
+A LoRA (low-rank) adapter trained on the agent's own cleared-level turns from 127 RE-ARC-3 games (Tufa Labs' generator) cut validation loss 13.9%. Two full-strength runs cleared 109 and 115 levels and one half-strength run 117: at or below the two lowest of 18 runs without it (rank p 0.004, descriptive: not interleaved), though it ran on a rented VM on other days. One untested reading: the agent already clears 91% of those levels. Reinforcement learning (GRPO) shipped nothing: a first-wave lead of 1.9 levels did not replicate.
 
 ## Why it behaves this way
 
-A run sums 183 all-or-nothing level outcomes, so identical runs spread. A resume re-sends prefill worth about 1% of GPU time (at most 2.3%), under half a level, so compute is an unlikely route for the yield.
+A run sums 183 all-or-nothing level outcomes, so identical runs spread. A resume re-sends prefill worth about 1% of GPU time, under half a level, so compute is an unlikely route for the yield.
 
 ## What to copy
 
-> (1) Size your noise: run identical code eight times on one day; n runs per arm resolve 2.8 x SD x sqrt(2/n) levels (our SD: 8.25 for pairs run one after another, hours to two days apart; 5.95 for eight runs on one day). (2) Judge a small change by its target metric; use levels only to veto gross harm. (3) Price a speed-up by resampling logged attempts and by what the window's last tenth earns. (4) Interleave arms on one build before trusting a gain across days. (5) Pair a cleared and a stuck play before building; write each kill rule first. (6) Skip what we dropped: a fourth draft step (decode -4.2%), 16 streams with a host-RAM cache (115 against 114; 104 on repeat). (7) Untested: the paired decision test; a token-only cut to 70% of the window, which the curve says costs about 20 levels; self-training filtered by efficiency.
+> (1) Size your noise: run identical code eight times on one day; n runs per arm resolve 2.8 x SD x sqrt(2/n) levels (our SD: 8.25 for pairs, 5.95 for eight same-day runs). (2) Judge a small change by its target metric; use levels only to veto gross harm. (3) Price a speed-up by resampling logged attempts and by what the window's last tenth earns. (4) Interleave arms on one build before trusting a gain across days. (5) Pair a cleared and a stuck play before building; write each kill rule first. (6) Skip what we dropped: a fourth draft step (decode -4.2%), 16 streams with a host-RAM cache (115 against 114; 104 on repeat). (7) Untested: the paired decision test; a token-only cut to 70% of the window, which the curve says costs about 20 levels; self-training filtered by efficiency.
 
 Items 1 to 5 need only repeated runs and logs, tested on one stack.
 
 ## Limits
 
-Development numbers are on the demonstration games, not held out. 40.98 is a maximum; with the unexplained 10-18 zero the 18 draws average 32.67, and a draw picked by public score should score near the mean on the private half. The second-run shift in the identical pairs is unexplained too: only one of those 12 runs, a first run, began play over 3 minutes before its server was ready. Harness arms have three runs or fewer, were not interleaved and ran on Kaggle against a control mostly from another platform; six of 23 Kaggle runs began play 12 to 21 minutes before the server was ready, unevenly across arms.
+Development numbers are on the demonstration games, not held out. 40.98 is a maximum; with the unexplained 10-18 zero the 18 draws average 32.67, and we expect a draw picked by public score to score near the mean on the private half (untested until private scores post). The second-run shift in the identical pairs is unexplained too: only one of those 12 runs, a first run, began play over 3 minutes before its server was ready. Harness arms have three runs or fewer, were not interleaved and ran on Kaggle against a control mostly from another platform; six of 23 Kaggle runs began play 12 to 21 minutes before the server was ready, unevenly across arms.
 
 ## Credit
 
-Inherited: Qwen's model, Intel's 4-bit weights, albucino's drafter, J. Pezzulli's serving build, Tufa Labs' Duck and RE-ARC-3, Daniel Franzen's notebook, harness patch and schedule. Borrowed: shiiin9, Lord Han Solo, ursuciprian, lovedheart, Tufa Labs' step-verification text. <!-- OWNER: confirm or correct the AI-use sentence, and add any decisions you made yourself (for example the kill rules or the interleaved test); the sentence below states only what the files show. The files show the veto only for the finals rule (adopted 10-20, open to veto until 10-28), not for the 11-01 and 11-02 harness pins. PDF Appendix M says "much of"; this says "most" (claim H10: 165 of 166 commits), so align the PDF to "most" or this to "much". --> Claude (Anthropic) wrote most of the code, analysis and text. The author set the goals and limits, could veto the Final Submissions rule until 10-28, and marked the two Final Submissions by hand.
+Inherited: Qwen's model, Intel's 4-bit weights, albucino's drafter, J. Pezzulli's serving build, Tufa Labs' Duck and RE-ARC-3, Daniel Franzen's notebook, harness patch and schedule. Borrowed: shiiin9's priority formula (Apache 2.0), expert ids recovered from lee-chang-93's pruned checkpoint (list licence unsettled), Lord Han Solo, ursuciprian, lovedheart, Tufa Labs' step-verification text. <!-- OWNER: confirm or correct the AI-use sentence, and add any decisions you made yourself (for example the kill rules or the interleaved test); the sentence below states only what the files show. The files show the veto only for the finals rule (adopted 10-20, open to veto until 10-28), not for the 11-01 and 11-02 harness pins. PDF Appendix M says "much of"; this says "most" (claim H10: 165 of 166 commits), so align the PDF to "most" or this to "much". --> Claude (Anthropic) wrote most of the code, analysis and text. The author set the goals and limits, could veto the Final Submissions rule until 10-28, and marked the two Final Submissions by hand.
 
 <!--
 CLAIM IDS (hidden; not part of the Writeup; delete every HTML comment before pasting into Kaggle).
@@ -115,12 +115,12 @@ Opening paragraph
 
 Accuracy line
 - 40.98, submission 57417773, 2026-10-20: V3-B1, V3-B2
-- rank 23 of 5,048 on 2026-11-02 (live read about 12:15Z, before the deadline): V3-W30
+- public rank 26 of 5,073 on the final board (read 2026-11-03 01:06Z, after the deadline; the 11-02 12:15Z live read was rank 23 of 5,048): V3-W43
 - half of the 110 hidden games: G7; one scored draw per day: B10
 - best of 28 live draws since the fork: V3-W30
 - 17 valid draws (nonzero, same family, no adapter; excludes the 3 adapter draws, the 10-12 draw of a pre-r3 build and the 0.00), 28.97 to 40.98, mean 34.59 (family of 12, 3 draws of the 15-stream build, 2 of the harness builds; one 0.00 excluded): V3-W16, V3-W24, V3-W30
 - 0.61 of development-run score: V3-W2, V3-W30
-- private score unknown until after 11-02: rules
+- private scores pending (not posted when written): rules
 
 Problem, Prior work, Approach
 - 9 hours, one 96 GB GPU, 110 hidden games, no log, 25 public games: G7, A3

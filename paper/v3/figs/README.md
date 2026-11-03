@@ -88,7 +88,7 @@ Derived data written for these figures (`paper/v3/analysis/figs/data/`):
   "later pins" family merges three configurations (keepalive variants and one other). Open markers sit at 0.00 (3 draws).
   Rank is not plotted over time: in September the field is packed at 3 to 8 points, so a fraction of a point moves our
   rank by hundreds (14, 293, 28 within two weeks at a best of 2.65 to 4.47); panel (b) shows our best score against the
-  rank-1, 3 and 5 bar scores instead and prints the final rank (16 of 5,006 at the 2026-10-31 12:06 UTC snapshot).
+  rank-1, 3 and 5 bar scores instead and prints the final rank (26 of 5,073 on the final public board, 2026-11-03 01:06 UTC).
   Rank 1 is missing before 2026-09-13 (not recorded).
 - **F13 and F14 (new, harness modules under test):** `realmods.py` builds a temp copy of Franzen's patched tree with the overlays of
   arm l1a1y8sv2r3kp12lf15usc applied (the recipe of `solution/sim/test_franzen_seg8.py` and `test_franzen_scroll.py`) and loads the

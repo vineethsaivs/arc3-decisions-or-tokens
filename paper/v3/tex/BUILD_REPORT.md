@@ -29,6 +29,14 @@ to 3.7 to 4.5 inches wide, so the small labels inside fig_clock, fig_glyph and f
 full-size PDFs are in `paper/v3/figs/`. Moving fig_glyph and fig_scroll to the appendix (where their scripts' README put them)
 would return about 1.5 pages if the length matters more than the placement.
 
+## Final-board refresh (2026-11-03)
+
+Rank 26 of 5,073 (final public board) replaces rank 23 of 5,048 in the intro Result box, Sec. 8 text and Figure 8 caption,
+Appendix C (new final row, caption), Sec. 10 and Appendix I3 (xz was third on 11-01, fourth at the deadline behind NVARC3 at
+60.95), Appendix K (D3 dataset public, v2) and new claim row V3-W43. `fig_draws` re-run (last point is the 2026-11-03
+snapshot; rank 3 label 60.95). Public copy: 80 pages, 0 overfull, 0 undefined, no "only floats" warning; anonymised copy:
+80 pages (was 79), the one "only floats" warning it already had. Page-level underfull vboxes 4 (public) and 4 (anonymised).
+
 ## Words per body section (`python3 -I -B paper/v3/analysis/v3_style_check.py`)
 
 | Section | Prose | Captions | Cells | Boxes |

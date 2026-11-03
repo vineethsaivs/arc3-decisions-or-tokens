@@ -72,3 +72,7 @@ Source: `https://huggingface.co/Qwen/Qwen3.8-Flash-Next/raw/main/LICENSE` (3,235
 ## Not verified (so treat as UNKNOWN)
 
 Kaggle licence field of any notebook (Franzen's, shiiin9's, Tufa's); NVIDIA Open Model License text; Cerebras REAP repo licence today; arcprize ARC-AGI MIT; the ARC Prize/Kaggle rules on open-sourcing (JS pages, not re-read; paper cites them).
+
+## Update 2026-11-03
+
+shiiin9's notebook page shows "Apache 2.0" (current version, read in Chrome): row 5 moves from UNKNOWN to PERMITTED with attribution. lee-chang-93: the id list is our own recovery from router rows, no weights copied; status unsettled, low risk. Decision: keep the notebook attached to the Writeup; attribution is in the Writeup Credit and THIRD_PARTY.md.

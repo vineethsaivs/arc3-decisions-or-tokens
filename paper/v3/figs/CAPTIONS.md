@@ -148,11 +148,11 @@ pins (8), 15-stream pin (3), harness builds (2: 33.56 on 11-01, 36.38 on 11-02, 
 are the three 0.00 draws (2026-10-03, 10-10, 10-18); the first two were field-wide early failures of the midnight wave, the
 cause of the third is unknown. Rings: the two Final Submissions, 40.09 (2026-10-13) and 40.98 (2026-10-20). Higher is
 better. (b) Our best public score so far (step) against the rank-1, 3 and 5 scores, one leaderboard snapshot per day from
-2026-08-25 (rank 1 is recorded from 2026-09-12); last snapshot 2026-11-02 07:06Z: 40.98, rank 20 of 5,043 (live read at
-about 12:15Z: rank 23 of 5,048, before the deadline). Not shown: rank over time (in September a fraction of a point moves
-rank by hundreds), and the private score, which is not known until after 2026-11-02. Same-family draws differ by up to 12
+2026-08-25 (rank 1 is recorded from 2026-09-12); last point is the final public board, read 2026-11-03 01:06Z after the deadline: 40.98, rank 26 of 5,073
+(rank 1 75.56, rank 3 60.95, rank 5 56.02; the 11-02 12:15Z live read was rank 23 of 5,048). Not shown: rank over time (in September a fraction of a point moves
+rank by hundreds), and the private score, which is pending. Same-family draws differ by up to 12
 points (28.97 to 40.98 for the yield-8K family and its variants), so a family's position is not an effect. Data:
-`paper/v3/analysis/figs/data/board_draws_all_2026-11-02.csv`, `board_snapshots_2026-11-02.csv`.
+`paper/v3/analysis/figs/data/board_draws_all_2026-11-02.csv`, `board_snapshots_2026-11-02.csv` (last row: the final board), `leaderboard_final_2026-11-03.txt`.
 
 ## F11 `fig_clock` (body)
 

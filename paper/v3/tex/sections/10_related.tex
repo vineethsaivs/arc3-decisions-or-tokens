@@ -3,12 +3,13 @@
 \paragraph{Noise in evaluation.}
 Single runs are weak evidence in reinforcement learning \citep{henderson2017matters} and for agents \citep{bjarnason2026randomness,kapoor2024agentsmatter,anthropic2026infranoise}.
 Remedies include intervals \citep{agarwal2021precipice}, power analysis \citep{colas2018seeds,miller2024errorbars}, protocols judged by their error rates \citep{bouthillier2021variance} and the expected maximum of several runs \citep{dodge2019showyourwork}.
-On this benchmark, forum posts attribute most of the variance of repeated runs to whether single levels clear \citep{borro19802026forum732932} and find that identical builds differ widely \citep{makarov2026forum743723}. % N3-9
+On this benchmark, forum posts attribute most of the variance of repeated runs to whether single levels clear \citep{borro19802026forum732932} and find that identical builds differ widely \citep{makarov2026forum743723}. A decomposition of an ARC-AGI-3 harness gap reports one counted run per configuration and game \citep{lencevicius2026persistgym}; on SWE-Bench the single-run pass@1 moves 2.2 to 6.0 points by the run chosen \citep{bjarnason2026randomness}. % N3-9
 We add the size of that noise on this score, and concurrent replication on rented copies of the scoring GPU; we also tried a paired test of single decisions, used once and not validated.
 
 \paragraph{Budgets and context.}
 Score that flattens with compute is the picture of \citet{pourcel2025soar}; budget forcing ends reasoning at a budget \citep{muennighoff2025s1}, while a yield resumes the turn.
 Ending a request at a tool call forces recomputation \citep{abhyankar2024infercept}, and keeping reasoning across tool turns is a known harness rule and lever \citep{deepseek2025v32,kamradt2026astra}; we found no earlier measurement of a client-side yield threshold.
+Tufa Labs note that hand-crafted tools hurt the Duck \citep{arcprize2026milestone1}, without numbers; our four shipped harness changes (leads $-1$ to $+6$ levels, three runs per arm) cannot exclude harm.
 
 \paragraph{Self-training and reinforcement learning.}
 Training on a model's own successes is the idea of STaR, ReST and rejection-sampling fine-tuning \citep{zelikman2022star,gulcehre2023rest,yuan2023rft}, and RL recipes already drop prompts that a policy always solves, as in DAPO's dynamic sampling \citep{yu2025dapo}.

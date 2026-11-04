@@ -7,6 +7,9 @@ Run from the repo root:
 Reads
   paper/v3/evidence/data/lora_replicas.csv    levels per run: 9 pin runs (Kaggle), adapter at merge scale 2.0 (2 runs)
                                               and 1.0 (1 run), GCP G4 VM (V3-L9, V3-L10)
+  paper/v3/evidence/data/lora_controls_vertex.csv  two same-card no-adapter controls of the adapter's own base arm
+                                              (hm32) on Vertex AI G4 Spot, 2026-11-03 (V3-W44); levels re-summed from
+                                              solution/kaggle/generated/kernel-outputs/vertex-adctl-{1,2}/benchmark.json
   paper/v3/evidence/data/lora_behaviour.csv   per-run counters (V3-L13, V3-L14): reasoning characters per action and
                                               actions per reply on cleared levels (8 pin runs with transcripts),
                                               RESET actions per run (9 pin runs), GAME OVER echoes per run (8 pin runs)
@@ -16,6 +19,7 @@ Reads
 Adapter strength = merge scale / 2.0 (the trained alpha 32 over r 16): 0 = the pin, 0.5 = scale 1.0, 1.0 = scale 2.0.
 """
 import csv
+import json
 import re
 import statistics as st
 import sys
@@ -29,6 +33,15 @@ from figstyle import SCALE_V3 as SCALE, C, DATA, REPO, W, apply, fs, check_no_ov
 rep = list(csv.DictReader(open(DATA / "lora_replicas.csv")))
 beh = {r["run"]: r for r in csv.DictReader(open(DATA / "lora_behaviour.csv"))}
 STRENGTH = {"pin_y8_family": None, "lora_r16": None}
+
+# same-card controls (Vertex): levels are re-summed from the benchmark files and asserted against the csv
+CTL = []
+for r in csv.DictReader(open(DATA / "lora_controls_vertex.csv")):
+    bm = json.load(open(REPO / f"solution/kaggle/generated/kernel-outputs/vertex-{r['run']}/benchmark.json"))
+    n = sum(g["levels_completed"] for g in bm["game_runs"])
+    assert n == int(r["levels"]) and len(bm["game_runs"]) == 25, (r["run"], n)
+    CTL.append(n)
+assert sorted(CTL) == [130, 132]
 
 
 def strength(r):
@@ -116,8 +129,11 @@ def draw(ax, pts, roundto):
 # levels: the outcome, on the left, full height
 axL = fig.add_axes([0.105, 0.20, 0.235, 0.665])
 draw(axL, RUNS, 1)
-axL.set_ylim(98, 132)
-axL.set_yticks([100, 105, 110, 115, 120, 125, 130])
+axL.scatter([0.0, 0.0], sorted(CTL), s=17, c=C["blue"], edgecolors=C["blue"], linewidths=0.5, zorder=4, marker="s")
+labels.append(axL.text(0.13, 131.0, "same-card controls\n(Vertex, no adapter)", fontsize=fs(6.0), ha="left", va="center",
+                       color=C["blue"], linespacing=1.0))
+axL.set_ylim(98, 135)
+axL.set_yticks([100, 105, 110, 115, 120, 125, 130, 135])
 axL.set_ylabel("levels cleared per run\n(25 demonstration games)", labelpad=2, linespacing=1.05)
 axL.set_xticklabels(XL, linespacing=1.0)
 axL.grid(axis="y", visible=True)
@@ -150,8 +166,8 @@ leg = [plt.Line2D([], [], marker="o", ls="", ms=3.6, mfc=C["light"], mec=INK, me
        plt.Line2D([], [], color=INK, lw=1.4),
        plt.Line2D([], [], marker="D", ls="", ms=4.0, mfc=ACC, mec=ACC),
        plt.Line2D([], [], color=ACC, lw=0.9, ls=(0, (2.5, 1.5)))]
-axL.legend(leg, ["no adapter (9 of 18)", "their mean", "with adapter", "mean by scale"], loc="lower left",
-           bbox_to_anchor=(0.0, 0.0), handletextpad=0.4, labelspacing=0.3, borderaxespad=0.2, handlelength=1.6,
+axL.legend(leg, ["no adapter, Kaggle (9 of 18)", "their mean", "with adapter, VM", "mean by scale"],
+           loc="lower left", fontsize=fs(6.2), bbox_to_anchor=(0.0, 0.0), handletextpad=0.4, labelspacing=0.3, borderaxespad=0.2, handlelength=1.6,
            frameon=True, facecolor="white", edgecolor="none", framealpha=1.0)
 check_no_overlap(fig, labels)
 save(fig, "fig_finetune", writeup=True)

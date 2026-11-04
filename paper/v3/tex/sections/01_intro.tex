@@ -42,7 +42,7 @@ A research pass reads why such changes are the place to look: on long levels mos
 
 \item \textbf{Two fine-tuning results and what came with them (Sec.~\ref{sec:finetune}).}
 (a) Rejection-sampling fine-tuning on the agent's own cleared levels lowered validation loss by 13.9\% and lowered levels. % V3-L6 V3-L9 V3-L10
-Its three runs sit at or below the two lowest of 18 runs without it (rank $p$ 0.004), though they ran on another platform and on other days. % V3-W9
+Its three runs sit at or below the two lowest of 18 runs without it (rank $p$ 0.004). Two later same-card controls without it cleared more, and the adapter's three runs are the lowest of those five (rank $p$ 0.10). The adapter and the controls ran on different services and days, not interleaved, and the controls are two, one restarted after a preemption. % V3-W9 V3-W44
 The agent already clears 91\% of the training games' levels, so the filter kept nearly everything, slow wins included; the adapter's reasoning per action fell toward the training games' level, and its resets and deaths rose. % V3-L1 V3-L2 V3-L13 V3-L18
 This chain is our best reading of why; two alternatives are untested.
 

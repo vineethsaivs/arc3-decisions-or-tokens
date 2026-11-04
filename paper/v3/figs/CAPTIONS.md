@@ -86,15 +86,20 @@ A LoRA adapter trained on the agent's own cleared-level turns from 127 offline R
 at LoRA scale 0 (no adapter), half and full trained strength. (a) Levels per run: 9 of the 18 runs of the yield-8,192
 family without the adapter are plotted (the nine on Kaggle: 119 to 129, mean 124.0, SD 3.9; the other nine, on Vertex
 AI, are not drawn; all 18 span 115 to 132, mean 124.4, and the text's rank p of 0.004 is against all 18), one run at half
-strength (117) and two at full (109, 115; GCP VM, not interleaved with the runs without it). Every run is plotted; bar:
-no-adapter mean; dashed: mean by scale. One half-strength run cannot show a dose response. Higher is better. (b) Play counters per run on the same runs: reasoning characters per action
+strength (117) and two at full (109, 115; GCP VM, not interleaved with the runs without it). Blue squares: two same-card
+no-adapter controls of the adapter's own base arm (`l1a1y8sv2r3hm32`) on Vertex AI G4 Spot, 2026-11-03: 132 and 130
+levels (one preempted once and restarted), above all three adapter runs; among those five runs the adapter's three are
+the lowest, exact one-sided rank p = 1/C(5,3) = 0.10 (V3-W44). Limits: two controls; adapter on the VM on 2026-10-19,
+controls on Vertex AI 15 days later, not interleaved; no causal claim. Every other run is plotted; bar:
+no-adapter mean (the nine on Kaggle); dashed: mean by scale. One half-strength run cannot show a dose response. Higher is better. (b) Play counters per run on the same runs: reasoning characters per action
 and actions per reply on cleared levels (8 pin runs with transcripts), RESET actions per run (9 pin runs), and deaths
 (GAME OVER echoes in transcripts) per run (8 pin runs). Gray band: the agent's own play on the training games (two
 datagen attempts; read from `docs/research/2026-10-19-top/lora.md`, not recomputed). Reasoning per action moves toward the training play; actions per reply
 moves about a tenth of the way; RESETs double and deaths rise at full strength only, which weaker play would also
 produce; NO-OP share (not drawn) moves away from the training play. RESETs and deaths have no training-play line: the
 datagen attempts played 127 and 48 games at the same per-game budget as a development run, so their whole-run counts do
-not compare with a 25-game run. Data: `paper/v3/evidence/data/lora_replicas.csv`, `lora_behaviour.csv`.
+not compare with a 25-game run. Data: `paper/v3/evidence/data/lora_replicas.csv`, `lora_behaviour.csv`, `lora_controls_vertex.csv` (controls; levels re-summed from
+`solution/kaggle/generated/kernel-outputs/vertex-adctl-{1,2}/benchmark.json`).
 
 ## F7 `fig_tried` (appendix)
 

@@ -14,7 +14,7 @@ overlaps another. Output: `<name>.pdf` (vector, 5.5 in wide) and `<name>.png` (2
 | F3 `fig_power` (body) | `fig_power.py` | `e4_noise.json`, `yield_stats.json`, `e5_detect.json` (v2 out); `mde_by_runs.csv`, `vertex_vs_kaggle_runs.csv`, `lora_replicas.csv` | scipy |
 | F4 `fig_budget` (body) | `budget_band.py` (data step, about 19 min on 8 workers), then `fig_budget.py` | `f1_curves_n2.json`, `new_plateau_pool.json`, `e4_noise.json` (v2 out); `analysis/figs/data/budget_band.json` | |
 | F5 `fig_yield` (body, Writeup) | `fig_yield.py` (`--rebuild` re-reads the transcripts) | `yield_runs.json`, `yield_stats.json`, `yield_mech.json` (v2 out); `analysis/figs/data/yield_resume_by_game.csv`; `analysis/out/yield_wave/read_2026-10-24.json` (panel c, V3-W36) | |
-| F6 `fig_finetune` (body, Writeup) | `fig_finetune.py` | `evidence/data/lora_replicas.csv`, `lora_behaviour.csv`; RE-ARC-3 column of `docs/research/2026-10-19-top/lora.md` | |
+| F6 `fig_finetune` (body, Writeup) | `fig_finetune.py` | `evidence/data/lora_replicas.csv`, `lora_behaviour.csv`, `lora_controls_vertex.csv` (two Vertex no-adapter controls, levels re-summed from `kernel-outputs/vertex-adctl-{1,2}/benchmark.json`); RE-ARC-3 column of `docs/research/2026-10-19-top/lora.md` | |
 | F7 `fig_tried` (appendix) | `fig_tried.py` | `analysis/figs/data/tried_arms.csv`; `yield_runs.json`, `e4_noise.json` (v2 out); `lora_replicas.csv` | scipy |
 | F8 `fig_selection` (appendix) | `fig_selection.py` | `evidence/data/board_draws.csv` | |
 | F9 `fig_trainnoise` (appendix) | `fig_trainnoise.py` | `evidence/data/grpo_base_noise_pairs.csv` | |

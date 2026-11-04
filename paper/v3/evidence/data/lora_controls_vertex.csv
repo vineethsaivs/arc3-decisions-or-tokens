@@ -1,0 +1,3 @@
+run,group,platform,levels,mean_score,games_won,zero_level_games,note
+adctl-1,adapter_base_control,vertex_g4_spot,132,62.80,12,0,"arm l1a1y8sv2r3hm32, no adapter; preempted once, ran as attempt 2; launched 2026-11-03 21:06Z; source solution/kaggle/generated/kernel-outputs/vertex-adctl-1/benchmark.json"
+adctl-2,adapter_base_control,vertex_g4_spot,130,59.33,10,0,"arm l1a1y8sv2r3hm32, no adapter; launched 2026-11-03 21:07Z; source solution/kaggle/generated/kernel-outputs/vertex-adctl-2/benchmark.json"

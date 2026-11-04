@@ -1,6 +1,6 @@
 # Decisions or Tokens? What Moves an Offline ARC-AGI-3 Agent, and How to Tell
 
-*Identical code cleared 123, then 101 of 183 levels. We size that noise, show a 12.5-level gain stop reproducing, and find that fine-tuning on its own wins ran lower, confounded with platform and day.*
+*Identical code cleared 123, then 101 of 183 levels. We size that noise, show a 12.5-level gain stop reproducing, and find that fine-tuning on its own wins ran lower than same-card controls, though not interleaved.*
 
 <!-- COVER: paper/v3/figs/cover_1600x900.png goes in the Media Gallery as the cover image, not in the body. Title and subtitle go in their own Kaggle fields; the body starts at the opening paragraph (the hook), then the Accuracy line. -->
 <!-- IMAGES TO UPLOAD (Kaggle takes images separately; the ../figs paths below do not render there). Upload each file, then replace its path with the uploaded URL and keep the italic caption under it:
@@ -22,7 +22,7 @@ ARC-AGI-3 is a set of grid games the agent has never seen, scored on levels clea
 
 ## Prior work
 
-Our system is Franzen's: Tufa Labs' Duck loop driving a 4-bit Qwen3.8-Flash-Next. Run-to-run variance and self-training are known (Henderson et al. 2017; STaR, ReST). New here, as far as we found: a token-budget price, a measured yield threshold, and a KL guard read net of a nondeterministic forward pass. The closest public work, "Before Tuning the Harness", also repeats identical-code submissions and accounts cost per request; we price tokens in levels. <!-- URL for the hidden record, not for the body unless the owner wants it: https://github.com/guoyi12311125-netizen/arc3-repeat-controlled-eval (24-page PDF; read from the repository page and README only, per V3-W39 and scratchpad pt/C_rivals.md). -->
+Our system is Franzen's: Tufa Labs' Duck loop driving a 4-bit Qwen3.8-Flash-Next. Run-to-run variance and self-training are known (Henderson et al. 2017; STaR, ReST). New here, as far as we found: a token-budget price, a measured yield threshold, and a KL guard read net of a nondeterministic forward pass. The closest public work, "Before Tuning the Harness", also repeats identical-code submissions; we price tokens in levels. <!-- URL for the hidden record, not for the body unless the owner wants it: https://github.com/guoyi12311125-netizen/arc3-repeat-controlled-eval (24-page PDF; read from the repository page and README only, per V3-W39 and scratchpad pt/C_rivals.md). -->
 
 ## Approach
 
@@ -32,7 +32,7 @@ Our system is Franzen's: Tufa Labs' Duck loop driving a 4-bit Qwen3.8-Flash-Next
 
 A *turn* ends when the model acts. After a set number of generated tokens without acting, the harness *yields*, resuming the turn by re-sending its opening message (the *opener*) and the board image.
 
-The 40.98 build made 19 changes to Franzen's notebook (more since). Three decisions define the build: yielding after 8,192 tokens instead of 2,048, dropping an eighth of the experts so 14 games run at once, and fail-closed checks that turn a dead run into an error that does not spend the day's draw (none has fired on a scored run). Expert pruning is the one large point estimate: 19.5 more levels than the 3.3 its tokens predict, from two runs per arm, not interleaved, below the 23 levels two runs can detect.
+The 40.98 build made 19 changes to Franzen's notebook. Three decisions define the build: yielding after 8,192 tokens instead of 2,048, dropping an eighth of the experts so 14 games run at once, and fail-closed checks that turn a dead run into an error that does not spend the day's draw (none has fired on a scored run). Expert pruning is the one large point estimate: 19.5 more levels than the 3.3 its tokens predict, from two runs per arm, not interleaved, below the 23 levels two runs can detect.
 
 ## Identical code, different scores
 
@@ -41,10 +41,6 @@ The 40.98 build made 19 changes to Franzen's notebook (more since). Three decisi
 *Figure 2. (a) Identical-run pairs. (b) Seventeen valid draws.*
 
 Six pairs of byte-identical development runs differed by up to 22 levels (pooled SD 8.25); the second run was lower in all six (sign test p 0.031), an unexplained shift. Eight identical runs on rented GPUs, on one day, six started together, spread 115 to 132. Two runs per arm detect only gains above about 23 levels.
-
-We adopt a change when its target server metric moves as predeclared and no run falls nine levels below the pooled control, a floor that screens only gross harm.
-
-A *paired decision test* (replay recorded states with and without a context change) failed a leaner history once (first-action agreement 78% to 71%; p 0.09) and is not validated against a lever with a known level effect.
 
 ## What extra tokens are worth
 
@@ -76,9 +72,9 @@ All five passed their gates and four shipped, with leads over the control (mean 
 
 ![Fine-tuning](../figs/fig_finetune_writeup.png)
 
-*Figure 5. (a) Levels against LoRA scale (0 = no adapter; nine of the 18 no-adapter runs shown). (b) Style counters.*
+*Figure 5. (a) Levels against LoRA scale (0 = no adapter; 9 of 18 such runs, plus two same-card controls as squares). (b) Style counters.*
 
-A LoRA (low-rank) adapter trained on the agent's own cleared-level turns from 127 RE-ARC-3 games (Tufa Labs' generator) cut validation loss 13.9%. Two full-strength runs cleared 109 and 115 levels and one half-strength run 117: at or below the two lowest of 18 runs without it (rank p 0.004, descriptive: not interleaved), though it ran on a rented VM on other days. One untested reading: the agent already clears 91% of those levels. Reinforcement learning (GRPO) shipped nothing: a first-wave lead of 1.9 levels did not replicate.
+A LoRA (low-rank) adapter trained on the agent's own cleared-level turns from 127 RE-ARC-3 games (Tufa Labs' generator) cut validation loss 13.9%. Two full-strength runs cleared 109 and 115 levels and one half-strength run 117: at or below the two lowest of 18 runs without it (rank p 0.004) and below two later same-card controls (132 and 130; lowest three of five, p 0.10). Not interleaved: VM against Vertex AI, 15 days apart, one control restarted after a preemption. No causal claim. One untested reading: the agent already clears 91% of those levels. Reinforcement learning (GRPO) shipped nothing: a first-wave lead of 1.9 levels did not replicate.
 
 ## Why it behaves this way
 
@@ -86,13 +82,13 @@ A run sums 183 all-or-nothing level outcomes, so identical runs spread. A resume
 
 ## What to copy
 
-> (1) Size your noise: run identical code eight times on one day; n runs per arm resolve 2.8 x SD x sqrt(2/n) levels (our SD: 8.25 for pairs, 5.95 for eight same-day runs). (2) Judge a small change by its target metric; use levels only to veto gross harm. (3) Price a speed-up by resampling logged attempts and by what the window's last tenth earns. (4) Interleave arms on one build before trusting a gain across days. (5) Pair a cleared and a stuck play before building; write each kill rule first. (6) Skip what we dropped: a fourth draft step (decode -4.2%), 16 streams with a host-RAM cache (115 against 114; 104 on repeat). (7) Untested: the paired decision test; a token-only cut to 70% of the window, which the curve says costs about 20 levels; self-training filtered by efficiency.
+> (1) Size your noise: run identical code eight times on one day; n runs per arm resolve 2.8 x SD x sqrt(2/n) levels (our SD: 8.25 for pairs, 5.95 for eight same-day runs). (2) Judge a small change by its target metric as predeclared; use levels only to veto gross harm (we used nine below the pooled control). (3) Price a speed-up by resampling logged attempts and by what the window's last tenth earns. (4) Interleave arms on one build before trusting a gain across days. (5) Pair a cleared and a stuck play before building; write each kill rule first. (6) Skip what we dropped: a fourth draft step (decode -4.2%), 16 streams with a host-RAM cache (115 against 114; 104 on repeat). (7) Untested: the paired decision test (replay recorded states; it failed a leaner history once, agreement 78% to 71%, p 0.09); a token-only cut to 70% of the window (about 20 levels on the curve); self-training filtered by efficiency.
 
 Items 1 to 5 need only repeated runs and logs, tested on one stack.
 
 ## Limits
 
-Development numbers are on the demonstration games, not held out. 40.98 is a maximum; with the unexplained 10-18 zero the 18 draws average 32.67, and we expect a draw picked by public score to score near the mean on the private half (untested until private scores post). The second-run shift in the identical pairs is unexplained too: only one of those 12 runs, a first run, began play over 3 minutes before its server was ready. Harness arms have three runs or fewer, were not interleaved and ran on Kaggle against a control mostly from another platform; six of 23 Kaggle runs began play 12 to 21 minutes before the server was ready, unevenly across arms.
+Development numbers are on the demonstration games, not held out. 40.98 is a maximum; with the unexplained 10-18 zero the 18 draws average 32.67, and we expect a draw picked by public score to score near the mean on the private half (untested until private scores post). The second-run shift is unexplained: only one of the pairs' 12 runs began play over 3 minutes before its server was ready. Harness arms have three runs or fewer, were not interleaved and ran on Kaggle against a control mostly from another platform; six of 23 Kaggle runs began play 12 to 21 minutes before the server was ready, unevenly across arms.
 
 ## Credit
 
@@ -111,7 +107,7 @@ Opening paragraph
 - 11% speed-up about 4 levels: C4, F1
 - all five harness changes passed their gates and four shipped; they led the control by -1 to +6 on three runs each (tool fixes -1.1, replay +3.2, stall +4.9, groups +5.6): V3-W19, V3-W20, V3-W22, V3-W28, V3-W29
 - 12.5 levels across days, did not reproduce interleaved: D1, YN6, V3-W36 (verdict C null)
-- subtitle: fine-tuning on the agent's own wins lowered levels, on another platform (not interleaved): V3-L9, V3-L10
+- subtitle: fine-tuning on the agent's own wins ran lower than same-card controls (not interleaved, two controls): V3-L9, V3-L10, V3-W44
 
 Accuracy line
 - 40.98, submission 57417773, 2026-10-20: V3-B1, V3-B2
@@ -163,7 +159,7 @@ Fixing what the model is shown
 
 Fine-tuning
 - 127 RE-ARC-3 games, validation loss 13.9%: V3-L1, V3-L6
-- 109 and 115 full strength, 117 half, rank p 0.004 against 18 runs, nine plotted in Figure 5a: V3-L9, V3-L10, V3-W9
+- 109 and 115 full strength, 117 half, rank p 0.004 against 18 runs, nine plotted in Figure 5a; same-card controls 132 and 130 (squares), rank p 0.10 among five runs, not interleaved, different services and days: V3-L9, V3-L10, V3-W9, V3-W44
 - 91% of RE-ARC-3 levels already cleared: V3-L1
 - RL: first-wave lead 1.9, nothing shipped: V3-G13, V3-G14; 0.37 nats per token: V3-G5
 

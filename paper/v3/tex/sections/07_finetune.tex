@@ -13,13 +13,16 @@ Serving was intact: the adapter generated more tokens per second and no more tra
 
 \paragraph{Against what.}
 All three sit at or below the two lowest of 18 development runs of the yield-8,192 family on Kaggle and Vertex, which average 124.4 (rank $p$ 0.004). % V3-W9
-The adapter ran on a rented VM on other days, and no run without the adapter used the same VM and merge path, so platform, date and merge path are confounded with the adapter. The two platforms in the 18-run control set differ by under a level, but in the harness program's later control the Vertex AI runs averaged 9.7 levels above the Kaggle runs (two of those), so an offset is not excluded. % V3-L9 V3-X5 V3-W41
+Those 18 ran on other days than the adapter, which ran on a rented VM, so we added a same-card control: two no-adapter runs of the adapter's own base arm on the same RTX PRO 6000 as Vertex AI jobs cleared 132 and 130 levels, above all three adapter runs. % V3-W44
+Among these five runs the three adapter runs are the three lowest (exact rank $p$ = 1/10 = 0.10). % V3-W44
+The design limits stand: two controls; the adapter and the controls ran on different services (rented VM, Vertex AI) and 15 days apart, not interleaved; one control restarted after a preemption; and in the harness program's later control the Vertex AI runs averaged 9.7 levels above the Kaggle runs (two of those), so an offset is not excluded. % V3-L9 V3-X5 V3-W41 V3-W44
+We read this as the adapter staying below a same-card control, not as proof that it caused the drop.
 One run at half strength cannot show a dose response in levels.
 
 \begin{figure}[t]
 \centering
 \figfile{fig_finetune}{3.55in}
-\caption{All three adapter runs scored low. LoRA scale 0: no adapter, nine of the 18 runs without it (the nine on Kaggle; the other nine ran on Vertex AI and are not drawn; the mean of all 18 is 124.4), one point per run; 0.5: one run; 1.0: two runs; 25 demonstration games. (a) Levels per run; higher is better. (b) Style counters; gray band: the agent's own play on the training games (the RE-ARC-3 generator), drawn only for the per-action and per-reply rates. Reasoning per action moves toward the band, actions per reply barely moves, and resets and deaths rise, as weaker play would. Not interleaved: adapter runs on a rented VM, runs without it on Kaggle.}\label{fig:finetune} % V3-L9 V3-L10 V3-L13 V3-L14 V3-L18 V3-W9
+\caption{All three adapter runs scored low. LoRA scale 0: no adapter, nine of the 18 runs without it (the nine on Kaggle; the other nine ran on Vertex AI and are not drawn; the mean of all 18 is 124.4), one point per run; squares: two same-card no-adapter controls of the adapter's base arm, run later on Vertex AI (132, 130); 0.5: one run; 1.0: two runs; 25 demonstration games. (a) Levels per run; higher is better. (b) Style counters; gray band: the agent's own play on the training games (the RE-ARC-3 generator), drawn only for the per-action and per-reply rates. Reasoning per action moves toward the band, actions per reply barely moves, and resets and deaths rise, as weaker play would. Not interleaved: adapter runs on a rented VM on 2026-10-19, the squares on Vertex AI on 2026-11-03, the gray circles on Kaggle.}\label{fig:finetune} % V3-L9 V3-L10 V3-L13 V3-L14 V3-L18 V3-W9 V3-W44
 \end{figure}
 
 \paragraph{A reading: from the data to the style to the levels.}

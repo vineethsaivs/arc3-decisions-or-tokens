@@ -2,11 +2,37 @@
 
 \paragraph{Identical code, different scores.}
 Six pairs of byte-identical development runs differ by up to 22 levels, and the second run was lower in all six (sign test $p$ 0.031), for a reason we have not found. % B1 B2
-Their pooled SD is 8.25 levels, with a wide interval (Table~\ref{tab:instruments}); around the shared first-minus-second shift it is 5.6. % B1 N3-7
+Their SD of 8.25 levels (6 df; 5.3 to 18.2) is a root mean square of the within-pair gaps, so it contains that shift: the mean second-minus-first gap is $-9.2$ (95\% interval $-17.5$ to $-0.9$; paired $t$ on 5 df, $p$ 0.036), and 62\% of the pairs' mean square is that common shift. Around the shift the SD is 5.6 (5 df; 3.5 to 13.7). % B1 N3-7 V3-W47 V3-W48
 Any comparison run on different days can carry such a shift, which is the strongest argument for running arms side by side.
 
-Eight byte-identical runs on one day, on rented copies of the scoring GPU (six started together, two 2.5 hours later), cleared 115 to 132 levels with no order effect. % V3-X3 V3-X4
+Eight byte-identical runs on one day, on rented copies of the scoring GPU (six started together, two 2.5 hours later), cleared 115 to 132 levels (SD 5.95; 3.9 to 12.1) with no order effect. % V3-X3 V3-X4
 The leaderboard shows the same thing at a coarser grain: one agent's seventeen valid draws span 12 points (Figure~\ref{fig:noise}). % V3-B5 V3-W30
+
+\paragraph{The SD depends on the frame.}
+Table~\ref{tab:sdframes} sets every repeat set we have side by side. Without the cross-day pairs (eight same-day runs, nine near-identical builds over 58 hours, the interleaved test) the SD is about 5 levels: 4.9 pooled over those sets (25 df; 3.9 to 6.8) and 5.35 over the identical-build ones (17 df; 4.0 to 8.0). Across days it is 8.25, because of the shift. % V3-W47
+We therefore use 8.25 for comparisons across days and 5 to 6 for same-session ones, and state every detection limit as a range.
+The frames cannot be told apart statistically except through the shift (Bartlett $p$ 0.24 over the four disjoint sets), and the six pairs cannot separate day, order and platform, because their members ran 2.3 to 26.7 hours apart on two platforms. % V3-W47 V3-W48
+
+\begin{table}[t]
+\caption{Run-to-run SD of total levels by sampling frame, on the 25 development games (computed by \texttt{v3\_variance\_frames.py}). Interval: 95\% chi-square. Pooled rows combine disjoint sets by degrees of freedom. The pool of 18 contains the eight same-day runs and the nine builds. The nine builds differ in small ways, so their SD is not pure repeat noise.}\label{tab:sdframes} % V3-W47 V3-W48
+\centering\footnotesize
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Frame & Runs & SD & df & 95\% interval \\
+\midrule
+Six identical pairs, across days (includes the shift) & 12 & 8.25 & 6 & 5.3 to 18.2 \\
+\quad the same pairs about their common shift & 12 & 5.59 & 5 & 3.5 to 13.7 \\
+Eight identical runs, one day & 8 & 5.95 & 7 & 3.9 to 12.1 \\
+Nine near-identical builds, 58 h & 9 & 3.91 & 8 & 2.6 to 7.5 \\
+Interleaved test, pooled within arm & 12 & 4.88 & 10 & 3.4 to 8.6 \\
+Pool of 18 no-adapter runs & 18 & 4.69 & 17 & 3.5 to 7.0 \\
+\midrule
+Pooled, same-session sets (8, 9, 12 runs) & 29 & 4.93 & 25 & 3.9 to 6.8 \\
+Pooled, identical-build same-session sets (8, 12) & 20 & 5.35 & 17 & 4.0 to 8.0 \\
+Pooled, all four disjoint sets with the pairs & 41 & 5.73 & 31 & 4.6 to 7.6 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \begin{figure}[t]
 \centering
@@ -19,18 +45,37 @@ With run SD $\sigma$ and $n$ runs per arm, a two-sided test at the 5\% level wit
 \begin{equation}\label{eq:mde}
 \mathrm{MDE}(n) = 2.80\,\sigma\sqrt{2/n}.
 \end{equation}
-At the pairs' SD, two runs per arm resolve 23 levels, and a wave of twelve runs per arm made side by side would resolve about 9 (Figure~\ref{fig:power}). Eq.~\ref{eq:mde} is a normal approximation that assumes independent runs and equal variance in both arms; the SD rests on six pairs (6 df), and with Student $t$ quantiles at 6 df the two-run figure would be about 28 levels, so 23 is a floor. The second run was lower in all six pairs, which would raise it further. % B4 V3-X12
+At the pairs' SD, two runs per arm resolve 23 levels across days, and 17 at the same-day SD (13 at the pooled 4.7); a wave of twelve runs per arm made side by side would resolve about 9 (Figure~\ref{fig:power}). % B4 V3-X12 V3-W49
+Eq.~\ref{eq:mde} is a normal approximation that assumes independent runs, equal variance in both arms and a known SD. A $t$ test on two runs per arm has 2 df, and its detection limit is larger: 47 levels at SD 8.25, 34 at 5.95 and 27 at 4.7 (Table~\ref{tab:runsneeded}). The second run was lower in all six pairs, which would raise these further across days. % V3-W49
+Detecting a 10-level gain takes 5 to 12 runs per arm by the $t$ test, depending on the SD. The SD itself rests on six pairs (6 df) or eight runs (7 df), so every row of the table carries the intervals of Table~\ref{tab:sdframes}.
 Nearly every lever we built is smaller than 23 levels (Appendix~\ref{app:tried}), so a level count from two runs can veto gross harm and cannot promote. % B4 F3
 
+\begin{table}[t]
+\caption{Runs needed per arm to see a true gain $d$ (left), and the smallest gain seen at $n$ runs per arm (right; $t$ test, with the normal approximation of Eq.~\ref{eq:mde} in brackets). Two-sample $t$ test with equal $n$, noncentral-$t$ power 80\%, two-sided 5\%, SD taken as the true SD, in levels on the 25 development games. SD 4.7: pool of 18 runs; 5.95: eight runs on one day; 8.25: six pairs across days.}\label{tab:runsneeded} % V3-W49
+\centering\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}rrrrrrrr@{}}
+\toprule
+ & \multicolumn{4}{c}{Runs per arm for $d$ =} & \multicolumn{3}{c}{Smallest gain at $n$ =} \\
+\cmidrule(lr){2-5}\cmidrule(l){6-8}
+SD & 5 & 10 & 15 & 23 & 2 & 6 & 12 \\
+\midrule
+4.7 & 15 & 5 & 3 & 3 & 26.6 (13.2) & 8.4 (7.6) & 5.6 (5.4) \\
+5.95 & 24 & 7 & 4 & 3 & 33.6 (16.7) & 10.7 (9.6) & 7.1 (6.8) \\
+8.25 & 44 & 12 & 6 & 4 & 46.6 (23.1) & 14.8 (13.3) & 9.9 (9.4) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \paragraph{One rule for intervals.}
-We report every comparison at the identical-run SDs, 5.95 for eight runs on one day and 8.25 for six pairs run one after another, hours to a day apart, two-sided. % V3-X3 B1
+We report every comparison at the identical-run SDs, 5.95 for eight runs on one day and 8.25 for six pairs run one after another, hours to a day apart, two-sided; where the two differ, 8.25 is the cautious choice and the interval at a smaller SD is narrower. % V3-X3 B1
 Bootstrap intervals over runs treat runs on different days as exchangeable, which the shift above argues against, so they come second.
 Intervals are 95\% unless marked.
 
 \begin{figure}[t]
 \centering
 \figfile{fig_power}{2.7in}
-\caption{Two runs per arm resolve about 23 levels. Smallest shift a two-sided test sees at 80\% power (Eq.~\ref{eq:mde}) against runs per arm, log scales; lower is better. Solid: the six pairs' SD of 8.25, with graded bands for its 50\%, 80\% and 95\% intervals; dashed: SD 5.95 of eight runs on one day. Markers sit where each lever's effect meets the solid line, so their x is the runs per arm a test needs; the serving marker is the curve's prediction, not a measurement.}\label{fig:power} % B1 B4 C4 D1 V3-L9 V3-L10
+\caption{Two runs per arm resolve about 23 levels across days and 17 on one day. Smallest shift a two-sided test sees at 80\% power (Eq.~\ref{eq:mde}) against runs per arm, log scales; lower is better. Solid: the six pairs' SD of 8.25, with graded bands for its 50\%, 80\% and 95\% intervals; dashed: SD 5.95 of eight runs on one day. Markers sit where each lever's effect meets the solid line, so their x is the runs per arm a test needs; the serving marker is the curve's prediction, not a measurement.}\label{fig:power} % B1 B4 C4 D1 V3-L9 V3-L10
 \end{figure}
 
 \paragraph{The gate.}
@@ -40,6 +85,7 @@ Our gate reads mechanism first. % B6 B8
 (3) Use levels only as a veto: both runs must clear a floor nine levels below the pooled control. % B6
 (4) Ship a tie when the counter passed and no harm counter, a metric that signals damage such as tracebacks or deaths, moved.
 The floor is weak by design: it rejects a harmless change 26\% of the time and passes a true loss of nine levels 25\% of the time, so it screens only gross harm. % B6
+The later harness gate (three runs against seven, Sec.~\ref{sec:harness}) screens as little: by simulation at SD 5.95 it ships a true loss of 6 levels one time in five and a null change seven times in ten (Appendix~\ref{app:noisegates}). % V3-W51
 The draft model's reduced vocabulary passed such a gate, at a gain below its prediction (Table~\ref{tab:instruments}). % V3-H1 V3-H2 V3-H4
 
 \paragraph{A paired decision test.}
@@ -61,8 +107,8 @@ They can run side by side, so a wave of twelve runs per arm would finish in one 
 \toprule
 Instrument & Noise & Resolves & Cost \\
 \midrule
-Two runs per arm & SD 8.25 levels from six identical pairs (6 df; 5.3 to 18.2) & MDE 23.1 levels & 4 runs \\ % B1 B4
-Eight identical runs, one day & SD 5.95 (7 df; 3.9 to 12.1); no order shift & MDE 16.7 at 2 per arm, 6.8 at 12 per arm & 8 runs \\ % V3-X3 V3-X4 V3-X12
+Two runs per arm & SD 8.25 levels from six identical pairs (6 df; 5.3 to 18.2) & MDE 23.1 levels (46.6 by $t$) & 4 runs \\ % B1 B4 V3-W49
+Eight identical runs, one day & SD 5.95 (7 df; 3.9 to 12.1); no order shift & MDE 16.7 at 2 per arm, 6.8 at 12 per arm (33.6 and 7.1 by $t$) & 8 runs \\ % V3-X3 V3-X4 V3-X12 V3-W49
 Concurrent wave, 12 per arm (not yet run) & SD 8.25 assumed & MDE 9.4 levels & 24 jobs, one 2 h 17 min round, \$93 to \$131 \\ % V3-X12 V3-X13
 Serving counters & between-run CV 0.36\% (cache hit) to 3.23\% (tokens per second); levels 7.31\% & draft-vocabulary gate: decode $+1.2\%$ against $+1.4\%$ to $+1.7\%$ predicted & 1 run per arm \\ % B8 V3-H2 V3-H4
 Paired decision test & two unchanged replies agree on the first action in 0.778 of 117 states & leaner history: agreement $-0.071$ (90\% interval $-0.132$ to $-0.004$) against a tolerance of $-0.05$; paired $p$ 0.09 & 468 replies, 0.72 GPU-h \\ % V3-T3 V3-T4 V3-W6

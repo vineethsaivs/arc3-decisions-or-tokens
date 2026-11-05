@@ -42,8 +42,19 @@ run() {  # run <script>
 }
 run paper/v3/analysis/figs/fig_noise_draws.py
 run paper/v3/analysis/figs/fig_discovery.py
+# ---- gate false-ship and board-selection tables (paper Appendix N; stdlib plus numpy and scipy; inputs are in analysis/figs/data).
+# v3_variance_frames.py and v3_second_population.py also live in paper/v3/analysis but read kernel outputs and daily board
+# snapshots that this export does not carry, so they run only in the full project tree.
+if command -v uv >/dev/null 2>&1; then
+  uv run --offline --no-project --with numpy --with scipy python -I -B paper/v3/analysis/v3_gates_board.py >/dev/null 2>&1 \
+    || uv run --no-project --with numpy --with scipy python -I -B paper/v3/analysis/v3_gates_board.py >/dev/null 2>&1 \
+    || echo "gates_board: skipped (needs numpy and scipy)"
+else
+  python3 -I -B paper/v3/analysis/v3_gates_board.py >/dev/null 2>&1 || echo "gates_board: skipped (needs numpy and scipy)"
+fi
 mkdir -p "$OUT"
 for f in fig_noise_draws fig_discovery; do cp paper/v3/figs/$f.pdf paper/v3/figs/$f.png "$OUT/"; done
+[ -f paper/v3/analysis/out/gates_board.md ] && cp paper/v3/analysis/out/gates_board.md "$OUT/" && echo "gates_board.md written to $OUT"
 for f in fig_noise_draws fig_discovery; do
   if cmp -s "$OUT/$f.png" "$ROOT/paper/v3/figs/$f.png"; then echo "$f.png: pixel-identical to the shipped figure"
   else echo "$f.png: regenerated; differs from the shipped file (matplotlib or font version), compare by eye"; fi

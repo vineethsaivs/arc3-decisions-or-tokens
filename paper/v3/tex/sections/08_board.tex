@@ -26,12 +26,12 @@ Those are different, time-ordered configurations, each carrying other changes, s
 \paragraph{How much of the best draw is selection.}
 If the first eight live draws after the yield change shared one mean, the best of eight would sit about 1.4 SD above it, near 40.3 (Appendix~\ref{app:draws}). % V3-B6
 Resampling the twelve valid draws of the agent's family, whose record closed on 2026-10-28, gives an expected best of twelve of 40.33 (Figure~\ref{fig:selection}). % V3-W16
-So 40.98 is what a maximum of this family looks like, not evidence of a higher mean.
+So 40.98 is what a maximum of this family looks like, not evidence of a higher mean; with the seventeen valid draws the expected best is 39.6 to 40.7 across three models (up to 41.1 for 21 draws), and the chance that the best of 17 reaches 40.98 is 0.17 to 0.64 (Appendix~\ref{app:noisegates}). % V3-W52
 Picking two Final Submissions by public score is a mild form of the holdout reuse studied by \citet{blum2015ladder} and \citet{roelofs2019meta}. % G8
 
 \paragraph{What to expect on the private half.}
 Within a configuration the public and private halves of a draw correlate 0.00 to 0.53 on our model, so a draw picked by its public score should be expected to score near the family mean on the private half, not near its public score. % G8
-The agent's seventeen valid draws and its zero of unknown cause average 32.67 together. % V3-W30
+The agent's seventeen valid draws and its zero of unknown cause average 32.67 together. Our expectation for the private score of the two marked draws, both of one build, is the family mean 34.6 to that build's shrunk mean 37.0, about 35 to 37, with a per-draw SD of about 3.4; the build effect itself is not established (ANOVA $p$ 0.11). % V3-W30 V3-W52
 
 \paragraph{Scale check.}
 The valid draws average 0.61 of the development-run mean game score, inside the earlier range of 0.53 to 0.63; the ratio checks scale and forecasts nothing. % V3-W2 G4 V3-W30
@@ -40,6 +40,6 @@ The valid draws average 0.61 of the development-run mean game score, inside the 
 Three of 31 completed draws since the fork scored 0.00: two in field-wide failures of the midnight submission wave, and one of unknown cause, since a scored run returns no log (Appendix~\ref{app:failures}). % V3-B1 V3-B7 B11 V3-W30
 
 \paragraph{Final Submissions.}
-Our written rule, adopted after our best draw was submitted (the finals rule, Appendix~\ref{app:draws}), marks the agent's two best valid draws, 40.98 and 40.09, unless a fine-tuned adapter passes all its gates; none did (Sec.~\ref{sec:finetune}). % V3-B9 V3-W17 V3-W38
+Our written rule, adopted after our best draw was submitted (the finals rule, Appendix~\ref{app:draws}), marks the agent's two best valid draws, 40.98 and 40.09, unless a fine-tuned adapter passes all its gates; none did, although the round B adapter drew three slots by our override before its gate read (Sec.~\ref{sec:finetune}). % V3-B9 V3-W17 V3-W38
 On 2026-11-02, after the last draw, we marked these two by hand on the submissions page, where the selection held after a reload; they are also the two highest public draws, so Kaggle's automatic pick would have chosen them, and the final standing is the better of their private scores. % V3-W25 V3-W30 V3-W35 BOARD-REFRESH
 Both are draws of builds that predate the harness changes of Sec.~\ref{sec:harness}. The first harness build drew 33.56 and the build with all four shipped changes 36.38 in the final draw; one draw each says nothing about either build's mean. % V3-W24 V3-W30 BOARD-REFRESH

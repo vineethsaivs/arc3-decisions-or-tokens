@@ -8,7 +8,7 @@ Its result is four changes whose mechanisms fire and whose level means we report
 
 \paragraph{Diagnosis.}
 We read paired plays, the same level cleared in one development run and stuck in another, from four runs made before the program, and counted or quoted every claim from the transcripts. % V3-W18
-Stuck runs stop acting. An \emph{idle turn} is a turn of the model that ends, at a yield or the length cap, with no action executed. % V3-W18
+In these eight pairs, stuck plays often stopped acting; the counts below are over the 562 level plays of the same four runs (63 never cleared), read from counters, not from the eight. An \emph{idle turn} is a turn of the model that ends, at a yield or the length cap, with no action executed. % V3-W18
 Of the levels never cleared, 27\% hold three or more idle turns in a row, against 8\% of the cleared levels. % V3-W18
 Their clock tells the same story: 40\% of it goes to such turns, against 29\%. % V3-W18
 Stuck runs also write off an object type or an action they never tested, and misread what the harness shows them.
@@ -49,7 +49,7 @@ Each change ran three times on Kaggle against a pooled control of seven runs of 
 \paragraph{A stall check.}
 When a level has gone three, five or seven idle turns in a row, the harness tells the model to execute an action in this turn, a short probe with its effect predicted or the checked first steps of its plan. % V3-W20
 It also lists the object types (colour and size) and the valid actions not yet tried on the level, and asks for step-by-step checking: mechanics first, replay recorded steps before a long plan, retry a no-op from another state. % V3-W20
-Of the idle turns that were the third, fifth or seventh in a row, 87\% were followed by an action, against 54\% in the runs we diagnosed. % V3-W20 V3-W18
+Of the idle turns that were the third, fifth or seventh in a row, 87\% were followed by an action, against 54\% in the four earlier runs we diagnosed. This is a mechanism check, not a result: the check exists to force an action, and the reference comes from different runs. % V3-W20 V3-W18
 Streaks of five or more idle turns fell from 2.75 per run to 0.33. % V3-W20
 Every predeclared item passed on all three runs (Figure~\ref{fig:gates}; Appendix~\ref{app:harness}). % V3-W20
 
@@ -101,7 +101,7 @@ Neither can take an action, and both stop at a time limit. % V3-W29
 
 \paragraph{What the helpers did.}
 The model wrote about 34 code blocks per run that call them, in five or six games, about one block in a hundred and close to the rate of an earlier validation helper on this model. % V3-W29 V3-W34
-Of 85 replays, 42 named a wrong prediction and ten more reported only exceptions raised by the model's own code; no goal check found a counterexample. % V3-W29
+Of 85 replays, 42 named a wrong prediction and ten more reported only exceptions raised by the model's own code; no goal check found a counterexample. These are the helper's reports of a mismatch (52 of 85 in all), not evidence that play improved. % V3-W29
 
 \paragraph{Checks against the history, across builds.}
 Cleared later levels with a simulator check rose from 6\% to 9\%, or 10\% with goal checks (Figure~\ref{fig:discovery}c).

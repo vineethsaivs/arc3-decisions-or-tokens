@@ -6,10 +6,16 @@ Remedies include intervals \citep{agarwal2021precipice}, power analysis \citep{c
 On this benchmark, forum posts attribute most of the variance of repeated runs to whether single levels clear \citep{borro19802026forum732932} and find that identical builds differ widely \citep{makarov2026forum743723}. A decomposition of an ARC-AGI-3 harness gap reports one counted run per configuration and game \citep{lencevicius2026persistgym}; on SWE-Bench the single-run pass@1 moves 2.2 to 6.0 points by the run chosen \citep{bjarnason2026randomness}. % N3-9
 We add the size of that noise on this score, and concurrent replication on rented copies of the scoring GPU; we also tried a paired test of single decisions, used once and not validated.
 
+\paragraph{A second population, and what it cannot test.}
+As far as we found, public repeat-run data from other settings give similar sizes, and none tests our SD. Bjarnason et al.\ repeat 12 SWE-Bench-Verified agent cells ten times each \citep{bjarnason2026randomness}: pass@1 has SD 0.7 to 1.8 points (median 1.45) on means of 16\% to 64\%, a relative SD of 1.7\% to 8.1\% against our about 3\% to 7\%, so Eq.~\ref{eq:mde} puts one run per arm at about 6 points (5.7 at the median SD, 2.8 to 7.1 across cells). % V3-W53
+Rebuilding a cross-section of Franzen-notebook copies from two daily board snapshots gives SD 3.0 to 3.7 points on 215 to 220 teams (Pham reports 25.8 with SD 3.9 and no stated count \citep{pham2026forum745062}); these are different teams, with edits, hardware and failed runs, and not repeats of one build. % V3-W54
+Tufa Labs' public example run has 20 passes with SD 2.44 levels on a mean of 15.5 \citep{bessis2026duck,tufalabs2026duckcode}, and Franzen's notebook output four passes with SD 1.71 on 104.3 \citep{franzen2026milestone2}; both are within one job, so they contain no session-to-session shift and cannot test a shift like ours. % V3-W55
+Nothing public confirms or refutes our 8.25 or the 5.6 around the shift; the other sets show only that run SDs of several percent of the mean are common.
+
 \paragraph{Budgets and context.}
 Score that flattens with compute is the picture of \citet{pourcel2025soar}; budget forcing ends reasoning at a budget \citep{muennighoff2025s1}, while a yield resumes the turn.
 Ending a request at a tool call forces recomputation \citep{abhyankar2024infercept}, and keeping reasoning across tool turns is a known harness rule and lever \citep{deepseek2025v32,kamradt2026astra}; we found no earlier measurement of a client-side yield threshold.
-Tufa Labs note that hand-crafted tools hurt the Duck \citep{arcprize2026milestone1}, without numbers; our four shipped harness changes (leads $-1$ to $+6$ levels, three runs per arm) cannot exclude harm.
+Tufa Labs note that hand-crafted tools hurt the Duck \citep{arcprize2026milestone1}, without numbers; our four shipped harness changes (leads $-1$ to $+6$ levels, three runs per arm) cannot exclude harm. % V3-W46
 
 \paragraph{Self-training and reinforcement learning.}
 Training on a model's own successes is the idea of STaR, ReST and rejection-sampling fine-tuning \citep{zelikman2022star,gulcehre2023rest,yuan2023rft}, and RL recipes already drop prompts that a policy always solves, as in DAPO's dynamic sampling \citep{yu2025dapo}.
@@ -27,7 +33,7 @@ Our replay check is the optional, prompted form of that rule on an open-weight m
 The two leading teams have published no method; their public repositories and their results on ARC-AGI-2 are consistent with post-training at a scale we cannot match. % V3-R1 V3-R2
 
 \paragraph{What is new here.}
-As far as we found, three things: a token-budget price for an ARC-AGI-3 agent, a measurement of a client-side yield threshold with an interleaved test on which its apparent gain did not reproduce, and a KL drift guard read net of a nondeterministic training forward pass; a paired test of single decisions is a fourth, but it was used once and is not validated.
+As far as we found, three things: a token-budget price for an ARC-AGI-3 agent, a two-setting measurement of a client-side yield threshold with an interleaved test on which its apparent gain did not reproduce, and a KL drift guard read net of a nondeterministic training forward pass; a paired test of single decisions is a fourth, but it was used once and is not validated.
 
 \paragraph{Credit.}
 Inherited, with the component table of Appendix~\ref{app:components} giving each part's origin: Qwen's model \citep{qwen38flashnext}, Intel's weights \citep{intel2026w4a16}, albucino's drafter \citep{albucino2026drafter}, J.~Pezzulli's Pennyroyal build \citep{pezzulli2026pennyroyal}, Tufa Labs' Duck harness and RE-ARC-3 \citep{bessis2026duck,tufalabs2026rearc3}, and Daniel Franzen's patch, notebook and schedule \citep{franzen2026milestone2,franzen2026writeup}. % H5

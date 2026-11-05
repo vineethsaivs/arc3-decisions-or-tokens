@@ -12,9 +12,9 @@ Two runs at full strength cleared 109 and 115 levels and one at half strength cl
 Serving was intact: the adapter generated more tokens per second and no more tracebacks. % V3-L12 V3-L13
 
 \paragraph{Against what.}
-All three sit at or below the two lowest of 18 development runs of the yield-8,192 family on Kaggle and Vertex, which average 124.4 (rank $p$ 0.004). % V3-W9
+All three sit at or below the two lowest of 18 development runs of the yield-8,192 family on Kaggle and Vertex, which average 124.4 (rank $p$ 0.004, counting the full- and half-strength runs as one class of adapter run, our choice). % V3-W9
 Those 18 ran on other days than the adapter, which ran on a rented VM, so we added a same-card control: two no-adapter runs of the adapter's own base arm on the same RTX PRO 6000 as Vertex AI jobs cleared 132 and 130 levels, above all three adapter runs. % V3-W44
-Among these five runs the three adapter runs are the three lowest (exact rank $p$ = 1/10 = 0.10). % V3-W44
+Among these five runs the three adapter runs are the three lowest (exact rank $p$ = 1/10 = 0.10, the smallest possible for three against two). % V3-W44
 The design limits stand: two controls; the adapter and the controls ran on different services (rented VM, Vertex AI) and 15 days apart, not interleaved; one control restarted after a preemption; and in the harness program's later control the Vertex AI runs averaged 9.7 levels above the Kaggle runs (two of those), so an offset is not excluded. % V3-L9 V3-X5 V3-W41 V3-W44
 We read this as the adapter staying below a same-card control, not as proof that it caused the drop.
 One run at half strength cannot show a dose response in levels.
@@ -27,7 +27,7 @@ One run at half strength cannot show a dose response in levels.
 
 \paragraph{A reading: from the data to the style to the levels.}
 The counters fit one reading, which we have not tested (Figure~\ref{fig:finetune}; Table~\ref{tab:rft} in Appendix~\ref{app:rft}).
-The filter kept almost everything: the agent clears 91\% of RE-ARC-3 levels against 68\% of demonstration levels, so ``a cleared level'' admitted 63\% of training windows. % V3-L1 V3-L2
+The filter kept almost everything: the agent clears 91\% of RE-ARC-3 levels (best of three attempts per game, merged) against 68\% of demonstration levels in one play, so ``a cleared level'' admitted 63\% of training windows. % V3-L1 V3-L2 V3-W57
 Counted by turn, half the targets came from levels that took more than twice the human baseline's actions, which slow levels supply by construction; we have not measured that share on the agent's own demonstration-set play. % V3-L3
 Play on these easier games has its own style, less reasoning per action and more actions per reply; the adapter's reasoning per action fell toward it, its actions per reply moved about a tenth of the way and its NO-OP share moved away. % V3-L13 V3-L18
 It also took more actions, reset about twice as often and died two to three times as often, which weaker play produces anyway. % V3-L13
@@ -66,5 +66,5 @@ The third run did not finish in time for round A. % V3-G10
 
 % PLACEHOLDER-ROUND-A: edit \roundaresult in sections/placeholders.tex, not this line.
 % count:off
-\notebox{\roundaresult} % V3-G13 V3-G14 V3-W17
+\notebox{\roundaresult} % V3-W45 V3-W17
 % count:on

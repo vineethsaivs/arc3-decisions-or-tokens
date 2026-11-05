@@ -40,7 +40,7 @@ The plateau used here is the expected score at unlimited budget with each level 
 
 
 \paragraph{A noise model and the stuck mass.}
-A model that clears every level independently at its recorded rate, under the replica's token budget, predicts run SDs of 5.2, 6.4 and 5.7 levels, against 3.9, 5.5 and 8.25 observed (Table~\ref{tab:noisemodel}); the standard error of each prediction is 0.3 to 0.8. % N3-3
+A model that clears every level independently at its recorded rate, under the replica's token budget, predicts run SDs of 5.2, 6.4 and 5.7 levels, against 3.9, 5.5 and 8.25 observed (Table~\ref{tab:noisemodel}; Appendix~\ref{app:noisegates} gives a different independence model, summing per-game variances, with predictions of 5.1, 6.3 and 5.5); the standard error of each prediction is 0.3 to 0.8. % N3-3
 It matches the stable groups and underpredicts the identical pairs by a factor 1.44 in SD (the chance of an SD this high under the model is 0.05). The gap is the pairs' common first-minus-second shift of 9.2 levels, which holds 62\% of their sum of squares; around it the pairs' SD is 5.6 against the model's 5.7. Tokens per second and slot contention do not explain it. % N3-7
 Completion explains 84\% to 90\% of within-game score variance on our replica, as the forum post reports (84.7\%, by our reading of its definition \citep{borro19802026forum732932}), but the two largest games hold 27\% to 32\% of it, against 65\% there. % N3-9
 Of the points the nine yield runs lose to unreached levels, 57\% sit on levels that none of 30 runs cleared; the table splits the rest by tokens spent. % N3-12

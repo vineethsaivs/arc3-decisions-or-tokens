@@ -30,4 +30,4 @@ Most of the system is inherited: the model, its weights and drafter, the serving
 Several of our changes borrow other people's ideas, credited in Sec.~\ref{sec:related} and Appendix~\ref{app:components}.
 Three decisions matter more than the rest, and Figure~\ref{fig:loop} marks where they act: the yield after 8,192 tokens; expert pruning, which drops an eighth of the experts in each layer so that 14 games run at once; and fail-closed checks. % D14 F2 H5
 The checks make two kinds of dead scored run, a server that exits before it is ready or a run under 20 levels at the end, raise an error, which Kaggle does not count against the daily slot. % B10
-Neither has fired on a scored run, they cannot catch a run killed from outside, and a 0.00 of unknown cause still banked on 2026-10-18 (Sec.~\ref{sec:board}). % B10 V3-B7
+Neither has fired on a scored run and they cannot catch a run killed from outside; a 0.00 of unknown cause was banked on 2026-10-18 by a build that carried both checks, so they did not turn it into an error (Sec.~\ref{sec:board}, Appendix~\ref{app:failures}). % B10 V3-B7 V3-W58

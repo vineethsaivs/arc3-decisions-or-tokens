@@ -2,8 +2,8 @@
 
 \paragraph{Limitations.}
 The evidence covers one model, one GPU and one harness.
-Every development number comes from the demonstration set, where we also chose what to ship, so it may overstate levels on fresh games; the only held-out number is a board maximum. % A3 V3-B6
-The noise estimates rest on six identical pairs and one set of eight runs on one day (six started together), and the pairs carry a first-minus-second shift we cannot explain: only one of their twelve runs, a first run, began play more than three minutes before its server was ready, and without that pair the second run is still lower in the other five. % B1 V3-X3 V3-W37
+Every development number comes from the demonstration set, where we also chose what to ship, so it may overstate levels on fresh games; the only held-out number is a board maximum, picked by public score, so we expect the private half near the family mean (about 35 to 37) and not at 40.98. % A3 V3-B6 V3-W52
+The noise estimates rest on six identical pairs, one set of eight runs on one day (six started together), nine near-identical builds and one interleaved test, so every SD has 5 to 31 degrees of freedom and the intervals are wide (Table~\ref{tab:sdframes}); the SD is 8.25 across days and about 5 to 6 within a session, and which applies to a future comparison depends on its design. The pairs carry a first-minus-second shift we cannot explain: only one of their twelve runs, a first run, began play more than three minutes before its server was ready, and without that pair the second run is still lower in the other five. % B1 V3-X3 V3-W37
 The rejection-sampling comparison was not interleaved. A same-card control (two no-adapter runs on Vertex AI, 132 and 130 levels) stayed above the adapter's three runs, but it has two runs, it ran 15 days after the adapter and on a different service (the adapter ran on a rented VM), and one run restarted after a preemption; an interleaved set on one service would separate service and day from the adapter. % D8 V3-L9 V3-W44
 The curve is a simulator over recorded attempts, built after the changes it prices, and its ceiling is partly set by construction. % C2 C5
 The clock's reading assumes that the late rate of clears would hold on a stretched clock, and that rate was still falling. % V3-W13
@@ -13,9 +13,9 @@ A scored run returns no log, so nothing here explains a single board draw.
 
 \paragraph{Conclusion.}
 We asked whether decisions or tokens limit an offline ARC-AGI-3 agent, and how one can tell.
-Measured: run-to-run noise, with two runs per arm resolving about 23 levels. % B1 B4
+Measured: run-to-run noise, with two runs per arm resolving about 17 levels on one day and 23 across days (more by a $t$ test). % B1 B4 V3-W47 V3-W49
 Simulated: a price of about 4 levels for our serving speed-ups; read from the clock, about three times the curve's price on score. % C4 V3-W14
 Open: whether either price is right (one recorded step bought 19.5 levels, about six times its predicted price), and whether more tokens or different decisions would clear the levels no run has cleared. % N1.4 N3-12
 Not reproduced when interleaved: the level gain that a rarer yield coincided with across days, which excludes the earlier gain and not small gains; drift between days and extra tokens are the candidate causes. % D1 YN6 V3-W36
 Fired and unresolved: five changes to what the model is shown, when it must act and what it can check; all five passed their gates and four shipped, with leads of $-1$ to $+6$ levels over the pooled control (larger over the two Kaggle controls alone) that three runs cannot resolve, while the scroll detector showed no gain on its target games and was not shipped. % V3-W20 V3-W22 V3-W23 V3-W28 V3-W29 V3-W41
-Negative, with design limits: fine-tuning on the agent's own cleared levels was followed by fewer levels, also against two same-card controls (rank $p$ 0.10 among five runs), not interleaved and on different services and days, and we shipped none. % V3-L9 V3-L10 V3-W44
+Negative, with design limits: fine-tuning on the agent's own cleared levels was followed by fewer levels, also against two same-card controls (rank $p$ 0.10 among five runs, the smallest possible), not interleaved and on different services and days; no adapter passed its gates, though one drew three board slots by our override (Sec.~\ref{sec:rl}). % V3-L9 V3-L10 V3-W44 V3-W17

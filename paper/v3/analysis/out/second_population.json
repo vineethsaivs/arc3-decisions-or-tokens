@@ -1,0 +1,330 @@
+{
+ "tufa_20_passes": {
+  "n": 20,
+  "mean": 15.45,
+  "sd": 2.438,
+  "cv": 0.1578,
+  "mde": {
+   "n1": 9.66,
+   "n2": 6.83,
+   "n3": 5.58,
+   "n5": 4.32
+  },
+  "unit": "levels of 183 (25 public games x 1 pass), one job, Qwen3.6-27B",
+  "mde_pct_of_mean": {
+   "n1": 62.5,
+   "n2": 44.2,
+   "n3": 36.1,
+   "n5": 28.0
+  }
+ },
+ "franzen_v3_4_passes": {
+  "n": 4,
+  "mean": 104.25,
+  "sd": 1.708,
+  "cv": 0.0164,
+  "mde": {
+   "n1": 6.77,
+   "n2": 4.78,
+   "n3": 3.91,
+   "n5": 3.03
+  },
+  "unit": "levels of 183, 4 passes in one job (values read from v2 note and benchmark.json summary)",
+  "mde_pct_of_mean": {
+   "n1": 6.5,
+   "n2": 4.6,
+   "n3": 3.8,
+   "n5": 2.9
+  }
+ },
+ "field_cross_section": {
+  "floor10": {
+   "n": 220,
+   "mean": 26.027,
+   "sd": 3.669,
+   "cv": 0.141,
+   "mde": {
+    "n1": 14.54,
+    "n2": 10.28,
+    "n3": 8.39,
+    "n5": 6.5
+   },
+   "floor": 10,
+   "unit": "public board score points, different teams, first scored draw, window 10-01 to 10-02",
+   "median": 26.22
+  },
+  "floor15": {
+   "n": 215,
+   "mean": 26.346,
+   "sd": 3.038,
+   "cv": 0.1153,
+   "mde": {
+    "n1": 12.04,
+    "n2": 8.51,
+    "n3": 6.95,
+    "n5": 5.38
+   },
+   "floor": 15,
+   "unit": "public board score points, different teams, first scored draw, window 10-01 to 10-02",
+   "median": 26.25
+  },
+  "floor20": {
+   "n": 208,
+   "mean": 26.63,
+   "sd": 2.646,
+   "cv": 0.0994,
+   "mde": {
+    "n1": 10.49,
+    "n2": 7.41,
+    "n3": 6.05,
+    "n5": 4.69
+   },
+   "floor": 20,
+   "unit": "public board score points, different teams, first scored draw, window 10-01 to 10-02",
+   "median": 26.375
+  }
+ },
+ "bjarnason_swebench_verified": {
+  "source": "arXiv 2602.07150 Table 1 (read via arxiv.org/html/2602.07150): pass@1 mean +/- std over 10 runs, N=500 tasks",
+  "cells": [
+   {
+    "cell": "Qwen3-32B t0.6 nano-agent",
+    "mean_pp": 16.4,
+    "sd_pp": 0.7,
+    "cv": 0.043,
+    "mde_pp": {
+     "n1": 2.77,
+     "n2": 1.96,
+     "n3": 1.6,
+     "n5": 1.24
+    }
+   },
+   {
+    "cell": "Qwen3-32B t0.6 r2e-gym",
+    "mean_pp": 23.9,
+    "sd_pp": 1.4,
+    "cv": 0.059,
+    "mde_pp": {
+     "n1": 5.55,
+     "n2": 3.92,
+     "n3": 3.2,
+     "n5": 2.48
+    }
+   },
+   {
+    "cell": "DeepSWE t1.0 nano-agent",
+    "mean_pp": 31.4,
+    "sd_pp": 1.0,
+    "cv": 0.032,
+    "mde_pp": {
+     "n1": 3.96,
+     "n2": 2.8,
+     "n3": 2.29,
+     "n5": 1.77
+    }
+   },
+   {
+    "cell": "DeepSWE t1.0 r2e-gym",
+    "mean_pp": 34.4,
+    "sd_pp": 1.5,
+    "cv": 0.044,
+    "mde_pp": {
+     "n1": 5.94,
+     "n2": 4.2,
+     "n3": 3.43,
+     "n5": 2.66
+    }
+   },
+   {
+    "cell": "Devstral-2 t0.2 nano-agent",
+    "mean_pp": 63.5,
+    "sd_pp": 1.1,
+    "cv": 0.017,
+    "mde_pp": {
+     "n1": 4.36,
+     "n2": 3.08,
+     "n3": 2.52,
+     "n5": 1.95
+    }
+   },
+   {
+    "cell": "Devstral-2 t0.2 r2e-gym",
+    "mean_pp": 34.9,
+    "sd_pp": 1.5,
+    "cv": 0.043,
+    "mde_pp": {
+     "n1": 5.94,
+     "n2": 4.2,
+     "n3": 3.43,
+     "n5": 2.66
+    }
+   },
+   {
+    "cell": "Qwen3-32B t0 nano-agent",
+    "mean_pp": 16.4,
+    "sd_pp": 1.2,
+    "cv": 0.073,
+    "mde_pp": {
+     "n1": 4.75,
+     "n2": 3.36,
+     "n3": 2.74,
+     "n5": 2.13
+    }
+   },
+   {
+    "cell": "Qwen3-32B t0 r2e-gym",
+    "mean_pp": 22.3,
+    "sd_pp": 1.8,
+    "cv": 0.081,
+    "mde_pp": {
+     "n1": 7.13,
+     "n2": 5.04,
+     "n3": 4.12,
+     "n5": 3.19
+    }
+   },
+   {
+    "cell": "DeepSWE t0 nano-agent",
+    "mean_pp": 20.4,
+    "sd_pp": 1.0,
+    "cv": 0.049,
+    "mde_pp": {
+     "n1": 3.96,
+     "n2": 2.8,
+     "n3": 2.29,
+     "n5": 1.77
+    }
+   },
+   {
+    "cell": "DeepSWE t0 r2e-gym",
+    "mean_pp": 19.2,
+    "sd_pp": 1.5,
+    "cv": 0.078,
+    "mde_pp": {
+     "n1": 5.94,
+     "n2": 4.2,
+     "n3": 3.43,
+     "n5": 2.66
+    }
+   },
+   {
+    "cell": "Devstral-2 t0 nano-agent",
+    "mean_pp": 63.8,
+    "sd_pp": 1.6,
+    "cv": 0.025,
+    "mde_pp": {
+     "n1": 6.34,
+     "n2": 4.48,
+     "n3": 3.66,
+     "n5": 2.84
+    }
+   },
+   {
+    "cell": "Devstral-2 t0 r2e-gym",
+    "mean_pp": 35.4,
+    "sd_pp": 1.7,
+    "cv": 0.048,
+    "mde_pp": {
+     "n1": 6.74,
+     "n2": 4.76,
+     "n3": 3.89,
+     "n5": 3.01
+    }
+   }
+  ],
+  "sd_min": 0.7,
+  "sd_median": 1.45,
+  "sd_max": 1.8,
+  "mde_at_median_sd": {
+   "n1": 5.74,
+   "n2": 4.06,
+   "n3": 3.32,
+   "n5": 2.57
+  },
+  "mde_at_max_sd": {
+   "n1": 7.13,
+   "n2": 5.04,
+   "n3": 4.12,
+   "n5": 3.19
+  },
+  "mde_at_min_sd": {
+   "n1": 2.77,
+   "n2": 1.96,
+   "n3": 1.6,
+   "n5": 1.24
+  },
+  "abstract_quotes": [
+   "standard deviations exceeding 1.5 percentage points even at temperature 0",
+   "2.2 to 6.0 percentage points depending on which single run is selected"
+  ],
+  "note": "SD is within a fixed config over 10 runs; the 2.2 to 6.0 range is the spread of pass@1 over runs per the abstract (read), not a gain."
+ },
+ "guoyi_readme_identical_code": {
+  "n": 3,
+  "mean": 27.797,
+  "sd": 2.96,
+  "cv": 0.1065,
+  "mde": {
+   "n1": 11.73,
+   "n2": 8.29,
+   "n3": 6.77,
+   "n5": 5.25
+  },
+  "unit": "Kaggle public score points, 3 submissions labelled identical code",
+  "with_byte_identical_pair_29.89_30.21_added": {
+   "n": 5,
+   "mean": 28.698,
+   "sd": 2.433,
+   "cv": 0.0848,
+   "mde": {
+    "n1": 9.64,
+    "n2": 6.82,
+    "n3": 5.56,
+    "n5": 4.31
+   }
+  },
+  "note": "README gives scores only; SD computed here. Unit not stated by the README; conditions (days, hardware) unknown."
+ },
+ "anthropic_infra_noise": {
+  "source": "anthropic.com/engineering/infrastructure-noise (read)",
+  "published": {
+   "terminal_bench_extremes_gap_pp": 6,
+   "spread_moderate_configs_pp": "just below 2",
+   "leaderboard_skepticism_below_pp": 3,
+   "swebench_ram_5x_effect_pp": 1.54,
+   "terminal_bench_3x_vs_1x_p": 0.4
+  },
+  "sd_published": false,
+  "mde_computable": false,
+  "note": "Naive binomial CI roughly 1 to 2 pp (read). No SD, no runs per config, so the recipe cannot be applied."
+ },
+ "miller_error_bars": {
+  "source": "arXiv 2411.00640 abstract only (read)",
+  "sd_published": false,
+  "mde_computable": false
+ },
+ "kapoor_agents_that_matter": {
+  "source": "arXiv 2407.01502 abstract only (read)",
+  "sd_published": false,
+  "mde_computable": false
+ },
+ "ours_for_comparison": {
+  "sd_levels": [
+   3.9,
+   5.5,
+   5.95,
+   8.25
+  ],
+  "mean_levels_approx": [
+   111.5,
+   124.3
+  ],
+  "mde_n1_levels": [
+   15.45,
+   21.79,
+   23.58,
+   32.69
+  ],
+  "cv_range": "3.3% to 7.2%"
+ }
+}

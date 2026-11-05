@@ -11,10 +11,9 @@
 5. paper/v3/figs/fig_finetune_writeup.png, under "Imitating easy wins" (Figure 5)
 Cover (Media Gallery only): paper/v3/figs/cover_1600x900.png. Alt text for all: ALT_TEXT.md. -->
 
-The same code cleared 123 of 183 levels, then 101. Decisions or tokens? Neither is resolvable at that noise: an 11% speed-up prices at about 4 levels and four harness changes led by -1 to +6, both unresolved. A 12.5-level gain from re-sending context less often did not reproduce once runs were interleaved. Scope: one stack, 25 public games, usually two to seven runs per arm.
+The same code cleared 123 of 183 levels, then 101. Decisions or tokens? Neither is resolvable at that noise: a faster server (+11% tokens) is worth about 4 levels and four harness changes led a control by -1 to +6. A 12.5-level gain across days from re-sending context less often did not reproduce once runs were interleaved. The contribution is a method: size the noise first. Scope: one stack, 25 public games, usually two to seven runs per arm.
 
-**Accuracy.** Public score 40.98 (submission 57417773, 2026-10-20), public rank 26 of 5,073 at the deadline, on half of the 110 hidden games: our best of 28 live *draws* (scored runs, one a day) since forking Franzen's notebook. The agent's 17 valid draws (not the 0.00, adapter or earlier-build draws) span 28.97 to 40.98, mean 34.59, 0.61 of its development-run score. Draws measure the whole stack, not one lever. Private scores are pending. `sh release/reproduce.sh` (CPU) regenerates Figure 2. [PDF](https://github.com/vineethsaivs/arc3-decisions-or-tokens/blob/main/paper/v3/tex/main.pdf), [notebook](https://www.kaggle.com/code/vineethsaivs/arc3-franzen-l1a1y8sv2r3p-a), [code](https://github.com/vineethsaivs/arc3-decisions-or-tokens). Paper CC BY 4.0; code CC BY 4.0 or MIT-0. <!-- STATUS 2026-11-02 21:00Z: the repository and PDF are public (https://github.com/vineethsaivs/arc3-decisions-or-tokens, commit c77243c, tag v1, LICENSE present). The D3 dataset is now PUBLIC (version 2, with the Qwen LICENSE and NOTICE; reported 2026-11-03, V3-W42). The submitted notebook was still private on 2026-11-02 (it embeds files with unread licences, so Kaggle's own after-the-deadline publication is the route). Re-check both logged out before submitting. Board refreshed 2026-11-03 to the final public board, rank 26 of 5,073 (V3-W43). -->
-<!-- ACCURACY / BOARD-REFRESH: refreshed 11-02 12:15Z after the last draw (36.38); after the deadline re-read the rank, and once posted lead with the private score of the linked Final Submission. LICENCE: CC-BY 4.0 (Kaggle) vs CC0 or MIT-0 (arcprize.org) is the owner's open decision, see CHECKLIST.md; change this clause if the owner picks another. -->
+**Accuracy.** Public score 40.98 (submission 57417773, 2026-10-20), public rank 26 of 5,073 at the deadline, on half of the 110 hidden games: our best of 28 live *draws* (scored runs, one a day) since forking Franzen's notebook. Seventeen valid draws (not the 0.00, adapter or earlier-build draws) span 28.97 to 40.98, mean 34.59 (32.67 with one unexplained 0.00). The best of 17 to 21 such draws is expected near 40 to 41, so 40.98 is no evidence for one lever; we expect a private score of about 35 to 37, which is pending. `sh release/reproduce.sh` (CPU) regenerates Figure 2. [PDF](https://github.com/vineethsaivs/arc3-decisions-or-tokens/blob/main/paper/v3/tex/main.pdf), [code](https://github.com/vineethsaivs/arc3-decisions-or-tokens). Paper CC BY 4.0; code CC BY 4.0 or MIT-0.
 
 ## Problem
 
@@ -22,7 +21,7 @@ ARC-AGI-3 is a set of grid games the agent has never seen, scored on levels clea
 
 ## Prior work
 
-Our system is Franzen's: Tufa Labs' Duck loop driving a 4-bit Qwen3.8-Flash-Next. Run-to-run variance is known in RL (Henderson et al. 2017) and agents (Bjarnason et al. 2026: SWE-Bench pass@1 moves 2.2 to 6.0 points by run chosen); so is self-training (STaR, ReST). New here, as far as we found: a token-budget price, a measured yield threshold, and a KL guard read net of a nondeterministic forward pass. The closest public work, "Before Tuning the Harness", also repeats identical-code submissions; we price tokens in levels. Lencevicius (arXiv 2610.26632) splits an ARC-AGI-3 harness gap with one run per cell. <!-- URL for the hidden record, not for the body unless the owner wants it: https://github.com/guoyi12311125-netizen/arc3-repeat-controlled-eval (24-page PDF; read from the repository page and README only, per V3-W39 and scratchpad pt/C_rivals.md). -->
+Our system is Franzen's: Tufa Labs' Duck loop driving a 4-bit Qwen3.8-Flash-Next. Run-to-run variance is known in RL (Henderson et al. 2017) and agents (Bjarnason et al. 2026: SWE-Bench pass@1 moves 2.2 to 6.0 points by run chosen). New here, as far as we found: a token-budget price and an interleaved test on which a yield gain did not reproduce. The closest public work, "Before Tuning the Harness", also repeats identical-code submissions; we price tokens in levels.
 
 ## Approach
 
@@ -32,67 +31,80 @@ Our system is Franzen's: Tufa Labs' Duck loop driving a 4-bit Qwen3.8-Flash-Next
 
 A *turn* ends when the model acts. After a set number of generated tokens without acting, the harness *yields*, resuming the turn by re-sending its opening message (the *opener*) and the board image.
 
-The 40.98 build made 19 changes to Franzen's notebook. Three decisions define the build: yielding after 8,192 tokens instead of 2,048, dropping an eighth of the experts so 14 games run at once, and fail-closed checks that turn a dead run into an error that does not spend the day's draw. Expert pruning is the one large point estimate: 19.5 more levels than the 3.3 its tokens predict, from two runs per arm, not interleaved, below the 23 levels two runs can detect.
+The 40.98 build made 19 changes to Franzen's notebook. Three define it: yielding after 8,192 tokens instead of 2,048; dropping an eighth of the experts so 14 games run at once; and fail-closed checks that error a dead run without spending the day's draw (one unexplained 0.00 was banked anyway). Expert pruning is the one large point estimate: 19.5 more levels than the 3.3 its tokens predict, from two runs per arm, not interleaved, below what two runs can detect.
 
-## Identical code, different scores
+## Same code, different scores
 
 ![Noise and draws](../figs/fig_noise_draws_writeup.png)
 
 *Figure 2. (a) Identical-run pairs. (b) Seventeen valid draws.*
 
-Six pairs of byte-identical development runs differed by up to 22 levels (pooled SD 8.25); the second run was lower in all six (sign test p 0.031), an unexplained shift. Eight identical runs on rented GPUs, on one day, six started together, spread 115 to 132. Two runs per arm detect only gains above about 23 levels.
+Six pairs of byte-identical development runs differed by up to 22 levels. Their SD is 8.25, but it contains a shift: the second run was lower in all six (mean 9.2 levels, sign test p 0.031), cause unexplained. Around it the SD is 5.6. Eight identical runs on rented GPUs, on one day, spread 115 to 132 (SD 5.95). Two runs per arm detect only gains above about 23 levels across days and 17 on one day; 10 levels takes 5 to 12 runs per arm.
 
 ## What extra tokens are worth
 
-Resampling 1,114 recorded level attempts at other budgets, score flattens with tokens and a development run sits at about 90% of its ceiling. Our serving changes added 11% tokens per second, about 4 levels on the curve: unresolved, not zero. The clock prices it about three times higher on score: the window's last tenth earns 7% of the points.
+Resampling 1,114 logged level attempts, score flattens with tokens and a development run sits at about 90% of its ceiling. Our serving changes added 11% tokens per second, about 4 levels on the curve (2 to 10 across estimates): unresolved, not zero.
 
-## A context lever that failed an interleaved test
+## A 12.5-level gain that did not reproduce
 
 ![Yield lever](../figs/fig_yield_writeup.png)
 
 *Figure 3. (a) Across days, not interleaved: levels per game. (b) Re-sent openers. (c) Interleaved, six runs per arm, and the difference with its 95% interval.*
 
-Yielding at 8,192 tokens, not 2,048, cut re-sent openers about 70%. Across days, nine such runs averaged 12.5 more levels than 21 controls.
+Yielding at 8,192 tokens, not 2,048, cut re-sent openers about 70%. Across days, nine such runs (seven with other serving changes) averaged 12.5 more levels than 21 controls.
 
-Six runs per arm then ran interleaved on one build but for one line, with rules fixed in a dated file (amended once, before any run started). The rarer yield scored 2.5 levels below the old one (p 0.42), at matched tokens too. That excludes the 12.5-level gap (predeclared verdict: null) but not small gains (95% interval -14.2 to +9.2 at the pairs' SD, -7.5 to +2.5 by bootstrap). Drift and about 5 levels of extra tokens are candidate causes.
+Six runs per arm then ran interleaved on one build but for one line, with rules fixed in a dated file (amended once after the jobs were submitted, before any ran; four of 16 jobs never ran). The rarer yield scored 2.5 levels below the old one (p 0.42), at matched tokens too. That excludes the 12.5-level gap (predeclared verdict: null) but not small gains (95% interval -14.2 to +9.2 at the pairs' SD). Run noise cannot explain the shortfall; drift, build and about 5 levels of extra tokens can. We shipped the yield on the across-days gain.
 
-## Fixing what the model is shown
+## Four harness fixes, none resolvable
 
 ![Harness changes](../figs/fig_gates_writeup.png)
 
 *Figure 4. Levels per run: control (seven, mostly on another platform), three runs per change. Shading: one SD of identical runs. Shipped: stall, corner-joined, tool fixes, replay; scroll was not.*
 
-Paired plays (a level cleared in one run, stuck in another) showed that stuck runs stop acting. Five changes each had a kill rule in a dated file written before its first run.
+Paired plays (a level cleared in one run, stuck in another) suggested that stuck runs often stop acting. Five changes each had a kill rule in a dated file written before its first run. A **stall check** (act after three idle turns) was followed by an action in 87% of those turns, against 54% in earlier runs: the mechanism fires, no gain claimed. A **replay check** reported a wrong prediction in 42 of 85 replays.
 
-A **stall check** (act after three idle turns) was followed by an action in 87% of those turns, against 54%. A **replay check** (helpers test the model's simulator and goal guesses against the level's history) caught a wrong prediction in 42 of 85 replays.
+All five passed their gates and four shipped, leading the control (mean 123.4) by -1 to +6 levels; together +3.2 (z 0.8), which noise explains. The gate (three runs against seven) screens out only large losers: by simulation at SD 5.95 it ships a true -6 change one time in five and a null change seven in ten. A scroll detector did not help any target game: not shipped. The Final Submissions predate every change.
 
-All five passed their gates and four shipped, with leads over the control (mean 123.4) of -1 to +6 levels, which three runs per arm cannot resolve. Tufa Labs noted hand-crafted tools hurt (ARC Prize Milestone 1 post); we cannot rule out harm. A scroll detector fired where designed but no target game improved: not shipped. The Final Submissions predate every change.
-
-## Imitating easy wins
+## Fine-tuning on easy wins ran lower
 
 ![Fine-tuning](../figs/fig_finetune_writeup.png)
 
 *Figure 5. (a) Levels against LoRA scale (0 = no adapter; 9 of 18 such runs, plus two same-card controls as squares). (b) Style counters.*
 
-A LoRA (low-rank) adapter trained on the agent's own cleared-level turns from 127 RE-ARC-3 games (Tufa Labs' generator) cut validation loss 13.9%. Two full-strength runs cleared 109 and 115 levels and one half-strength run 117: at or below the two lowest of 18 runs without it (rank p 0.004) and below two later same-card controls (132 and 130; lowest three of five, p 0.10). Not interleaved: VM against Vertex AI, 15 days apart, one control restarted after a preemption. No causal claim. One untested reading: the agent already clears 91% of those levels. Reinforcement learning (GRPO) shipped nothing: a first-wave lead of 1.9 levels did not replicate.
+We trained a LoRA (low-rank) adapter on the agent's own cleared-level turns from 127 RE-ARC-3 games. Two full-strength runs cleared 109 and 115 levels and one half-strength run 117: at or below the two lowest of 18 runs without it (rank p 0.004) and below two later same-card controls (132 and 130; lowest three of five, p 0.10, the smallest possible). Not interleaved: VM against Vertex AI, 15 days apart. No causal claim. One untested reading: the agent already clears 91% of those levels (best of three; 68% of the public 25 in one play). Reinforcement learning (GRPO) passed no gate (a first-wave lead of 1.9 levels, pooled +0.25 against a +1.75 bar); a later adapter, pinned by our override before its gate read, drew 35.90, 39.79 and 35.98, then failed.
 
-## Why it behaves this way
+## Why the noise looks like this
 
-A run sums 183 all-or-nothing level outcomes, so identical runs spread. A resume re-sends prefill worth about 1% of GPU time, under half a level, so compute is an unlikely route for the yield. For the 85% goal this paper offers method only [inference]. The yield shipped on an across-days gain that interleaving did not reproduce.
+A run sums 25 games' level counts. Within a session the games vary about independently: their variances add to a run SD of 5.1 to 6.3, against 3.9 to 6.0 observed. Five games hold 55 to 64% of that variance and four never move. Across days a common shift adds more: the pairs' variance is 68, against 39 from games alone.
 
 ## What to copy
 
-> (1) Size your noise: run identical code eight times on one day; n runs per arm resolve 2.8 x SD x sqrt(2/n) levels (5% two-sided, 80% power; our SD: 8.25 from six pairs, 5.95 from eight same-day runs). (2) Judge a small change by its target metric as predeclared; use levels only to veto gross harm (we used nine below the pooled control). (3) Price a speed-up by resampling logged attempts and by what the window's last tenth earns. (4) Interleave arms on one build before trusting a gain across days. (5) Pair a cleared and a stuck play before building; write each kill rule first. (6) Skip what we dropped: a fourth draft step (decode -4.2%), 16 streams with a host-RAM cache. (7) Untested: the paired decision test (replay recorded states; it failed a leaner history once, agreement 78% to 71%, p 0.09); a token-only cut to 70% of the window (about 20 levels on the curve).
+1. **Size your noise:** run identical code about eight times on one day, plus a few pairs across days (ours: SD 5.95 and 8.25).
+2. **Know your detection line:** n runs per arm detect 2.8 x SD x sqrt(2/n) levels (5% two-sided, 80% power, normal approximation).
+3. **Interleave arms** on one build before trusting a gain across days (our 12.5 became -2.5).
+4. **Judge a small change by the behavior it targets,** pass rule written first; use levels only to veto gross harm.
+5. **Price a speed-up** by resampling logged attempts and by what the window's last tenth earns (7% of points).
+6. **Pair a cleared and a stuck play** before building a fix; write each kill rule first.
 
-Items 1 to 5 need only repeated runs and logs, tested on one stack; try them on benchmarks that sum all-or-nothing outcomes. The SD values are ours.
+Items 1 to 6 need only repeated runs and logs, tested on one stack with our SD values. Elsewhere the scale is similar: SWE-Bench-Verified agents (10 runs per cell, Bjarnason et al.) have SD 0.7 to 1.8 points, so one run per arm detects only about 6.
 
 ## Limits
 
-Development numbers are on the demonstration games, not held out. 40.98 is a maximum; with the unexplained 10-18 zero the 18 draws average 32.67, and we expect a draw picked by public score to score near the mean on the private half (untested until private scores post). The second-run shift is unexplained: only one of the pairs' 12 runs began play over 3 minutes before its server was ready. Harness arms have three runs or fewer, were not interleaved and ran on Kaggle against a control mostly from another platform; six of 23 Kaggle runs began play 12 to 21 minutes before the server was ready, unevenly across arms.
+Development numbers are on the demonstration games, not held out. 40.98 is a maximum picked by public score; we expect the private half near the mean (untested until private scores post). The second-run shift is unexplained. Harness arms have three runs or fewer, were not interleaved and ran against a control mostly from another platform.
 
 ## Credit
 
-Inherited: Qwen's model, Intel's 4-bit weights, albucino's drafter, J. Pezzulli's serving build, Tufa Labs' Duck and RE-ARC-3, Daniel Franzen's notebook, harness patch and schedule. Borrowed: shiiin9's priority formula (Apache 2.0), expert ids recovered from lee-chang-93's pruned checkpoint (list licence unsettled), Lord Han Solo, ursuciprian, lovedheart, Tufa Labs' step-verification text. <!-- OWNER: confirm or correct the AI-use sentence, and add any decisions you made yourself (for example the kill rules or the interleaved test); the sentence below states only what the files show. The files show the veto only for the finals rule (adopted 10-20, open to veto until 10-28), not for the 11-01 and 11-02 harness pins. PDF Appendix M says "much of"; this says "most" (claim H10: 165 of 166 commits), so align the PDF to "most" or this to "much". --> Claude (Anthropic) wrote most of the code, analysis and text. The author set the goals and limits, could veto the Final Submissions rule until 10-28, and marked the two Final Submissions by hand.
+Inherited: Qwen's model, Intel's 4-bit weights, albucino's drafter, J. Pezzulli's serving build, Tufa Labs' Duck and RE-ARC-3, Daniel Franzen's notebook, harness patch and schedule. Borrowed: shiiin9's priority formula (Apache 2.0), expert ids recovered from lee-chang-93's pruned checkpoint (list licence unsettled), Lord Han Solo, ursuciprian, lovedheart, Tufa Labs' step-verification text. Claude (Anthropic) wrote most of the code, analysis and text. The author set the goals and limits, and marked the two Final Submissions by hand.
+
+<!-- DEEP PASS 2026-11-04: body rewritten from the four-lens diagnosis and the variance, gates/board, skeptic and second-population analyses (paper/v3/analysis/out/variance_frames.md, gates_board.md, second_population.md). Pre-pass body saved in the session scratchpad. Notebook link removed from the Accuracy line: it returned 404 logged out on 11-04; re-add once public. -->
+
+<!-- STATUS 2026-11-02 21:00Z: the repository and PDF are public (https://github.com/vineethsaivs/arc3-decisions-or-tokens, commit c77243c, tag v1, LICENSE present). The D3 dataset is now PUBLIC (version 2, with the Qwen LICENSE and NOTICE; reported 2026-11-03, V3-W42). The submitted notebook was still private on 2026-11-02 (it embeds files with unread licences, so Kaggle's own after-the-deadline publication is the route). Re-check both logged out before submitting. Board refreshed 2026-11-03 to the final public board, rank 26 of 5,073 (V3-W43). -->
+
+<!-- ACCURACY / BOARD-REFRESH: refreshed 11-02 12:15Z after the last draw (36.38); after the deadline re-read the rank, and once posted lead with the private score of the linked Final Submission. LICENCE: CC-BY 4.0 (Kaggle) vs CC0 or MIT-0 (arcprize.org) is the owner's open decision, see CHECKLIST.md; change this clause if the owner picks another. -->
+
+<!-- URL for the hidden record, not for the body unless the owner wants it: https://github.com/guoyi12311125-netizen/arc3-repeat-controlled-eval (24-page PDF; read from the repository page and README only, per V3-W39 and scratchpad pt/C_rivals.md). -->
+
+<!-- OWNER: confirm or correct the AI-use sentence, and add any decisions you made yourself (for example the kill rules or the interleaved test); the sentence below states only what the files show. The files show the veto only for the finals rule (adopted 10-20, open to veto until 10-28), not for the 11-01 and 11-02 harness pins. PDF Appendix M says "much of"; this says "most" (claim H10: 165 of 166 commits), so align the PDF to "most" or this to "much". -->
 
 <!--
 CLAIM IDS (hidden; not part of the Writeup; delete every HTML comment before pasting into Kaggle).

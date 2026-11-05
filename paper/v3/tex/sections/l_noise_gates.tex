@@ -1,0 +1,69 @@
+\section{Where the noise comes from and what the gates can see}\label{app:noisegates}
+
+Three zero-GPU analyses of files already in the repository: \texttt{v3\_variance\_frames.py}, \texttt{v3\_gates\_board.py} and \texttt{v3\_second\_population.py} (Sec.~\ref{sec:related}), with outputs under \texttt{paper/v3/analysis/out/}.
+All numbers are computed by those scripts; the claims table (Appendix~\ref{app:claims}) gives each source.
+
+\paragraph{Per-game variance.}
+A run sums 25 games. If the games vary independently, the variance of the run total is the sum of the per-game variances; a common run effect adds a positive covariance. Table~\ref{tab:pergame} compares the two.
+In the three same-session sets of identical or near-identical runs the total sits at or below the sum (permutation $p$ 0.20, 0.48 and 0.21 for an observed total variance at or below independence), and independent games predict a run SD of 5.1, 6.3 and 5.5 against 3.9, 5.95 and 4.7 observed: no shared run effect is detectable inside a session. % V3-W50
+The pairs are the exception. Their per-game variances sum to 38.8 (SD 6.2) but the total is 68.1 (SD 8.25), a covariance term of $+29.3$, which is the common shift of the pairs (Sec.~\ref{sec:measure}). The two interleaved arms have terms of $+15.0$ and $-40.5$ on six runs each, which we read as noise. % V3-W50 V3-W48
+Five games hold 55\% to 64\% of the per-game variance in every frame. In the pool of 18 they are tn36 (18\% of the total), sc25 (12\%), su15 (9\%), sk48 (8\%) and s5i5 (7\%); four of 25 games never move (ar25 and cd82 clear every level every time; lp85 and sb26 never vary either), 21 move at all and 10 have a variance of 1 or more. % V3-W50
+
+\begin{table}[t]
+\caption{Sum of per-game variances against the variance of the run total, in levels squared, 25 development games. Never moving: games whose level count is identical in every run of the set. Top five: share of the per-game variance held by the five most variable games. Pairs: centred on each pair's mean (12 runs, 6 df).}\label{tab:pergame} % V3-W50
+\centering\footnotesize
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Set & Runs & Sum, per game & Total & Never moving & Top five \\
+\midrule
+Nine near-identical builds & 9 & 26.2 & 15.3 & 6 & 0.60 \\
+Eight same-day runs & 8 & 39.3 & 35.4 & 6 & 0.57 \\
+Pool of 18 & 18 & 30.4 & 22.0 & 4 & 0.55 \\
+Interleaved test, 8,192 arm & 6 & 27.7 & 42.7 & 6 & 0.63 \\
+Interleaved test, 2,048 arm & 6 & 45.5 & 5.0 & 5 & 0.64 \\
+Six identical pairs & 12 & 38.8 & 68.1 & 3 & 0.58 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{What the three-against-seven gate can see.}
+The harness gate (Sec.~\ref{sec:harness}) ships a change if its three-run mean levels are at least the seven-run control's minus 2.5 and its mean score at least the control's minus 1.5, plus mechanism and action checks that we do not simulate. Table~\ref{tab:falseship} gives the probability of shipping a change of a given true size, with normal run noise and an independent control, at the three SDs of Sec.~\ref{sec:measure}; the score rule uses the 0.52 points per level that 18 harness runs fit (residual SD 1.7). % V3-W51
+At SD 5.95 the gate ships a true loss of 6 levels one time in five (0.20, or 0.16 with the score rule), a null change seven times in ten (0.73, 0.67) and misses a true gain of 6 two times in a hundred (0.04 with the score rule). It cannot tell $+3$ from 0 (0.91 against 0.73). Two runs against seven, or three against three, behave the same (0.70 to 0.73 for a null change at SD 5.95).
+The gate therefore screens out large losers and promotes nothing: a chain of changes that each passed it has no demonstrated lead, which is how we read the four shipped harness changes. % V3-W51 V3-W41
+
+\begin{table}[t]
+\caption{Probability that the no-harm gate ships a change, by its true effect in levels, three arm runs against seven control runs. Each cell: levels rule only / levels and score rules. Normal run noise at the SD in the first column; the control is independent of the arm.}\label{tab:falseship} % V3-W51
+\centering\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{@{}rccccc@{}}
+\toprule
+SD & $-6$ & $-3$ & 0 & $+3$ & $+6$ \\
+\midrule
+4.7 & 0.14 / 0.11 & 0.44 / 0.37 & 0.78 / 0.70 & 0.95 / 0.92 & 1.00 / 0.99 \\
+5.95 & 0.20 / 0.16 & 0.45 / 0.39 & 0.73 / 0.67 & 0.91 / 0.87 & 0.98 / 0.96 \\
+8.25 & 0.27 / 0.23 & 0.47 / 0.42 & 0.67 / 0.62 & 0.83 / 0.80 & 0.93 / 0.91 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{How much of 40.98 is selection.}
+Sec.~\ref{sec:board} counts 17 valid draws of the agent's family from 2026-10-13 to 2026-11-02 (mean 34.59, SD 3.39; the adapter draws, the 10-12 draw of the earlier build and the 0.00 of 10-18 are not among them). The 21 post-yield nonzero draws are those 17 plus the three adapter draws (35.90, 39.79, 35.98, pinned by our override before their gate read; Sec.~\ref{sec:rl}) and the 10-12 draw (34.34), mean 34.96. Both sets are right; they are different sets. % V3-W52 V3-W17
+Table~\ref{tab:maxdraws} gives the expected best of $n$ draws under three models and the chance that the best reaches 40.98. Under the family SD the expected best of 17 to 21 draws is 40.7 to 41.1; under the within-build SD, 39.6 to 40.2; the bootstrap gives 40.4 to 40.6. One family draw reaches 40.98 with probability 0.030 ($z$ 1.88), so 40.98 is a typical best of this many draws and not evidence that r3p beats the family: the build effect is not established (ANOVA across the seven builds $F$ 2.34, $p$ 0.113; between-build SD 2.1). % V3-W52
+The two auto-selected draws are both r3p's. With r3p's mean of 38.43 over three draws and a reliability of 0.63, its shrunk mean is 37.0, 2.4 above the family mean. We therefore expect a private score of about 35 to 37 (the family mean to the shrunk r3p mean, per-draw SD about 3.4), not 40.98. The public and private halves hold different games, so the true mean can differ between halves by a term these data cannot estimate; the range is a prediction, not a result. % V3-W52
+
+\begin{table}[t]
+\caption{Expected best of $n$ board draws, and the chance that the best reaches 40.98. Normal: draws from a normal with the set's mean and the stated SD (family 3.39 for 17 draws and 3.25 for 21; within-build 2.77). Bootstrap: resampling the draws. Computed by \texttt{v3\_gates\_board.py}.}\label{tab:maxdraws} % V3-W52
+\centering\footnotesize
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Model & Draws & Expected best & P(best $\geq$ 40.98) \\
+\midrule
+Normal, family SD & 17 & 40.67 & 0.40 \\
+Normal, within-build SD & 17 & 39.56 & 0.17 \\
+Bootstrap & 17 & 40.40 & 0.64 \\
+Normal, family SD & 21 & 41.10 & 0.50 \\
+Normal, within-build SD & 21 & 40.18 & 0.27 \\
+Bootstrap & 21 & 40.55 & 0.64 \\
+\bottomrule
+\end{tabular}
+\end{table}

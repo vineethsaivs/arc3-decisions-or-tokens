@@ -16,40 +16,53 @@ The problem is hard for a plain reason: a run's score sums nearly two hundred al
 Published ARC-AGI-3 agents use hosted models on the demonstration set \citep{lehmann2026tycho,skoutnev2026twin}, and the open-weight write-ups we read report no measurement protocol \citep{bessis2026duck,franzen2026writeup}.
 One public repository, ``Before Tuning the Harness'', repeats identical submissions before tuning and accounts cost per request \citep{guoyi2026repeat}; we read its page and README only and did not check its model, and we price tokens in levels. % V3-W39
 Our entry forks Daniel Franzen's public notebook \citep{franzen2026milestone2}; Sec.~\ref{sec:setting} separates what we inherited, borrowed and built.
-We make five contributions.
+We make five contributions; Table~\ref{tab:glance} gives the findings and their status.
 
 \begin{enumerate}\setlength{\itemsep}{2pt}
 \item \textbf{A measurement kit for a noisy fixed-budget agent (Sec.~\ref{sec:measure}).}
-Six identical pairs give a run-to-run SD of 8.25 levels across days (5.6 around their shared first-to-second shift) and eight runs on one day 5.95, so two runs per arm resolve about 23 levels across days and 17 on one day by normal approximation; a $t$ test needs 5 to 12 runs per arm to see a 10-level gain, and a wave of twelve runs per arm made side by side would resolve about 9. % B1 B4 V3-X12 V3-W47 V3-W49
-We also used concurrent replication on rented copies of the scoring GPU, which match Kaggle within 1\% on serving counters, and once a paired decision test, which replays single decisions with and without a change against the model's own sampling noise and is not yet validated against a lever with a known level effect. % V3-T3 V3-T4 V3-X1
+Six identical pairs give a run-to-run SD of 8.25 levels across days (5.6 around their shared first-to-second shift) and eight runs on one day 5.95, so two runs per arm resolve about 23 levels across days and 17 on one day by normal approximation, and a 10-level gain needs 5 to 12 runs per arm. % B1 B4 V3-X12 V3-W47 V3-W49
+We also used concurrent replication on rented copies of the scoring GPU (within 1\% of Kaggle on serving counters) and once a paired decision test, not yet validated against a lever with a known level effect. % V3-T3 V3-T4 V3-X1
 
 \item \textbf{A token-budget curve that prices throughput (Sec.~\ref{sec:curve}).}
-Built from recorded level attempts, it puts the agent at about 90\% of its ceiling, the score that unlimited tokens would give at the depths we recorded. % C2 N2
-Our serving speed-ups are then worth about 4 levels (2 to 10 across our estimates), below what two runs per arm can see; the price is a simulator's and is itself uncertain. % C4 N1.3
+Built from recorded level attempts, it puts the agent at about 90\% of its ceiling and our serving speed-ups at about 4 levels (2 to 10 across estimates), below what two runs per arm can see. % C2 N2 C4 N1.3
 Read from the clock, the last tenth of the window earns 7\% of the points, about three times the curve's price on score. % V3-W13 V3-W14
 
 \item \textbf{A context lever that failed an interleaved test (Sec.~\ref{sec:yield}).}
-Yielding a turn after 8,192 generated tokens, four times Franzen's threshold, re-sends the turn's opening message and board image about 70\% less often. % D14 D5
-Across days it coincided with 12.5 more levels. % D1 D8
-Interleaved on builds that differ in one line, six runs per arm, it scored 2.5 fewer ($p$ 0.42), which excludes the earlier gain but not small gains: drift between days and extra tokens are the candidate causes, and only the interleaved design could show that the gain did not reproduce (Sec.~\ref{sec:yield}). % YN6 V3-W36 V3-W38
+Yielding a turn after 8,192 generated tokens, four times Franzen's threshold, re-sends the opening message and board image about 70\% less often. % D14 D5
+Across days it coincided with 12.5 more levels; interleaved, on builds that differ in one line, six runs per arm, it scored 2.5 fewer ($p$ 0.42). % D1 D8 YN6 V3-W36 V3-W38
+That excludes the earlier gain but not small gains; drift between days and extra tokens are the candidate causes.
 
 \item \textbf{A diagnosis-first harness program with kill rules (Sec.~\ref{sec:harness}).}
-In eight paired plays, stuck plays often stopped acting, wrote off object types untested and misread what the harness shows; over 562 level plays of the same four runs, 27\% of never-cleared levels hold three or more idle turns in a row, against 8\% of cleared ones. % V3-W18
-Five changes, each gated by a rule in a dated file written before its runs, fired as designed: a stall check, a corner-joined view of objects, a scroll detector, tool fixes that keep a timed-out snippet's output, and a replay check that tests the model's simulator and goal guesses against the level's history at no cost in actions. % V3-W20 V3-W22 V3-W23 V3-W28 V3-W29 V3-W38
-The first two led a pooled control by about five levels and the replay check by about three (over twice as much against the two Kaggle controls alone), which three runs cannot resolve; the scroll detector gave no gain and was not shipped; the replay check's helper reported a mismatch in 52 of 85 replays (42 a wrong prediction), which counts reports and not better play. % V3-W19 V3-W23 V3-W29 V3-W41
-None adds tokens, so this is evidence about decisions, not budget.
-A research pass reads why such changes are the place to look: on long levels most of the clock goes to finding the rule or the goal, not to carrying out a plan. % V3-W31 V3-W34
+Stuck plays often stop acting: 27\% of never-cleared levels hold three or more idle turns in a row, against 8\% of cleared ones (562 level plays of four runs). % V3-W18
+Five changes, each gated by a rule in a dated file written before its runs, fired as designed: a stall check, a corner-joined view of objects, a scroll detector, tool fixes and a replay check. % V3-W20 V3-W22 V3-W23 V3-W28 V3-W29 V3-W38
+Four shipped, leading a pooled control by $-1$ to $+6$ levels, which three runs cannot resolve; the scroll detector gave no gain and did not ship. % V3-W19 V3-W23 V3-W29 V3-W41
+None adds tokens, so this is evidence about decisions, not budget. A research pass reads why: on long levels most of the clock goes to finding the rule or the goal, not to carrying out a plan. % V3-W31 V3-W34
 
-\item \textbf{Two fine-tuning results and what came with them (Sec.~\ref{sec:finetune}).}
-(a) Rejection-sampling fine-tuning on the agent's own cleared levels lowered validation loss by 13.9\% and lowered levels. % V3-L6 V3-L9 V3-L10
-Its three runs sit at or below the two lowest of 18 runs without it (rank $p$ 0.004, two adapter scales pooled). Two later same-card controls without it cleared more, and the adapter's three runs are the lowest of those five (rank $p$ 0.10, the smallest possible for three against two). The adapter and the controls ran on different services and days, not interleaved, and the controls are two, one restarted after a preemption. % V3-W9 V3-W44
-The agent already clears 91\% of the training games' levels, so the filter kept nearly everything, slow wins included; the adapter's reasoning per action fell toward the training games' level, and its resets and deaths rose. % V3-L1 V3-L2 V3-L13 V3-L18
-This chain is our best reading of why; two alternatives are untested.
-
-(b) In reinforcement learning on this stack the training forward pass is not deterministic: two identical passes agree exactly on about 12\% of tokens and differ by 0.37 nats per token (RMS). % V3-G5
-A drift guard must therefore be read net of the stack's own floor; read raw, our predeclared guard would have discarded the run on noise. % V3-G4 V3-G7
-Round A shipped no adapter: a first-wave lead of 1.9 levels, selection-biased since only the leader went on, did not replicate (second wave $-2.8$, pooled $+0.25$ against a $+1.75$ bar). A round B adapter was nonetheless pinned for three board draws by our override before its gate read (35.90, 39.79, 35.98) and then failed (Sec.~\ref{sec:rl}). % V3-W45 V3-W17
+\item \textbf{Two fine-tuning results (Sec.~\ref{sec:finetune}).}
+(a) Rejection-sampling fine-tuning on the agent's own cleared levels lowered validation loss by 13.9\% and was followed by fewer levels: three runs at or below the two lowest of 18 without it (rank $p$ 0.004), and the lowest of five against two later same-card controls (rank $p$ 0.10, the smallest possible), not interleaved and on different services and days. % V3-L6 V3-L9 V3-L10 V3-W9 V3-W44
+The agent already clears 91\% of the training games' levels, so the filter kept nearly everything, slow wins included: our untested reading of why. % V3-L1 V3-L2 V3-L13 V3-L18
+(b) In reinforcement learning on this stack the training forward pass is not deterministic (two identical passes agree exactly on about 12\% of tokens, RMS gap 0.37 nats), so a drift guard must be read net of the stack's own floor; read raw, ours would have discarded the run on noise. % V3-G5 V3-G4 V3-G7
+Round A shipped no adapter (pooled $+0.25$ levels against a $+1.75$ bar); a round B adapter was nonetheless pinned for three board draws by our override before its gate read (35.90, 39.79, 35.98) and then failed (Sec.~\ref{sec:rl}). % V3-W45 V3-W17
 \end{enumerate}
+
+\begin{table}[t]
+\caption{Findings at a glance. Levels are on the 25 development games (183 levels), not held out; every row is one stack.}\label{tab:glance}
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.34\linewidth}>{\raggedright\arraybackslash}p{0.38\linewidth}>{\raggedright\arraybackslash}p{0.2\linewidth}@{}}
+\toprule
+Finding & Evidence & Status \\
+\midrule
+Identical code scores 123, then 101 & six pairs (SD 8.25, 5.6 about the shift); eight same-day runs (SD 5.95) & measured \\ % B1 V3-W47
+Serving +11\% tokens is worth about 4 levels & simulator on 1,114 attempts (2 to 10 across estimates) & simulated, unresolved \\ % C4 V3-W14
+Yield at 8,192: $+12.5$ across days, $-2.5$ interleaved & 9 against 21 runs; 6 against 6 runs ($p$ 0.42) & not reproduced \\ % D1 D8 YN6
+Four shipped harness changes: $-1$ to $+6$ & three runs each against seven (together $+3.2$, $z$ 0.8) & fired, unresolved \\ % V3-W19 V3-W38
+LoRA on own wins: 109, 115, 117 levels & controls 132, 130; rank $p$ 0.10, not interleaved & lower, no causal claim \\ % V3-W9 V3-W44
+GRPO rounds A to C & pooled $+0.25$ against a $+1.75$ bar & failed its gate \\ % V3-W45
+40.98 public: best of 28 draws & seventeen valid draws, mean 34.59, range 28.97 to 40.98 & a maximum; expect 35 to 37 \\ % V3-B2 V3-W30 V3-W52
+\bottomrule
+\end{tabular}
+\end{table}
 
 \begin{figure}[t]
 \centering

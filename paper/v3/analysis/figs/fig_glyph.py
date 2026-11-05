@@ -161,7 +161,7 @@ texts.append(fig.text((bx + BW - 0.05) / W, 1 - (by + BH / 2) / H, f"{CORP['star
 texts.append(fig.text(bx / W, 1 - (by + BH + 0.1) / H,
                       f"{CORP['hit']} of {CORP['starts']} level starts in {CORP['hit_games']} of {CORP['games']} human replays "
                       "hold a `group` of 2 or more nodes with a\nbounding box of at least 3 x 3 cells "
-                      f"({CORP['hit_filtered']} if sparse dot lattices, fill under 0.1, are dropped). Recount with the real module.", fontsize=7, color=C["ink"], ha="left", va="top", linespacing=1.25))
+                      f"({CORP['hit_filtered']} if sparse dot lattices, fill under 0.1, are dropped).", fontsize=7, color=C["ink"], ha="left", va="top", linespacing=1.25))
 texts.append(fig.text(bx / W, 0.012, "Colours are the game's 16 indices on a fixed palette chosen for this picture; "
                       "(b) and (c) are faded so the outlines read.", fontsize=6.5, color=C["gray_text"], ha="left", va="bottom"))
 

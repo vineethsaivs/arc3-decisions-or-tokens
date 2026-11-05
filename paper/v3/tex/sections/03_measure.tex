@@ -67,6 +67,13 @@ SD & 5 & 10 & 15 & 23 & 2 & 6 & 12 \\
 \end{tabular}
 \end{table}
 
+\paragraph{Why the noise has this size.}
+A run sums 25 games' level counts, so its variance is the sum of the per-game variances plus any covariance the games share.
+Within a session the sum is enough: independent games predict a run SD of 5.1, 6.3 and 5.5 for the three same-session sets, against 3.9, 5.95 and 4.7 observed, and no shared run effect is detectable (Appendix~\ref{app:noisegates}). % V3-W50
+The variance is concentrated: five games hold 55\% to 64\% of it and four never move, so a gain on the other twenty games is what a test must find among a few noisy ones. % V3-W50
+Across days the pairs' variance is 68 against 39 from the games alone: the difference is the common shift, the one term the within-session model cannot supply. % V3-W47 V3-W50
+This is also why a larger arm helps less than it seems: it shrinks the noise from the games, not a shift shared by whole days.
+
 \paragraph{One rule for intervals.}
 We report every comparison at the identical-run SDs, 5.95 for eight runs on one day and 8.25 for six pairs run one after another, hours to a day apart, two-sided; where the two differ, 8.25 is the cautious choice and the interval at a smaller SD is narrower. % V3-X3 B1
 Bootstrap intervals over runs treat runs on different days as exchangeable, which the shift above argues against, so they come second.

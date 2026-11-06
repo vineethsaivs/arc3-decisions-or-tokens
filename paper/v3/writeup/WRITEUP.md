@@ -11,7 +11,7 @@
 5. paper/v3/figs/fig_finetune_writeup.png, under "Imitating easy wins" (Figure 5)
 Cover (Media Gallery only): paper/v3/figs/cover_1600x900.png. Alt text for all: ALT_TEXT.md. -->
 
-The same code cleared 123 of 183 levels, then 101. Decisions or tokens? Neither is resolvable at that noise: a faster server (+11% tokens) is worth about 4 levels and four harness changes led a control by -1 to +6. A 12.5-level gain across days from re-sending context less often did not reproduce once runs were interleaved. The contribution is a method: size the noise first. Scope: one stack, 25 public games, usually two to seven runs per arm.
+The same code cleared 123 of 183 levels, then 101. Decisions or tokens? At that noise most gains, ours included, cannot be told from chance: a faster server (+11% tokens) is worth about 4 levels and four harness changes led a control by -1 to +6. A 12.5-level gain across days from re-sending context less often did not reproduce once runs were interleaved. The contribution is a method: size the noise first. Scope: one stack, 25 public games, usually two to seven runs per arm.
 
 **Accuracy.** Public score 40.98 (submission 57417773, 2026-10-20), public rank 26 of 5,073 at the deadline, on half of the 110 hidden games: our best of 28 live *draws* (scored runs, one a day) since forking Franzen's notebook. Seventeen valid draws (not the 0.00, adapter or earlier-build draws) span 28.97 to 40.98, mean 34.59 (32.67 with one unexplained 0.00). The best of 17 to 21 such draws is expected near 40 to 41, so 40.98 is no evidence for one lever; we expect a private score of about 35 to 37, which is pending. `sh release/reproduce.sh` (CPU) regenerates Figure 2. [PDF](https://github.com/vineethsaivs/arc3-decisions-or-tokens/blob/main/paper/v3/tex/main.pdf), [code](https://github.com/vineethsaivs/arc3-decisions-or-tokens). Paper CC BY 4.0; code CC BY 4.0 or MIT-0.
 
@@ -31,7 +31,7 @@ Our system is Franzen's: Tufa Labs' Duck loop driving a 4-bit Qwen3.8-Flash-Next
 
 A *turn* ends when the model acts. After a set number of generated tokens without acting, the harness *yields*, resuming the turn by re-sending its opening message (the *opener*) and the board image.
 
-The 40.98 build made 19 changes to Franzen's notebook. Three define it: yielding after 8,192 tokens instead of 2,048; dropping an eighth of the experts so 14 games run at once; and fail-closed checks that error a dead run without spending the day's draw (one unexplained 0.00 was banked anyway). Expert pruning is the one large point estimate: 19.5 more levels than the 3.3 its tokens predict, from two runs per arm, not interleaved, below what two runs can detect.
+The 40.98 build made 19 changes to Franzen's notebook. Three define it: yielding after 8,192 tokens instead of 2,048; dropping an eighth of the experts so 14 games run at once; and fail-closed checks that error a dead run without spending the day's draw (one unexplained 0.00 was banked anyway). Expert pruning showed 19.5 more levels than the 3.3 its tokens predict, from two runs per arm: below what two runs can detect, so a hypothesis.
 
 ## Same code, different scores
 
@@ -51,15 +51,15 @@ Resampling 1,114 logged level attempts, score flattens with tokens and a develop
 
 *Figure 3. (a) Across days, not interleaved: levels per game. (b) Re-sent openers. (c) Interleaved, six runs per arm, and the difference with its 95% interval.*
 
-Yielding at 8,192 tokens, not 2,048, cut re-sent openers about 70%. Across days, nine such runs (seven with other serving changes) averaged 12.5 more levels than 21 controls.
+Yielding at 8,192 tokens, not 2,048, cut re-sent openers about 70%. Across days (arms run on different days), nine such runs (seven with other serving changes) averaged 12.5 more levels than 21 controls.
 
-Six runs per arm then ran interleaved on one build but for one line, with rules fixed in a dated file (amended once after the jobs were submitted, before any ran; four of 16 jobs never ran). The rarer yield scored 2.5 levels below the old one (p 0.42), at matched tokens too. That excludes the 12.5-level gap (predeclared verdict: null) but not small gains (95% interval -14.2 to +9.2 at the pairs' SD). Run noise cannot explain the shortfall; drift, build and about 5 levels of extra tokens can. We shipped the yield on the across-days gain.
+Six runs per arm then ran interleaved (arms alternating on one day) on one build but for one line, with rules fixed in a dated file (amended once after the jobs were submitted, before any ran; four of 16 jobs never ran). The rarer yield scored 2.5 levels below the old one (p 0.42), at matched tokens too. That excludes the 12.5-level gap (predeclared verdict: null) but not small gains (95% interval -14.2 to +9.2 at the pairs' SD). Run noise cannot explain the shortfall; drift, build and about 5 levels of extra tokens can. We shipped it on the across-days gain, which we now treat as unproven.
 
 ## Four harness fixes, none resolvable
 
 ![Harness changes](../figs/fig_gates_writeup.png)
 
-*Figure 4. Levels per run: control (seven, mostly on another platform), three runs per change. Shading: one SD of identical runs. Shipped: stall, corner-joined, tool fixes, replay; scroll was not.*
+*Figure 4. Levels per run: control (seven, mostly on another platform), three runs per change. Shading: one SD of identical runs. Shipped: stall, corner-joined (diagonal cells grouped), tool fixes, replay; scroll was not.*
 
 Paired plays (a level cleared in one run, stuck in another) suggested that stuck runs often stop acting. Five changes each had a kill rule in a dated file written before its first run. A **stall check** (act after three idle turns) was followed by an action in 87% of those turns, against 54% in earlier runs: the mechanism fires, no gain claimed. A **replay check** reported a wrong prediction in 42 of 85 replays.
 
@@ -79,7 +79,7 @@ A run sums 25 games' level counts. Within a session the games vary about indepen
 
 ## What to copy
 
-1. **Size your noise:** run identical code about eight times on one day, plus a few pairs across days (ours: SD 5.95 and 8.25).
+1. **Size your noise:** run identical code about eight times on one day, plus a few pairs across days.
 2. **Know your detection line:** n runs per arm detect 2.8 x SD x sqrt(2/n) levels (5% two-sided, 80% power, normal approximation).
 3. **Interleave arms** on one build before trusting a gain across days (our 12.5 became -2.5).
 4. **Judge a small change by the behavior it targets,** pass rule written first; use levels only to veto gross harm.
@@ -90,7 +90,7 @@ Items 1 to 6 need only repeated runs and logs, tested on one stack with our SD v
 
 ## Limits
 
-Development numbers are on the demonstration games, not held out. 40.98 is a maximum picked by public score; we expect the private half near the mean (untested until private scores post). The second-run shift is unexplained. Harness arms have three runs or fewer, were not interleaved and ran against a control mostly from another platform.
+Development numbers are on the demonstration games, not held out. 40.98 is a maximum picked by public score; we expect the private half near the mean (untested until private scores post). Harness arms have three runs or fewer, were not interleaved and ran against a control mostly from another platform.
 
 ## Credit
 

@@ -34,7 +34,7 @@ UPDATED = {
     "G7": "V3-B1, V3-B2", "G1": "V3-B1, V3-B7", "G3, G5": "V3-B5", "B11": "V3-B7",
     "D1, YN1": "V3-H5", "D2": "V3-H5", "YN7": "V3-H5", "E8": "V3-H2, V3-H4", "E1": "V3-T7",
     "E6, E11, E12": "V3-T7", "F3": "V3-L9, V3-L10, V3-T3", "N5, N6, H1, H6": "V3-X1, V3-X8, V3-X11",
-    "YN6": "V3-X13", "B1, B2, I5, I6": "V3-X3, V3-X4", "B4, I1 to I4, I8": "V3-X12",
+    "YN6": "V3-X13; the interleaved test has since run (V3-W36: -2.5 levels, p 0.42)", "B1, B2, I5, I6": "V3-X3, V3-X4", "B4, I1 to I4, I8": "V3-X12",
     "H10": "not recounted; the AI-use line in Appendix K replaces it",
     "C2, N2, C9": "the extrapolated share is 85% to 91% (Table plateau); 94% is the eight-run value, not an extrapolation",
     "C4": "v3 quotes only the two-sided values, at the identical-run SDs 5.95 and 8.25 (V3-W12)",
@@ -139,7 +139,7 @@ def main():
             else:   # a few dossier cells mark the check inline in lower case: print the whole cell
                 m = re.search(r"\b(recomputed|read|not checked|derived)\b", src, re.I)
                 assert m, "no check marker in the source of " + cid
-                src_print, chk = src.strip().rstrip(".;,"), "check marked inline"
+                src_print, chk = src.strip().rstrip(".;,"), "source checked"
             claim_tex = cell(claim.strip())
             if printed in ANON_HIDE:   # our own rank by date identifies the entry
                 claim_tex = "\\ifanon Our rank history is withheld in the anonymised copy.\\else %s\\fi" % claim_tex
@@ -175,7 +175,7 @@ def main():
             o += [b, "\\addlinespace[0.5pt]"]
     o.append("\\midrule")
     o.append("\\multicolumn{2}{@{}p{0.98\\linewidth}}{\\textit{Not run in v2, and named as such there: %s. "
-             "K0 headroom has since been measured (V3-T7).}}\\\\" % cell("; ".join(kept), False))
+             "K0 headroom has since been measured (V3-T7), and the interleaved yield test has since run (V3-W36).}}\\\\" % cell("; ".join(kept), False))
     o += ["\\end{longtable}", "\\endgroup", ""]
     out = "\n".join(o)
     assert "\u2013" not in out and "\u2014" not in out and "--" not in out.replace("\\\\", ""), "dash in output"

@@ -15,11 +15,11 @@ All nine & 9 vs 21 & $+12.5$ & $+9.2$ to $+15.8$ & $2.4\times10^{-6}$ \\ % D1
 Eight & 8 vs 21 & $+12.3$ & $+8.8$ to $+15.8$ & $7.9\times10^{-6}$ \\ % D2
 Six & 6 vs 21 & $+13.5$ & $+9.7$ to $+17.1$ & $2.4\times10^{-5}$ \\ % D2
 First two, their two controls & 2 vs 2 & $+15.0$ & n/a & 0.33 \\ % D4
-By UTC day & 3 vs 6 days & $+10.9$ & n/a & 0.012 \\ % D3
+By UTC day & 3 vs 6 days & $+10.9$ & n/a & 0.024 \\ % D3
 \bottomrule
 \end{tabular}
 \par\vspace{2pt}
-\begin{minipage}{\linewidth}\footnotesize The day row's $p$ is its least possible, $1/84$. The 30 runs are every full-length run at the two settings on the current stack. On a development run the first two at 8,192 differ from their controls in the yield setting alone; the seven later runs carry other changes. Eight leaves out the own-traffic draft-vocabulary run, whose gate was still open in v2 and has since passed; six also leaves out the 16K-output-cap run and the four-draft-step run. Left out: three older-stack runs (they would widen the gap), the run without a token yield (115 levels against 119 for the same code at 8,192; server out of memory at 6,893 s) and an 8,192 run that died at start (0 levels; counted, the mean of ten is 111.6).\end{minipage} % D1 D2 D3 D4 YN7
+\begin{minipage}{\linewidth}\footnotesize The day row's two-sided $p$ is its least possible, $2/84$. The 30 runs are every full-length run at the two settings on the current stack. On a development run the first two at 8,192 differ from their controls in the yield setting alone; the seven later runs carry other changes. Eight leaves out the own-traffic draft-vocabulary run, whose gate was still open in v2 and has since passed; six also leaves out the 16K-output-cap run and the four-draft-step run. Left out: three older-stack runs (they would widen the gap), the run without a token yield (115 levels against 119 for the same code at 8,192; server out of memory at 6,893 s) and an 8,192 run that died at start (0 levels; counted, the mean of ten is 111.6).\end{minipage} % D1 D2 D3 D4 YN7
 \end{table}
 
 \paragraph{The interleaved wave.}
@@ -67,7 +67,7 @@ Yield 2,048, same-stack controls & 9 & 123, 101, 104, 116, 113, 113, 109, 115, 1
 Yield 2,048, earlier-stack controls & 12 & 122, 106, 117, 111, 111, 110, 108, 105, 107, 115, 113, 113 & Control \\ % D1
 Yield 8,192, first two & 2 & 128, 124 & Treated \\ % D1
 Yield 8,192, later seven & 7 & 119, 120, 128, 122, 129, 120, 126 & Treated \\ % D1
-No token yield & 1 & 115 & Left out: server out of memory at 6,893 s, 5.7 minutes before the window ended \\ % YN7 B12
+No token yield & 1 & 115 & Left out: server out of memory at 6,893 s of the 7,200 s window \\ % YN7 B12
 Fork before expert pruning & 3 & 92, 97, 90 & Left out: earlier code line; counting them would widen the gap \\ % YN7
 Yield 8,192, died at start (not among the 34) & 1 & 0 & Left out: counting it makes a ten-run mean of 111.6 \\ % YN7 B12
 \bottomrule

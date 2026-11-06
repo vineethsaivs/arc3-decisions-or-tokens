@@ -38,7 +38,7 @@ The waves continued: on Saturday 2026-10-17, 73 of 118 runs submitted 00:00 to 0
 These field counts come from a research pass over a third-party monitor and were not recomputed here. % V3-B8
 
 \paragraph{CUDA out-of-memory after READY.}
-Of 34 full-length replica runs (68.6 play-hours), one lost its server to \texttt{torch.OutOfMemoryError} with 91.06 MiB free, 1 h 54 min into play and 5.7 minutes before the window ended; its 115 levels include a dead server for that tail. % B12
+Of 34 full-length replica runs (68.6 play-hours), one lost its server to \texttt{torch.OutOfMemoryError} with 91.06 MiB free, 1 h 54 min into play and about 5 minutes before the window ended; its 115 levels include a dead server for that tail. % B12
 A second error came seven seconds after play began, in a run that deliberately added memory (BF16 draft KV); it is outside the rate. % B12
 One event is 2.9\% per two-hour run, with an exact 97.5\% upper bound of 15.3\%. A constant hazard, which is an assumption, extrapolates to 12.3\% for the nine-hour run. % B12
 Failures cannot show that the memory fraction of 0.955 works: with none in 10.1 post-change hours, the chance of seeing none at the earlier hazard is 0.86. The warning can (Table~\ref{tab:oom}). % B12

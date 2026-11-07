@@ -45,8 +45,9 @@ With run SD $\sigma$ and $n$ runs per arm, a two-sided test at the 5\% level wit
 \begin{equation}\label{eq:mde}
 \mathrm{MDE}(n) = 2.80\,\sigma\sqrt{2/n}.
 \end{equation}
-At the pairs' SD, two runs per arm resolve 23 levels across days, and 17 at the same-day SD (13 at the pooled 4.7); a wave of twelve runs per arm made side by side would resolve about 9 (Figure~\ref{fig:power}). % B4 V3-X12 V3-W49
-Eq.~\ref{eq:mde} is a normal approximation that assumes independent runs, equal variance in both arms and a known SD. A $t$ test on two runs per arm has 2 df, and its detection limit is larger: 47 levels at SD 8.25, 34 at 5.95 and 27 at 4.7 (Table~\ref{tab:runsneeded}). The second run was lower in all six pairs, which would raise these further across days. % V3-W49
+Solved for $n$ this is Lehr's rule of thumb, $n\approx16\sigma^2/d^2$ per arm \citep{lehr1992sixteen}.
+At the pairs' SD, two runs per arm resolve 23 levels across days, and 17 at the same-day SD (13 at the pooled 4.7); a wave of twelve runs per arm made side by side would resolve about 9 (Figure~\ref{fig:power}). A gain that clears a test at this low power is likely to overstate the true one \citep{gelman2014beyond}. % B4 V3-X12 V3-W49
+Eq.~\ref{eq:mde} is a normal approximation that assumes independent runs, equal variance in both arms and a known SD; normal intervals understate uncertainty at small $n$ \citep{bowyer2025clt}. A $t$ test on two runs per arm has 2 df, and its detection limit is larger: 47 levels at SD 8.25, 34 at 5.95 and 27 at 4.7 (Table~\ref{tab:runsneeded}). The second run was lower in all six pairs, which would raise these further across days. % V3-W49
 Detecting a 10-level gain takes 5 to 12 runs per arm by the $t$ test, depending on the SD. The SD itself rests on six pairs (6 df) or eight runs (7 df), so every row of the table carries the intervals of Table~\ref{tab:sdframes}.
 Nearly every lever we built is smaller than 23 levels (Appendix~\ref{app:tried}), so a level count from two runs can veto gross harm and cannot promote. % B4 F3
 

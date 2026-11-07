@@ -1,7 +1,7 @@
 An ARC-AGI-3 agent plays unseen interactive games and is scored on the levels it clears and the actions it spends.
 We forked Daniel Franzen's public notebook (an open-weight model, one offline GPU, nine hours) and asked which changes move its score, and how one can tell.
 Identical code cleared 123 and then 101 levels, so we measured the noise first: two runs per arm resolve only about 17 levels on one day and 23 across days, and a 10-level gain takes 5 to 12 runs per arm. % A3 B1 B4 V3-W47 V3-W49
-At that resolution, serving gains (about 4 levels on a token-budget curve) cannot be seen. % C2 C4 V3-W14
+At that resolution, serving gains of our size (about 4 levels on a token-budget curve) cannot be seen; teams with three to six times our throughput report far larger board gains. % C2 C4 V3-W14
 A context lever that coincided with 12.5 more levels across days did not reproduce in an interleaved test ($-2.5$ levels, $p$ 0.42; rules fixed in a dated file, amended once before any run). % D1 D5 D8 YN6 V3-W36 V3-W38
 Four shipped harness changes led a control by $-1$ to $+6$ levels, inside the noise; a fifth, a scroll detector, showed no gain. % V3-W20 V3-W22 V3-W23 V3-W28 V3-W29 V3-W38 V3-W41
 Fine-tuning on the agent's own cleared levels was followed by fewer levels (rank $p$ 0.10 against two same-card controls, not interleaved), and reinforcement learning passed no gate, though one of its adapters drew three board slots by our override. % V3-L9 V3-L10 V3-L18 V3-W9 V3-W44 V3-W45 V3-W17

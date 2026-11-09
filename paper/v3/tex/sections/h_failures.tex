@@ -6,7 +6,7 @@ A scored run returns a score and no log, so a run that dies can bank a completed
 The framework's \texttt{Benchmark.run} catches any solver exception, marks the games still playing as crashed and returns normally (\texttt{benchmark.py}, lines 90 and 178 to 190, in the vendored bundle under \texttt{solution/sim/fixtures/franzen-bundle}). % B10
 The notebook's wait for the server to finish loading (READY), on a dead server, prints the log tail, breaks out and plays the whole run against nothing (\texttt{build\_franzen\_arms.py}, line 518, docstring 521 to 529). % B10
 \texttt{failclosed\_server()} raises when the server exits before READY; \texttt{failclosed()} raises at the end of a run that cleared fewer than 20 levels. Both act only on the scored path. % B10
-An errored submission does not spend the daily slot: two errors on 2026-09-30 were followed by a completed run the same UTC day. The retry applies to errored submissions, which Kaggle does not count against the slot. % B10 G1
+Whether an errored submission spends the daily slot depends on when it fails: two start-up errors on 2026-09-30 (a Kaggle system error and a failed input mount) were followed by a completed run the same UTC day, but other teams report no refund for a notebook error raised once play has started \citep{cottaar2026forum753843}. The end-of-run check fires after play, so whether it saves a draw is untested. % B10 G1
 We read the offline test (\texttt{test\_failclosed.py}) and did not rerun it. A run that dies after 20 levels, or that Kaggle kills from outside, is not caught, and neither check has fired on a scored run. % B10
 
 \paragraph{The midnight zeros.}

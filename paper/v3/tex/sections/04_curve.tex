@@ -1,4 +1,4 @@
-\section{The token-budget curve: a simulator puts the agent near its ceiling}\label{sec:curve}
+\section{The token-budget curve: a price for small speed-ups}\label{sec:curve}
 
 \paragraph{The curve.}
 We simulate the score the scheduler earns on a budget of $B$ tokens by resampling 1,114 level attempts recorded in eight development runs, seven at the 8,192 yield and one without a token yield. % C1
@@ -6,7 +6,7 @@ Score rises in proportion to budget, bends, and flattens at a \emph{ceiling}: th
 Levels that no recorded attempt cleared never clear, so the ceiling is an upper bound at the depths we recorded, and no run had more than this budget. % C2
 
 \paragraph{The operating point.}
-At its own budget a development run earns about 90\% of its ceiling. % C2 N2
+At its own budget a development run earns about 90\% of the simulator's ceiling, which is partly built in (a level no run cleared stays stuck); on the same stack, doubling play time bought 37\% more levels \citep{shah2026lottery}. % C2 N2
 The share is partly built in, because the attempts were recorded at that budget: against the eight runs that built the curve it reads 94\%, and it falls as more runs are pooled and the ceiling rises (Appendix~\ref{app:curve-checks}). % C2 N2 C9
 
 \paragraph{The price of throughput.}
@@ -31,7 +31,7 @@ Why the curve's marginal levels are shallower we have not tested; until we know,
 \begin{figure}[t]
 \centering
 \figfile{fig_budget}{2.7in}
-\caption{A simulator puts the agent near its token ceiling. Simulated score against token budget relative to today's serving speed, for 110 games in the hidden run's window, from attempts recorded in eight development runs; bands: middle 50\%, 80\% and 95\% of 200 resamples of the runs. Dot: the operating point, about 90\% of the ceiling extrapolated to more runs (94\% of these runs' plateau); arrow: 11\% more tokens; dashed: these runs' plateau; hatched: the ceiling with more runs pooled; bar: the SD of one run. Higher is better. The simulator assumes that levels no attempt cleared stay stuck; no run had more than this budget.}\label{fig:budget} % C1 C2 C3 C4
+\caption{Simulated score flattens with token budget, partly by construction. Simulated score against token budget relative to today's serving speed, for 110 games in the hidden run's window, from attempts recorded in eight development runs; bands: middle 50\%, 80\% and 95\% of 200 resamples of the runs. Dot: the operating point, about 90\% of the ceiling extrapolated to more runs (94\% of these runs' plateau); arrow: 11\% more tokens; dashed: these runs' plateau; hatched: the ceiling with more runs pooled; bar: the SD of one run. Higher is better. The simulator assumes that levels no attempt cleared stay stuck; no run had more than this budget.}\label{fig:budget} % C1 C2 C3 C4
 \end{figure}
 
 \paragraph{Why throughput may not be the lever.}

@@ -1,6 +1,6 @@
 # Decisions or Tokens? What Moves an Offline ARC-AGI-3 Agent, and How to Tell
 
-*Identical code cleared 123, then 101 of 183 levels. We size that noise, show a 12.5-level gain stop reproducing, and find that fine-tuning on its own wins ran lower than same-card controls, though not interleaved.*
+*Identical code cleared 123, then 101 of 183 levels. We size that noise, test what moves the score, and report what failed.*
 
 <!-- COVER: paper/v3/figs/cover_1600x900.png goes in the Media Gallery as the cover image, not in the body. Title and subtitle go in their own Kaggle fields; the body starts at the opening paragraph (the hook), then the Accuracy line. -->
 <!-- IMAGES TO UPLOAD (Kaggle takes images separately; the ../figs paths below do not render there). Upload each file, then replace its path with the uploaded URL and keep the italic caption under it:
@@ -11,17 +11,17 @@
 5. paper/v3/figs/fig_finetune_writeup.png, under "Imitating easy wins" (Figure 5)
 Cover (Media Gallery only): paper/v3/figs/cover_1600x900.png. Alt text for all: ALT_TEXT.md. -->
 
-The same code cleared 123 of 183 levels, then 101. Decisions or tokens? At that noise most gains, ours included, cannot be told from chance: a faster server (+11% tokens) is worth about 4 levels and four harness changes led a control by -1 to +6. A 12.5-level gain across days from re-sending context less often did not reproduce once runs were interleaved. The contribution is a method: size the noise first.
+Is an offline ARC-AGI-3 agent limited by its decisions or its tokens? Our changes could not settle it: identical code cleared 123 of 183 levels, then 101, while our curve prices a faster server (+11% tokens) at about 4 levels and four harness changes led a control by -1 to +6. A 12.5-level lead across days for a context change did not reproduce once runs were interleaved. The contribution is a method: size the noise first.
 
-**Accuracy.** Public score 40.98 (submission 57417773, 2026-10-20), public rank 26 of 5,073 at the deadline, on half of the 110 hidden games: our best of 28 live *draws* (scored runs, one a day) since forking Franzen's notebook. Seventeen valid draws (not the 0.00, adapter or earlier-build draws) span 28.97 to 40.98, mean 34.59 (32.67 with one 0.00 of unknown cause, the same file size as many zeros others reported). The best of 17 to 21 such draws is expected near 40 to 41, so 40.98 is no evidence for one lever; we expect a private score of about 35 to 37, which is pending. `sh release/reproduce.sh` (CPU) regenerates Figure 2. [PDF](https://github.com/vineethsaivs/arc3-decisions-or-tokens/blob/main/paper/v3/tex/main.pdf), [code](https://github.com/vineethsaivs/arc3-decisions-or-tokens). Paper CC BY 4.0; code CC BY 4.0 or MIT-0.
+**Accuracy.** Public score 40.98 (submission 57417773, 2026-10-20), public rank 26 of 5,073 at the deadline, on half of the 110 hidden games: our best of 28 live *draws* (scored runs, one a day) since forking Franzen's notebook. Seventeen valid draws (not the 0.00, adapter or earlier-build draws) span 28.97 to 40.98, mean 34.59 (32.67 with one unexplained 0.00), against about 26 for 215 likely copies of Franzen's notebook on 2026-09-30 and 10-01. The best of 17 to 21 such draws is expected near 40 to 41, so 40.98 is no evidence for one lever; we expect a private score of about 35 to 37 (pending). `sh reproduce.sh` (CPU) regenerates Figure 2. [PDF](https://github.com/vineethsaivs/arc3-decisions-or-tokens/blob/main/paper/v3/tex/main.pdf), [code](https://github.com/vineethsaivs/arc3-decisions-or-tokens). Paper CC BY 4.0; code CC BY 4.0 or MIT-0.
 
-## Problem
+## Introduction
 
-ARC-AGI-3 is a set of grid games the agent has never seen, scored on levels cleared and actions spent. The scored run is offline: 9 hours, one 96 GB GPU, 110 hidden games, no log. We developed on the 25 public games; one pass is a *development run*.
+ARC-AGI-3 is a set of grid games the agent has never seen, scored on levels cleared and actions spent. The scored run is offline: 9 hours, one 96 GB GPU, 110 hidden games, no log. We developed on the 25 public (demonstration) games (183 levels); one pass is a *development run*.
 
 ## Prior work
 
-Our system is Franzen's: Tufa Labs' Duck loop driving a 4-bit Qwen3.8-Flash-Next. Run-to-run variance is known in RL (Henderson et al. 2017) and agents (Bjarnason et al. 2026: SWE-Bench pass@1 moves 2.2 to 6.0 points by run chosen). On ARC-AGI-3, one frozen harness repeated ten times gave SD 3.99 (Lehmann and Vahdati 2026). New here, as far as we found: a token-budget price and an interleaved test on which a yield gain did not reproduce. The closest public work, "Before Tuning the Harness", also repeats identical-code submissions; we price tokens in levels.
+Our system is Franzen's: Tufa Labs' Duck loop driving a 4-bit Qwen3.8-Flash-Next. Run-to-run variance is known in RL and agents (Henderson et al. 2017; Bjarnason et al. 2026); on ARC-AGI-3, one frozen harness repeated ten times gave SD 3.99 on a mean of 48.5 (Lehmann and Vahdati 2026). Concurrent entries repeat identical code and price tokens ([Before Tuning the Harness](https://github.com/guoyi12311125-netizen/arc3-repeat-controlled-eval), [The ARC-AGI-3 Lottery](https://github.com/Shreekumar-Shah-AICTE/arc-agi-3-lottery), [Where the Points Go](https://github.com/IntrepidXboy/where-the-points-go)). In [a frozen-model audit](https://github.com/damnventures/frozen-model-harness-audit), a shipped lever's gain across days failed predeclared same-day tests, as our yield gain failed an interleaved one: two independent cases.
 
 ## Approach
 
@@ -31,69 +31,71 @@ Our system is Franzen's: Tufa Labs' Duck loop driving a 4-bit Qwen3.8-Flash-Next
 
 A *turn* ends when the model acts. After a set number of generated tokens without acting, the harness *yields*, resuming the turn by re-sending its opening message (the *opener*) and the board image.
 
-The 40.98 build made 19 changes to Franzen's notebook. Three define it: yielding after 8,192 tokens instead of 2,048; dropping an eighth of the experts so 14 games run at once; and fail-closed checks that error a dead run without spending the day's draw (one unexplained 0.00 was banked anyway). Expert pruning showed 19.5 more levels than the 3.3 its tokens predict, from two runs per arm: below what two runs can detect, so a hypothesis; other teams found pruning neutral or costly per token.
+The 40.98 build made 19 changes to Franzen's notebook. Three define it: yielding after 8,192 tokens instead of 2,048; dropping an eighth of the experts so 14 games run at once; and fail-closed checks that error dead runs instead of banking 0.00 ([other teams](https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/753843) report no refund for such errors once play starts; one unexplained 0.00 was banked anyway).
 
-## Same code, different scores
+## Results
+
+### Same code, different scores
 
 ![Noise and draws](../figs/fig_noise_draws_writeup.png)
 
 *Figure 2. (a) Identical-run pairs. (b) Seventeen valid draws.*
 
-Six pairs of byte-identical development runs differed by up to 22 levels. Their SD is 8.25, but it contains a shift: the second run was lower in all six (mean 9.2 levels, sign test p 0.031), cause unexplained. Around it the SD is 5.6. Eight identical runs on rented GPUs, on one day, spread 115 to 132 (SD 5.95). Two runs per arm detect only gains above about 23 levels across days and 17 on one day; 10 levels takes 5 to 12 runs per arm.
+Six pairs of byte-identical development runs differed by up to 22 levels. Their SD is 8.25, but it contains a shift: the second run was lower in all six (mean 9.2 levels, sign test p 0.031), cause unexplained. Around it the SD is 5.6. Eight identical runs on rented GPUs, on one day, spread 115 to 132 (SD 5.95). Two runs per arm detect only gains above about 23 levels across days and 17 on one day.
 
-## What extra tokens are worth
+### What extra tokens are worth
 
-Resampling 1,114 logged level attempts, score flattens with tokens and a development run sits at about 90% of its ceiling (a local reading). Our serving changes added 11% tokens per second, about 4 levels on the curve (2 to 10 across estimates): unresolved, not zero. Others report 3 to 6 times our throughput with board gains of 15 to 20 points; our curve does not cover that.
+Resampling 1,114 logged attempts prices our serving changes (+11% tokens per second) at about 4 levels (2 to 10 across estimates): unresolved, not zero. By construction the resampled curve flattens and underprices large steps: on the same stack [another entry](https://github.com/Shreekumar-Shah-AICTE/arc-agi-3-lottery) doubled play time for 37% more levels, and [the 6th-place team](https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/755758) raised its throughput to about four times ours and its score from 25.72 to 47.19. Yet the [1st-place](https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/755795) and 6th-place teams switch models for the last 3 hours: "speed early, quality late" (6th).
 
-## A 12.5-level gain that did not reproduce
+### A 12.5-level gain that did not reproduce
 
 ![Yield lever](../figs/fig_yield_writeup.png)
 
 *Figure 3. (a) Across days, not interleaved: levels per game. (b) Re-sent openers. (c) Interleaved, six runs per arm, and the difference with its 95% interval.*
 
-Yielding at 8,192 tokens, not 2,048, cut re-sent openers about 70%. Across days (arms run on different days), nine such runs (seven with other serving changes) averaged 12.5 more levels than 21 controls.
+Yielding at 8,192 tokens, not 2,048, cut re-sent openers about 70%. Across days (not interleaved), nine such runs (seven with other serving changes) averaged 12.5 more levels than 21 controls.
 
-Six runs per arm then ran interleaved (arms alternating on one day) on one build but for one line, with rules fixed in a dated file (amended once after the jobs were submitted, before any ran; four of 16 jobs never ran). The rarer yield scored 2.5 levels below the old one (p 0.42), at matched tokens too. That excludes the 12.5-level gap (predeclared verdict: null) but not small gains (95% interval -14.2 to +9.2 at the pairs' SD). Run noise cannot explain the shortfall; drift, build and about 5 levels of extra tokens can. We shipped it on the across-days gain, which we now treat as unproven.
+Six runs per arm then ran interleaved (arms alternating on one day) on builds differing in one line, with rules fixed in a dated file (amended once before any ran; four of 16 jobs never ran). The rarer yield scored 2.5 levels below the old one (p 0.42), at matched tokens too. That excludes the 12.5-level gap (predeclared verdict: null) but not small gains (95% interval -14.2 to +9.2 at the pairs' SD). Run noise is unlikely to explain the shortfall; drift, build and about 5 levels of extra tokens can. We shipped it on the across-days gain, now unproven.
 
-## Four harness fixes, none resolvable
+### Four harness fixes, none resolvable
 
 ![Harness changes](../figs/fig_gates_writeup.png)
 
 *Figure 4. Levels per run: control (seven, mostly on another platform), three runs per change. Shading: one SD of identical runs. Shipped: stall, corner-joined, tool fixes, replay; scroll was not.*
 
-Paired plays (a level cleared in one run, stuck in another) suggested that stuck runs often stop acting. Five changes each had a kill rule in a dated file written before its first run. A **stall check** (act after three idle turns) was followed by an action in 87% of those turns, against 54% in earlier runs: the mechanism fires, no gain claimed.
+Paired plays (a level cleared in one run, stuck in another) suggested stuck runs often stop acting. Five changes each had a kill rule in a dated file written before its first run. A **stall check** (act after three yields in a row) was followed by an action in 87% of those cases, against 54% in earlier runs: the mechanism fires, no gain claimed.
 
-All five passed their gates and four shipped, leading the control (mean 123.4) by -1 to +6 levels; together +3.2 (z 0.8), which noise explains. The gate (three runs against seven) screens out only large losers: by simulation at SD 5.95 it ships a true -6 change one time in five and a null change seven in ten. A scroll detector did not help any target game: not shipped. The Final Submissions predate every change.
+All five passed their gates and four shipped, leading the control (mean 123.4) by -1 to +6 levels, each within noise. The gate (three runs against seven) is a coarse screen: by simulation at SD 5.95, a true -6 change ships one time in five, a null change seven in ten. A scroll detector showed no gain on its target games: not shipped. The Final Submissions predate every change. The [7th-place team](https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/756428) reports its three biggest board jumps came from harness changes.
 
-## Fine-tuning on easy wins ran lower
+### Fine-tuning on easy wins ran lower
 
 ![Fine-tuning](../figs/fig_finetune_writeup.png)
 
-*Figure 5. (a) Levels against LoRA scale (0 = no adapter; 9 of 18 such runs, plus two same-card controls as squares). (b) Style counters.*
+*Figure 5. (a) Levels by LoRA scale; squares: same-card controls. (b) Style counters.*
 
-We trained a LoRA (low-rank) adapter on the agent's own cleared-level turns from 127 RE-ARC-3 games. Two full-strength runs cleared 109 and 115 levels and one half-strength run 117: at or below the two lowest of 18 runs without it (rank p 0.004) and below two later same-card controls (132 and 130; lowest three of five, p 0.10, the smallest possible). Not interleaved: VM against Vertex AI, 15 days apart. No causal claim. One untested reading: the agent already clears 91% of those levels (best of three; 68% of the public 25 in one play). Reinforcement learning (GRPO) passed no gate (a first-wave lead of 1.9 levels, pooled +0.25 against a +1.75 bar); a later adapter, pinned by our override before its gate read, drew 35.90, 39.79 and 35.98, then failed. The leading team's RL-trained model also has no controlled comparison.
+We trained a LoRA (low-rank) adapter on the agent's own cleared-level turns from 127 RE-ARC-3 games. Two full-strength runs cleared 109 and 115 levels and one half-strength run 117: at or below the two lowest of 18 runs without it (rank p 0.004) and below two later same-card controls (132 and 130; lowest three of five, p 0.10, the smallest possible). Not interleaved: VM against Vertex AI, 15 days apart. No causal claim. One untested reading: the agent already clears 91% of those levels (best of three), so the cleared-level filter kept slow wins too. Reinforcement learning (GRPO) passed no promotion gate; a later adapter, pinned by our override before its gate read, drew 35.90, 39.79 and 35.98, then failed. No team we read showed a training gain beyond noise; [the public leader](https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3/discussion/755466) says extra tokens paid more than RL.
 
 ## Why the noise looks like this
 
-A run sums 25 games' level counts. Within a session the games vary about independently: their variances add to a run SD of 5.1 to 6.3, against 3.9 to 6.0 observed. Five games hold 55 to 64% of that variance and four never move. Across days a common shift adds more: the pairs' variance is 68, against 39 from games alone.
+A run sums 25 games' level counts. Within a session the games vary about independently: their variances add to a run SD of 5.1 to 6.3, against 3.9 to 6.0 observed. Five games hold 55 to 64% of that variance and four never move. Between paired runs a common shift adds more: the pairs' variance is 68, against 39 from games alone.
 
-## What to copy
+## Conclusion: what to copy
 
 1. **Size your noise:** run identical code about eight times on one day, plus a few pairs across days.
 2. **Know your detection line:** n runs per arm detect 2.8 x SD x sqrt(2/n) levels (5% two-sided, 80% power, normal approximation).
 3. **Interleave arms** on one build before trusting a gain across days (our 12.5 became -2.5).
 4. **Judge a small change by the behavior it targets,** pass rule written first; use levels only to veto gross harm.
-5. **Price a speed-up** by resampling logged attempts.
+5. **Price a small speed-up** by resampling logged attempts.
 
-Items 1 to 5 need only repeated runs and logs, tested on one stack with our SD values. Elsewhere the scale is similar: SWE-Bench-Verified agents (10 runs per cell, Bjarnason et al.) have SD 0.7 to 1.8 points, so one run per arm detects only about 6.
+The steps need only repeated runs and logs; we tested them on one stack. The scale recurs: identical reruns have SD 0.7 to 1.8 points on SWE-Bench-Verified (Bjarnason et al.) and 1.3 to 1.9 on ARC-AGI-2 ([rc397](https://github.com/rc397/arc-prize-2026); [damsolanke](https://github.com/damsolanke/arc-prize-2026); [Nguyen and Trinh](https://arxiv.org/abs/2611.06827)), so one run per arm detects only gains above about 6.
 
 ## Limits
 
-Development numbers are on the demonstration games, not held out. 40.98 is a maximum picked by public score; we expect the private half near the mean (untested until private scores post). Harness arms have three runs or fewer, were not interleaved and ran against a control mostly from another platform.
+Development numbers are on the public games, not held out. Harness arms: three runs or fewer, not interleaved, control mostly on another platform.
 
 ## Credit
 
-Inherited: Qwen's model, Intel's 4-bit weights, albucino's drafter, J. Pezzulli's serving build, Tufa Labs' Duck and RE-ARC-3, Daniel Franzen's notebook, harness patch and schedule. Borrowed: shiiin9's priority formula (Apache 2.0), expert ids recovered from lee-chang-93's pruned checkpoint (list licence unsettled), Lord Han Solo, ursuciprian, lovedheart, Tufa Labs' step-verification text. Claude (Anthropic) wrote most of the code, analysis and text. The author set the goals and limits, and marked the two Final Submissions by hand.
+Inherited: Qwen's model, Intel's 4-bit weights, albucino's drafter, J. Pezzulli's serving build, Tufa Labs' Duck and RE-ARC-3, Daniel Franzen's notebook, harness patch and schedule. Borrowed: shiiin9's priority formula (Apache 2.0), lee-chang-93's expert ids (licence unsettled), Lord Han Solo, ursuciprian, lovedheart, Son Pham's team, face-of-agi, Jeroen Cottaar, Tufa Labs' step-verification text. Claude (Anthropic) wrote most of the code, analysis and text. The author set the goals and limits, and marked the two Final Submissions by hand.
 
 <!-- DEEP PASS 2026-11-04: body rewritten from the four-lens diagnosis and the variance, gates/board, skeptic and second-population analyses (paper/v3/analysis/out/variance_frames.md, gates_board.md, second_population.md). Pre-pass body saved in the session scratchpad. Notebook link removed from the Accuracy line: it returned 404 logged out on 11-04; re-add once public. -->
 

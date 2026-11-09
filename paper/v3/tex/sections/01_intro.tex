@@ -24,7 +24,7 @@ Six identical pairs give a run-to-run SD of 8.25 levels across days (5.6 around 
 We also used concurrent replication on rented copies of the scoring GPU (within 1\% of Kaggle on serving counters) and once a paired decision test, not yet validated against a lever with a known level effect. % V3-T3 V3-T4 V3-X1
 
 \item \textbf{A token-budget curve that prices throughput (Sec.~\ref{sec:curve}).}
-Built from recorded level attempts, it puts the agent at about 90\% of its ceiling and our serving speed-ups at about 4 levels (2 to 10 across estimates), below what two runs per arm can see. % C2 N2 C4 N1.3
+Built from recorded level attempts, it prices our serving speed-ups at about 4 levels (2 to 10 across estimates), below what two runs per arm can see; it flattens partly by construction, so it underprices large steps \citep{shah2026lottery}. % C2 N2 C4 N1.3
 Read from the clock, the last tenth of the window earns 7\% of the points, about three times the curve's price on score. % V3-W13 V3-W14
 
 \item \textbf{A context lever that failed an interleaved test (Sec.~\ref{sec:yield}).}

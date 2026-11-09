@@ -58,9 +58,9 @@ arrow((x0, f(x0) + 0.0), (x1, f(x1) + 0.0), "#6A6A6A", rad=-0.04, lw=4.5)
 arrow((x0, f(x0)), (x0, f(x0) + ARROW), ACC, ls=(0, (2.2, 1.6)))
 arrow((x0, f(x0)), (x0, f(x0) - ARROW), BLUE)
 labels = [
-    ax.text(x0 - 0.35, f(x0) + 0.24, "context re-send:\nno effect when\ninterleaved", fontsize=30, color=ACC,
+    ax.text(x0 - 0.35, f(x0) + 0.24, "context re-send:\nno gain when\ninterleaved", fontsize=30, color=ACC,
             fontweight="bold", ha="right", va="center", linespacing=1.0),
-    ax.text(x0 + 0.35, f(x0) - 0.30, "imitating easy wins:\nlowered levels", fontsize=30, color=BLUE, fontweight="bold",
+    ax.text(x0 + 0.35, f(x0) - 0.30, "imitating easy wins:\nfewer levels,\nnot interleaved", fontsize=30, color=BLUE, fontweight="bold",
             ha="left", va="center", linespacing=1.0),
     ax.text(x1 + 0.10, f(x1) + 0.06, "faster serving:\nunresolved", fontsize=27, color="#4A4A4A", ha="left",
             va="bottom", linespacing=1.0),

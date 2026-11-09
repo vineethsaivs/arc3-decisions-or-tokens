@@ -41,7 +41,7 @@ Group diff & \texttt{frame\_diff} reports a corner-joined group whose parts all 
 \paragraph{Rejected without a skeptic.}
 The main rejections, with the synthesizer's reasons. % V3-W34
 A halt-on-mismatch executor: the model already writes checked loops by hand (445 blocks in three runs), and an earlier host-enforced prediction gate lost 10 of 35 levels. % V3-W34
-A search helper: search snippets fail more often (15.5\% against 7.8\%), but the saving is tokens, the agent already runs near its token ceiling (Sec.~\ref{sec:curve}), and the model writes its own search on 170 of 272 long levels. % V3-W34
+A search helper: search snippets fail more often (15.5\% against 7.8\%), but the saving is tokens, the simulator puts the agent near its token ceiling (Sec.~\ref{sec:curve}), and the model writes its own search on 170 of 272 long levels. % V3-W34
 Traceback hints in the style of SWE-agent \citep{yang2024sweagent}: tool errors are 8.2\% of calls, mostly the model's own bugs. % V3-W34 V3-W33
 Opener compaction: 71K retained history tied. Level-start object tables: 0.5K to 1.5K tokens per level start to save about 1\% of the clock. % V3-W34
 Cross-level memory: solved-level memory and a strategy audit were already dropped (Appendix~\ref{app:tried}). % V3-W34
